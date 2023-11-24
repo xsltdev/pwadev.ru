@@ -1,0 +1,22 @@
+{
+	"name": "pwadev.ru",
+	"version": "1.0.0",
+	"description": "Site with PWA documentation",
+	"devDependencies": {
+		"@prettier/plugin-xml": "^3.2.1",
+		"prettier": "^3.0.3"
+	},
+	"scripts": {
+		"build": "mkdocs build",
+		"serve": "mkdocs serve --dirtyreload",
+		"upgrade": "pip3 install --upgrade -r ./requirements.txt"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/xsltdev/pwadev.ru.git"
+	},
+	"bugs": {
+		"url": "https://github.com/xsltdev/pwadev.ru/issues"
+	},
+	"homepage": "https://pwadev.ru/"
+}
