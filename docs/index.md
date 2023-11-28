@@ -13,7 +13,7 @@ hide:
 
     ***
 
-    Прогрессивные веб-приложения
+    Прогрессивные веб-приложения.
 
     [:octicons-arrow-right-24: Учим PWA](./learn/pwa/index.md) <small>web.dev</small>
 
