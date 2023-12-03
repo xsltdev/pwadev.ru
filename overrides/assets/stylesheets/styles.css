@@ -175,7 +175,9 @@ h3 {
 	display: block;
 	margin: 0;
 	padding: 0.8rem;
-	transition: border 0.25s, box-shadow 0.25s;
+	transition:
+		border 0.25s,
+		box-shadow 0.25s;
 	box-shadow: var(--md-shadow-z1);
 }
 .md-typeset .grid.cards > ol > li:focus-within,
@@ -248,4 +250,14 @@ h3 {
 .md-typeset .grid > .tabbed-set {
 	margin-bottom: 0;
 	margin-top: 0;
+}
+
+//
+litdev-example {
+	border-radius: 5px;
+	border: 1px solid #ddd;
+}
+
+playground-preview {
+	border-top: 1px solid #ddd;
 }

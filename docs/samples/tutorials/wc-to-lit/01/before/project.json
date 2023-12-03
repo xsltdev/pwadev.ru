@@ -1,0 +1,1 @@
+{"extends":"/samples/base.json","files":{"index.html":{"content":"<!DOCTYPE html>\n<html>\n  <head>\n    <script src=\"./rating-element.js\" type=\"module\"></script>\n  </head>\n  <body>\n  </body>\n</html>\n"},"rating-element.ts":{"content":"document.body.innerHTML = '<div>This page has successfully loaded!</div>';\n"}}}

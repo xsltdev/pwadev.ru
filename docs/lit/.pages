@@ -1,0 +1,13 @@
+title: Lit
+nav:
+    - index.md
+    - getting-started.md
+    - components
+    #- templates
+    #- composition
+    #- data
+    #- tools
+    #- ssr
+    #- frameworks
+    #- localization
+    #- libraries

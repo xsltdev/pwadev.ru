@@ -1,0 +1,11 @@
+title: Компоненты
+nav:
+    - overview.md
+    - defining.md
+    - rendering.md
+    #- properties.md
+    #- styles.md
+    #- lifecycle.md
+    #- shadow-dom.md
+    #- events.md
+    #- decorators.md

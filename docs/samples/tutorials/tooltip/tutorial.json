@@ -1,0 +1,44 @@
+{
+  "header": "Build a tooltip element",
+  "difficulty": "Advanced",
+  "size": "small",
+  "duration": 30,
+  "category": "Build",
+  "date": "2022-05-10",
+  "steps": [
+    {
+      "title": "Introduction",
+      "noSolve": true
+    },
+    {
+      "title": "Get started with styling"
+    },
+    {
+      "title": "Add show/hide"
+    },
+    {
+      "title": "Interactivity"
+    },
+    {
+      "title": "Positioning"
+    },
+    {
+      "title": "Better positioning"
+    },
+    {
+      "title": "Animation"
+    },
+    {
+      "title": "Lazy creation",
+      "hasAfter": true
+    },
+    {
+      "title": "Using a directive",
+      "hasAfter": true
+    },
+    {
+      "title": "Congratulations!",
+      "noSolve": true
+    }
+  ]
+}

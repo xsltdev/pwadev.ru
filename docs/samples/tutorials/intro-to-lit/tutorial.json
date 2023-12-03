@@ -1,0 +1,42 @@
+{
+  "header": "Intro to Lit",
+  "difficulty": "Beginner",
+  "size": "small",
+  "duration": 20,
+  "category": "Learn",
+  "date": "2023-08-01",
+  "steps": [
+    {
+      "title": "Introduction",
+      "hasAfter": true
+    },
+    {
+      "title": "Define a component",
+      "hasAfter": true
+    },
+    {
+      "title": "Properties and expressions",
+      "hasAfter": true
+    },
+    {
+      "title": "Declarative event listeners",
+      "hasAfter": true
+    },
+    {
+      "title": "More expressions",
+      "hasAfter": true
+    },
+    {
+      "title": "Template logic",
+      "hasAfter": true
+    },
+    {
+      "title": "Styles",
+      "hasAfter": true
+    },
+    {
+      "title": "Finishing touches",
+      "hasAfter": true
+    }
+  ]
+}
