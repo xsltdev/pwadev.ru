@@ -1,1 +1,0 @@
-/home/by/xsltdev/0_content/lit.dev/packages/lit-dev-content/samples/tutorials/custom-attribute-converter/description.md
