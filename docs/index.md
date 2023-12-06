@@ -25,7 +25,7 @@ hide:
 
     Фреймворк для создания веб-компонент.
 
-    :octicons-arrow-right-24: Lit <small>v3</small>
+    [:octicons-arrow-right-24: Lit](./lit/index.md) <small>v3</small>
 
 </div>
 
