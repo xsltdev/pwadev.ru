@@ -1,86 +1,82 @@
 ---
-title: Styles
-eleventyNavigation:
-  key: Styles
-  parent: Components
-  order: 4
-versionLinks:
-  v1: components/styles/
-  v2: components/styles/
+description: Шаблон вашего компонента отображается на его теневой корень. Стили, которые вы добавляете в компонент, автоматически _скопируются_ в корень тени и влияют только на элементы в корне тени компонента
 ---
 
-Your component's template is rendered to its shadow root. The styles you add to your component are automatically _scoped_ to the shadow root and only affect elements in the component's shadow root.
+# Стили
 
-Shadow DOM provides strong encapsulation for styling. If Lit did not use Shadow DOM, you would have to be extremely careful not to accidentally style elements outside of your component, either ancestors or children of your component. This might involve writing long, cumbersome to use class names. By using Shadow DOM, Lit ensures whatever selector you write only apply to elements in your Lit component's shadow root.
+Шаблон вашего компонента отображается на его теневой корень. Стили, которые вы добавляете в компонент, автоматически _скопируются_ в корень тени и влияют только на элементы в корне тени компонента.
 
-## Adding styles to your component {#add-styles}
+Shadow DOM обеспечивает надежную инкапсуляцию стилей. Если бы Lit не использовал Shadow DOM, вам пришлось бы быть очень осторожным, чтобы случайно не стилизовать элементы вне вашего компонента, либо предков, либо дочерние элементы компонента. Это может привести к написанию длинных и громоздких имен классов. Используя Shadow DOM, Lit гарантирует, что любой написанный вами селектор будет применяться только к элементам в корневой тени вашего компонента Lit.
 
-You define scoped styles in the static `styles` class field using the tagged template literal `css` function. Defining styles this way results in the most optimal performance:
+## Добавление стилей в компонент {#add-styles}
 
-{% playground-example "v3-docs/components/style/basic" "my-element.ts" %}
+Вы определяете стили в статическом поле класса `styles`, используя тегированную шаблонную литеральную функцию `css`. Такое определение стилей обеспечивает наиболее оптимальную производительность:
 
-The styles you add to your component are _scoped_ using shadow DOM. For a quick overview, see [Shadow DOM](#shadow-dom).
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:15;
+               --litdev-example-editor-lines-js:14;
+               --litdev-example-preview-height:80px" project="v3-docs/components/style/basic" filename="my-element.ts"></litdev-example>
 
-The value of the static `styles` class field can be:
+Стили, которые вы добавляете в свой компонент, _скопируются_ с помощью shadow DOM. Для краткого обзора смотрите [Shadow DOM](#shadow-dom).
 
-*   A single tagged template literal.
+Значением статического поля класса `styles` может быть:
+
+-   Один тегированный шаблонный литерал.
 
     ```js
     static styles = css`...`;
     ```
 
-*   An array of tagged template literals.
+-   Массив помеченных литералов шаблона.
 
     ```js
     static styles = [ css`...`, css`...`];
     ```
 
-The static `styles` class field is _almost always_ the best way to add styles to your component, but there are some use cases you can't handle this way—for example, customizing styles per instance. For alternate ways to add styles, see [Defining scoped styles in the template](#styles-in-the-template).
+Статическое поле класса `styles` - это почти всегда лучший способ добавить стили в компонент, но есть некоторые случаи, с которыми нельзя справиться таким образом - например, настройка стилей для каждого экземпляра. Об альтернативных способах добавления стилей см. в разделе [Определение масштабируемых стилей в шаблоне](#styles-in-the-template).
 
+### Использование выражений в статических стилях {#expressions}
 
-### Using expressions in static styles {#expressions}
+Статические стили применяются ко всем экземплярам компонента. Любые выражения в CSS оцениваются **один раз**, а затем повторно используются для всех экземпляров.
 
-Static styles apply to all instances of a component. Any expressions in CSS are evaluated **once**, then reused for all instances.
+Для настройки стилей на основе дерева или для каждого экземпляра используйте пользовательские свойства CSS, чтобы позволить элементам быть [тематическими](#theming).
 
-For tree-based or per-instance style customization, use CSS custom properties to allow elements to be [themed](#theming).
-
-To prevent Lit components from evaluating potentially malicious code, the `css` tag only allows nested expressions that are themselves `css` tagged strings or numbers.
+Чтобы предотвратить оценку потенциально вредоносного кода компонентами Lit, тег `css` позволяет использовать только вложенные выражения, которые сами являются строками или числами с тегом `css`.
 
 ```js
 const mainColor = css`red`;
-...
+// ...
 static styles = css`
   div { color: ${mainColor} }
 `;
 ```
 
-This restriction exists to protect applications from security vulnerabilities whereby malicious styles, or even malicious code, can be injected from untrusted sources such as URL parameters or database values.
+Это ограничение существует для защиты приложений от уязвимостей в безопасности, когда вредоносные стили или даже вредоносный код могут быть внедрены из ненадежных источников, таких как параметры URL или значения базы данных.
 
-If you must use an expression in a `css` literal that is not itself a `css` literal, **and** you are confident that the expression is from a fully trusted source such as a constant defined in your own code, then you can wrap the expression with the `unsafeCSS` function:
+Если вам необходимо использовать выражение в литерале `css`, который сам не является литералом `css`, **и** вы уверены, что выражение получено из полностью доверенного источника, такого как константа, определенная в вашем собственном коде, то вы можете обернуть выражение функцией `unsafeCSS`:
 
 ```js
 const mainColor = 'red';
-...
+// ...
 static styles = css`
   div { color: ${unsafeCSS(mainColor)} }
 `;
 ```
 
-<div class="alert alert-info">
+!!!warning "Используйте тег `unsafeCSS` только с доверенным вводом"
 
-**Only use the `unsafeCSS` tag with trusted input.** Injecting unsanitized CSS is a security risk. For example, malicious CSS can "phone home" by adding an image URL that points to a third-party server.
+    Внедрение несанированного CSS представляет собой риск для безопасности. Например, вредоносный CSS может "позвонить домой", добавив URL-адрес изображения, который указывает на сторонний сервер.
 
-</div>
+### Наследование стилей от суперкласса
 
-### Inheriting styles from a superclass
+Используя массив тегированных литералов шаблонов, компонент может наследовать стили от суперкласса и добавлять свои собственные стили:
 
-Using an array of tagged template literals, a component can inherit the styles from a superclass, and add its own styles:
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:14;
+             --litdev-example-editor-lines-js:13;
+             --litdev-example-preview-height:120px" project="v3-docs/components/style/superstyles"></litdev-example>
 
-{% playground-ide "v3-docs/components/style/superstyles" %}
+Вы также можете использовать `super.styles` для ссылки на свойство `styles` суперкласса в JavaScript. Если вы используете TypeScript, мы рекомендуем избегать `super.styles`, поскольку компилятор не всегда корректно преобразует его. Явная ссылка на суперкласс, как показано в примере, позволяет избежать этой проблемы.
 
-You can also use `super.styles` to reference the superclass's styles property in JavaScript. If you're using TypeScript, we recommend avoiding `super.styles` since the compiler doesn't always convert it correctly. Explicitly referencing the superclass, as shown in the example, avoids this issue.
-
-When writing components intended to be subclassed in TypeScript, the `static styles` field should be explicitly typed as `CSSResultGroup` to allow flexibility for users to override `styles` with an array:
+При написании компонентов, предназначенных для подклассификации на TypeScript, поле `static styles` должно быть явно типизировано как `CSSResultGroup`, чтобы пользователи могли гибко переопределять `styles` с помощью массива:
 
 ```ts
 // Prevent typescript from narrowing the type of `styles` to `CSSResult`
@@ -94,13 +90,14 @@ You can share styles between components by creating a module that exports tagged
 
 ```js
 export const buttonStyles = css`
-  .blue-button {
-    color: white;
-    background-color: blue;
-  }
-  .blue-button:disabled {
-    background-color: grey;
-  }`;
+    .blue-button {
+        color: white;
+        background-color: blue;
+    }
+    .blue-button:disabled {
+        background-color: grey;
+    }
+`;
 ```
 
 Your element can then import the styles and add them to its static `styles` class field:
@@ -109,13 +106,15 @@ Your element can then import the styles and add them to its static `styles` clas
 import { buttonStyles } from './button-styles.js';
 
 class MyElement extends LitElement {
-  static styles = [
-    buttonStyles,
-    css`
-      :host { display: block;
-        border: 1px solid black;
-      }`
-  ];
+    static styles = [
+        buttonStyles,
+        css`
+            :host {
+                display: block;
+                border: 1px solid black;
+            }
+        `,
+    ];
 }
 ```
 
@@ -125,8 +124,8 @@ CSS's unicode escape sequence is a backslash followed by four or six hex digits:
 
 There are two work-arounds for adding a unicode escape to your styles:
 
-*   Add a second backslash (for example, `\\2022`).
-*   Use the JavaScript escape sequence, starting with `\u` (for example, `\u2022`).
+-   Add a second backslash (for example, `\\2022`).
+-   Use the JavaScript escape sequence, starting with `\u` (for example, `\u2022`).
 
 ```js
 static styles = css`
@@ -141,10 +140,9 @@ This section gives a brief overview of shadow DOM styling.
 
 Styles you add to a component can affect:
 
-* [The shadow tree](#shadowroot) (your component's rendered template).
-* [The component itself](#host).
-* [The component's children](#slotted).
-
+-   [The shadow tree](#shadowroot) (your component's rendered template).
+-   [The component itself](#host).
+-   [The component's children](#slotted).
 
 ### Styling the shadow tree {#shadowroot}
 
@@ -158,8 +156,8 @@ You can style the component itself using special `:host` selectors. (The element
 
 To create default styles for the host element, use the `:host` CSS pseudo-class and `:host()` CSS pseudo-class function.
 
-*   `:host` selects the host element.
-*   <code>:host(<var>selector</var>)</code> selects the host element, but only if the host element matches _selector_.
+-   `:host` selects the host element.
+-   <code>:host(<var>selector</var>)</code> selects the host element, but only if the host element matches _selector_.
 
 {% playground-example "v3-docs/components/style/host" "my-element.ts" %}
 
@@ -167,7 +165,7 @@ Note that the host element can be affected by styles from outside the shadow tre
 
 ```css
 my-element {
-  display: inline-block;
+    display: inline-block;
 }
 ```
 
@@ -179,9 +177,9 @@ The `<slot>` element acts as a placeholder in a shadow tree where the host eleme
 
 Use the `::slotted()` CSS pseudo-element to select children that are included in your template via `<slot>`s.
 
-*   `::slotted(*)` matches all slotted elements.
-*   `::slotted(p)` matches slotted paragraphs.
-*   `p ::slotted(*)` matches slotted elements where the `<slot>` is a descendant of a paragraph element.
+-   `::slotted(*)` matches all slotted elements.
+-   `::slotted(p)` matches slotted paragraphs.
+-   `p ::slotted(*)` matches slotted elements where the `<slot>` is a descendant of a paragraph element.
 
 {% playground-example "v3-docs/components/style/slottedselector" "my-element.ts" %}
 
@@ -189,11 +187,11 @@ Note that **only direct slotted children** can be styled with `::slotted()`.
 
 ```html
 <my-element>
-  <div>Stylable with ::slotted()</div>
+    <div>Stylable with ::slotted()</div>
 </my-element>
 
 <my-element>
-  <div><p>Not stylable with ::slotted()</p></div>
+    <div><p>Not stylable with ::slotted()</p></div>
 </my-element>
 ```
 
@@ -201,7 +199,7 @@ Also, children can be styled from outside the shadow tree, so you should regard 
 
 ```css
 my-element > div {
-  /* Outside style targetting a slotted child can override ::slotted() styles */
+    /* Outside style targetting a slotted child can override ::slotted() styles */
 }
 ```
 
@@ -213,10 +211,10 @@ my-element > div {
 
 ## Defining scoped styles in the template {#styles-in-the-template}
 
-We recommend using the [static `styles` class field](#add-styles) for optimal performance.  However, sometimes you may want to define styles in the Lit template. There are two ways to add scoped styles in the template:
+We recommend using the [static `styles` class field](#add-styles) for optimal performance. However, sometimes you may want to define styles in the Lit template. There are two ways to add scoped styles in the template:
 
-*   Add styles using a [`<style>` element](#style-element).
-*   Add styles using an [external style sheet](#external-stylesheet) (not recommended).
+-   Add styles using a [`<style>` element](#style-element).
+-   Add styles using an [external style sheet](#external-stylesheet) (not recommended).
 
 Each of these techniques has its own set of advantages and drawbacks.
 
@@ -285,9 +283,9 @@ While you can include an external style sheet in your template with a `<link>`, 
 
 **External stylesheet caveats.**
 
-*  The [ShadyCSS polyfill](https://github.com/webcomponents/polyfills/tree/master/packages/shadycss#limitations) doesn't support external style sheets.
-*   External styles can cause a flash-of-unstyled-content (FOUC) while they load.
-*   The URL in the `href` attribute is relative to the **main document**. This is okay if you're building an app and your asset URLs are well-known, but avoid using external style sheets when building a reusable element.
+-   The [ShadyCSS polyfill](https://github.com/webcomponents/polyfills/tree/master/packages/shadycss#limitations) doesn't support external style sheets.
+-   External styles can cause a flash-of-unstyled-content (FOUC) while they load.
+-   The URL in the `href` attribute is relative to the **main document**. This is okay if you're building an app and your asset URLs are well-known, but avoid using external style sheets when building a reusable element.
 
 </div>
 
@@ -326,9 +324,9 @@ CSS inheritance lets parent and host elements propagate certain CSS properties t
 
 Not all CSS properties inherit. Inherited CSS properties include:
 
-* `color`
-* `font-family` and other `font-*` properties
-* All CSS custom properties (`--*`)
+-   `color`
+-   `font-family` and other `font-*` properties
+-   All CSS custom properties (`--*`)
 
 See [CSS Inheritance on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/inheritance) for more information.
 
@@ -336,14 +334,11 @@ You can use CSS inheritance to set styles on an ancestor element that are inheri
 
 ```html
 <style>
-html {
-  color: green;
-}
+    html {
+        color: green;
+    }
 </style>
-<my-element>
-  #shadow-root
-    Will be green
-</my-element>
+<my-element> #shadow-root Will be green </my-element>
 ```
 
 ### CSS custom properties {#customprops}
@@ -354,14 +349,14 @@ The following component sets its background color to a CSS variable. The CSS var
 
 ```js
 class MyElement extends LitElement {
-  static styles = css`
-    :host {
-      background-color: var(--my-background, yellow);
+    static styles = css`
+        :host {
+            background-color: var(--my-background, yellow);
+        }
+    `;
+    render() {
+        return html`<p>Hello world</p>`;
     }
-  `;
-  render() {
-    return html`<p>Hello world</p>`;
-  }
 }
 ```
 
@@ -369,9 +364,9 @@ Users of this component can set the value of `--my-background`, using the `my-el
 
 ```html
 <style>
-  my-element {
-    --my-background: rgb(67, 156, 144);
-  }
+    my-element {
+        --my-background: rgb(67, 156, 144);
+    }
 </style>
 <my-element></my-element>
 ```
@@ -380,12 +375,12 @@ Users of this component can set the value of `--my-background`, using the `my-el
 
 ```html
 <style>
-  my-element {
-    --my-background: rgb(67, 156, 144);
-  }
-  my-element.stuff {
-    --my-background: #111111;
-  }
+    my-element {
+        --my-background: rgb(67, 156, 144);
+    }
+    my-element.stuff {
+        --my-background: #111111;
+    }
 </style>
 <my-element></my-element>
 <my-element class="stuff"></my-element>

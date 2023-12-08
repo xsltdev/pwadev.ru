@@ -3,7 +3,7 @@ nav:
     - overview.md
     - defining.md
     - rendering.md
-    #- properties.md
+    - properties.md
     #- styles.md
     #- lifecycle.md
     #- shadow-dom.md
