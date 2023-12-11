@@ -98,6 +98,8 @@ extra_javascript:
     - 'https://cdn.jsdelivr.net/gh/ireade/caniuse-embed/caniuse-embed.min.js'
     - path: '/js/components/litdev-example.js'
       type: module
+    - path: '/assets/javascripts/todomvc.js'
+      type: module
 
 extra_css:
     - '/assets/stylesheets/styles.css?8'
