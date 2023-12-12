@@ -84,9 +84,9 @@ static styles = css`
 static styles: CSSResultGroup = css`...`;
 ```
 
-### Sharing styles
+### Совместное использование стилей
 
-You can share styles between components by creating a module that exports tagged styles:
+Вы можете обмениваться стилями между компонентами, создав модуль, экспортирующий помеченные стили:
 
 ```js
 export const buttonStyles = css`
@@ -100,7 +100,7 @@ export const buttonStyles = css`
 `;
 ```
 
-Your element can then import the styles and add them to its static `styles` class field:
+Затем ваш элемент может импортировать стили и добавить их в свое статическое поле класса `styles`:
 
 ```js
 import { buttonStyles } from './button-styles.js';
@@ -118,14 +118,14 @@ class MyElement extends LitElement {
 }
 ```
 
-### Using unicode escapes in styles
+### Использование эскейпов юникода в стилях
 
-CSS's unicode escape sequence is a backslash followed by four or six hex digits: for example, `\2022` for a bullet character. This similar to the format of JavaScript's deprecated _octal_ escape sequences, so using these sequences in a `css` tagged template literal causes an error.
+Юникодная последовательность CSS - это обратный слеш, за которым следуют четыре или шесть шестнадцатеричных цифр: например, `\2022` для символа пули. Это похоже на формат устаревших экранирующих последовательностей JavaScript _octal_, поэтому использование таких последовательностей в литерале шаблона с тегом `css` приводит к ошибке.
 
-There are two work-arounds for adding a unicode escape to your styles:
+Есть два способа добавить в стили юникод:
 
--   Add a second backslash (for example, `\\2022`).
--   Use the JavaScript escape sequence, starting with `\u` (for example, `\u2022`).
+-   Добавить второй обратный слеш (например, `\\2022`).
+-   Использовать escape-последовательность JavaScript, начинающуюся с `\u` (например, `\u2022`).
 
 ```js
 static styles = css`
@@ -134,34 +134,36 @@ static styles = css`
   }
 ```
 
-## Shadow DOM styling overview {#shadow-dom}
+## Обзор стилей теневого DOM {#shadow-dom}
 
-This section gives a brief overview of shadow DOM styling.
+В этом разделе приводится краткий обзор теневых стилей DOM.
 
-Styles you add to a component can affect:
+Стили, которые вы добавляете к компоненту, могут влиять на:
 
--   [The shadow tree](#shadowroot) (your component's rendered template).
--   [The component itself](#host).
--   [The component's children](#slotted).
+-   [Теневое дерево](#shadowroot) (шаблон рендеринга вашего компонента).
+-   [Сам компонент](#host).
+-   [Дочерние элементы компонента](#slotted).
 
-### Styling the shadow tree {#shadowroot}
+### Стилизация теневого дерева {#shadowroot}
 
-Lit templates are rendered into a shadow tree by default. Styles scoped to an element's shadow tree don't affect the main document or other shadow trees. Similarly, with the exception of [inherited CSS properties](#inheritance), document-level styles don't affect the contents of a shadow tree.
+Lit-шаблоны по умолчанию выводятся в теневое дерево. Стили, применяемые к теневому дереву элемента, не влияют на основной документ и другие теневые деревья. Аналогично, за исключением [наследуемых CSS-свойств](#inheritance), стили уровня документа не влияют на содержимое теневого дерева.
 
-When you use standard CSS selectors, they only match elements in your component's shadow tree. This means you can often use very simple selectors since you don't have to worry about them accidentally styling other parts of the page; for example: `input`, `*`, or `#my-element`.
+Когда вы используете стандартные селекторы CSS, они соответствуют только элементам в теневом дереве вашего компонента. Это означает, что вы часто можете использовать очень простые селекторы, поскольку вам не нужно беспокоиться о том, что они случайно стилизуют другие части страницы; например: `input`, `*` или `#my-element`.
 
-### Styling the component itself {#host}
+### Стилизация самого компонента {#host}
 
-You can style the component itself using special `:host` selectors. (The element that owns, or "hosts" a shadow tree is called the _host element_.)
+Вы можете стилизовать сам компонент с помощью специальных селекторов `:host`. (Элемент, который является владельцем или "хозяином" теневого дерева, называется _хост-элементом_).
 
-To create default styles for the host element, use the `:host` CSS pseudo-class and `:host()` CSS pseudo-class function.
+Чтобы создать стили по умолчанию для элемента host, используйте CSS-псевдокласс `:host` и функцию CSS-псевдокласса `:host()`.
 
--   `:host` selects the host element.
--   <code>:host(<var>selector</var>)</code> selects the host element, but only if the host element matches _selector_.
+-   `:host` выбирает элемент-хост.
+-   `:host(selector)` выбирает принимающий элемент, но только если принимающий элемент соответствует _selector_.
 
-{% playground-example "v3-docs/components/style/host" "my-element.ts" %}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:21;
+               --litdev-example-editor-lines-js:20;
+               --litdev-example-preview-height:120px" project="v3-docs/components/style/host" filename="my-element.ts"></litdev-example>
 
-Note that the host element can be affected by styles from outside the shadow tree, as well, so you should consider the styles you set in `:host` and `:host()` rules as _default styles_ that can be overridden by the user. For example:
+Обратите внимание, что на элемент host могут влиять стили, находящиеся вне дерева теней, поэтому стили, заданные в правилах `:host` и `:host()`, следует рассматривать как _стили по умолчанию_, которые могут быть переопределены пользователем. Например:
 
 ```css
 my-element {
@@ -169,21 +171,23 @@ my-element {
 }
 ```
 
-### Styling the component's children {#slotted}
+### Стилизация дочерних компонентов {#slotted}
 
-Your component may accept children (like a `<ul>` element can have `<li>` children). To render children, your template needs to include one or more `<slot>` elements, as described in [Render children with the slot element](/docs/v3/components/shadow-dom/#slots).
+Ваш компонент может принимать дочерние элементы (например, элемент `<ul>` может иметь дочерние элементы `<li>`). Чтобы отобразить дочерние элементы, ваш шаблон должен включать один или несколько элементов `<slot>`, как описано в [Render children with the slot element](shadow-dom.md#slots).
 
-The `<slot>` element acts as a placeholder in a shadow tree where the host element's children are displayed.
+Элемент `<slot>` выступает в качестве заполнителя в теневом дереве, где отображаются дочерние элементы основного элемента.
 
-Use the `::slotted()` CSS pseudo-element to select children that are included in your template via `<slot>`s.
+Используйте CSS-псевдоэлемент `::slotted()` для выбора дочерних элементов, которые включены в ваш шаблон через `<slot>`.
 
--   `::slotted(*)` matches all slotted elements.
--   `::slotted(p)` matches slotted paragraphs.
--   `p ::slotted(*)` matches slotted elements where the `<slot>` is a descendant of a paragraph element.
+-   `::slotted(*)` соответствует всем элементам с прорезью.
+-   `::slotted(p)` соответствует абзацам с прорезью.
+-   `p ::slotted(*)` соответствует элементам со слотами, где `<slot>` является потомком элемента абзаца.
 
-{% playground-example "v3-docs/components/style/slottedselector" "my-element.ts" %}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:18;
+               --litdev-example-editor-lines-js:17;
+               --litdev-example-preview-height:100px" project="v3-docs/components/style/slottedselector" filename="my-element.ts"></litdev-example>
 
-Note that **only direct slotted children** can be styled with `::slotted()`.
+Обратите внимание, что **только прямые дочерние элементы слота** могут быть стилизованы с помощью `::slotted()`.
 
 ```html
 <my-element>
@@ -195,7 +199,7 @@ Note that **only direct slotted children** can be styled with `::slotted()`.
 </my-element>
 ```
 
-Also, children can be styled from outside the shadow tree, so you should regard your `::slotted()` styles as default styles that can be overridden.
+Кроме того, дочерние элементы могут быть стилизованы вне дерева теней, поэтому следует рассматривать стили `::slotted()` как стили по умолчанию, которые могут быть переопределены.
 
 ```css
 my-element > div {
@@ -203,24 +207,22 @@ my-element > div {
 }
 ```
 
-<div class="alert alert-info">
+!!!warning "Ограничения в полифилле ShadyCSS вокруг содержимого слотов"
 
-**Limitations in the ShadyCSS polyfill around slotted content.** See the [ShadyCSS limitations](https://github.com/webcomponents/polyfills/tree/master/packages/shadycss#limitations) for details on how to use the `::slotted()` syntax in a polyfill-friendly way.
+    Смотрите [Ограничения ShadyCSS](https://github.com/webcomponents/polyfills/tree/master/packages/shadycss#limitations) для получения подробной информации о том, как использовать синтаксис `::slotted()` в удобном для полифилла виде.
 
-</div>
+## Определение масштабируемых стилей в шаблоне {#styles-in-the-template}
 
-## Defining scoped styles in the template {#styles-in-the-template}
+Мы рекомендуем использовать [статическое поле класса `styles`](#add-styles) для оптимальной производительности. Однако иногда вам может понадобиться определить стили в шаблоне Lit. Существует два способа добавления стилей в шаблон:
 
-We recommend using the [static `styles` class field](#add-styles) for optimal performance. However, sometimes you may want to define styles in the Lit template. There are two ways to add scoped styles in the template:
+-   Добавить стили с помощью [элемента `<style>`](#style-element).
+-   Добавить стили с помощью [внешней таблицы стилей](#external-stylesheet) (не рекомендуется).
 
--   Add styles using a [`<style>` element](#style-element).
--   Add styles using an [external style sheet](#external-stylesheet) (not recommended).
+Каждый из этих методов имеет свой набор преимуществ и недостатков.
 
-Each of these techniques has its own set of advantages and drawbacks.
+### В элементе стиля {#style-element}
 
-### In a style element {#style-element}
-
-Typically, styles are placed in the [static `styles` class field](#add-styles); however, the element's static `styles` are evaluated **once per class**. Sometimes, you might need to customize styles **per instance**. For this, we recommend using CSS properties to create [themable elements](#theming). Alternatively, you can also include `<style>` elements in a Lit template. These are updated per instance.
+Обычно стили помещаются в [статическое поле класса `styles`](#add-styles); однако статические `стили` элемента оцениваются **один раз для каждого класса**. Иногда может потребоваться настройка стилей **для каждого элемента**. Для этого мы рекомендуем использовать свойства CSS для создания [тематических элементов](#theming). Также вы можете включить элементы `<style>` в шаблон Lit. Они обновляются для каждого экземпляра.
 
 ```js
 render() {
@@ -233,15 +235,13 @@ render() {
 }
 ```
 
-<div class="alert alert-info">
+!!!warning "Ограничения полифилла ShadyCSS в отношении стилизации по экземплярам"
 
-**Limitations in the ShadyCSS polyfill around per instance styling.** Per instance styling is not supported using the ShadyCSS polyfill. See the [ShadyCSS limitations](https://github.com/webcomponents/polyfills/tree/master/packages/shadycss#limitations) for details.
+    Стилизация по экземплярам не поддерживается полифиллом ShadyCSS. Подробности см. в разделе [Ограничения ShadyCSS](https://github.com/webcomponents/polyfills/tree/master/packages/shadycss#limitations).
 
-</div>
+#### Выражения и элементы стиля
 
-#### Expressions and style elements
-
-Using expressions inside style elements has some important limitations and performance issues.
+Использование выражений внутри элементов стиля имеет ряд важных ограничений и проблем с производительностью.
 
 ```js
 render() {
@@ -257,80 +257,79 @@ render() {
 }
 ```
 
-<div class="alert alert-info">
+!!!warning "Ограничения в полифилле ShadyCSS для выражений"
 
-**Limitations in the ShadyCSS polyfill around expressions.** Expressions in `<style>` elements won't update per instance in ShadyCSS, due to limitations of the ShadyCSS polyfill. In addition, `<style>` nodes may not be passed as expression values when using the ShadyCSS polyfill. See the [ShadyCSS limitations](https://github.com/webcomponents/polyfills/tree/master/packages/shadycss#limitations) for more information.
+    Выражения в элементах `<style>` не будут обновляться для каждого экземпляра в ShadyCSS, что связано с ограничениями полифилла ShadyCSS. Кроме того, узлы `<style>` не могут быть переданы в качестве значений выражений при использовании полифилла ShadyCSS. Дополнительную информацию см. в разделе [Ограничения ShadyCSS](https://github.com/webcomponents/polyfills/tree/master/packages/shadycss#limitations).
 
-</div>
+Оценка выражения внутри элемента `<style>` крайне неэффективна. При изменении любого текста внутри элемента `<style>` браузеру приходится заново анализировать весь элемент `<style>`, что приводит к ненужной работе.
 
-Evaluating an expression inside a `<style>` element is extremely inefficient. When any text inside a `<style>` element changes, the browser must re-parse the whole `<style>` element, resulting in unnecessary work.
-
-To mitigate this cost, separate styles that require per-instance evaluation from those that don't.
+Чтобы снизить эти затраты, отделите стили, требующие оценки для каждого экземпляра, от тех, которые этого не делают.
 
 ```js
-  static styles = css`/* ... */`;
-  render() {
+static styles = css`/* ... */`;
+
+render() {
     const redStyle = html`<style> :host { color: red; } </style>`;
     return html`${this.red ? redStyle : ''}`
-
+}
 ```
 
-### Import an external stylesheet (not recommended) {#external-stylesheet}
+### Импорт внешней таблицы стилей (не рекомендуется) {#external-stylesheet}
 
-While you can include an external style sheet in your template with a `<link>`, we do not recommend this approach. Instead, styles should be placed in the [static `styles` class field](#add-styles).
+Хотя вы можете включить внешнюю таблицу стилей в свой шаблон с помощью `<link>`, мы не рекомендуем использовать этот подход. Вместо этого стили следует помещать в [статическое поле класса `styles`](#add-styles).
 
-<div class="alert alert-info">
+!!!warning "Предупреждения о внешних таблицах стилей"
 
-**External stylesheet caveats.**
+    -   Полифилл [ShadyCSS](https://github.com/webcomponents/polyfills/tree/master/packages/shadycss#limitations) не поддерживает внешние таблицы стилей.
+    -   Внешние стили могут вызвать вспышку нестилизованного содержимого (FOUC) во время их загрузки.
+    -   URL в атрибуте `href` является относительным к **главному документу**. Это нормально, если вы создаете приложение и URL-адреса ваших активов хорошо известны, но избегайте использования внешних таблиц стилей при создании многократно используемого элемента.
 
--   The [ShadyCSS polyfill](https://github.com/webcomponents/polyfills/tree/master/packages/shadycss#limitations) doesn't support external style sheets.
--   External styles can cause a flash-of-unstyled-content (FOUC) while they load.
--   The URL in the `href` attribute is relative to the **main document**. This is okay if you're building an app and your asset URLs are well-known, but avoid using external style sheets when building a reusable element.
+## Динамические классы и стили
 
-</div>
+Один из способов сделать стили динамическими - добавить выражения к атрибутам `class` или `style` в вашем шаблоне.
 
-## Dynamic classes and styles
+Lit предлагает две директивы, `classMap` и `styleMap`, для удобного применения классов и стилей в HTML-шаблонах.
 
-One way to make styles dynamic is to add expressions to the `class` or `style` attributes in your template.
+Более подробную информацию об этих и других директивах можно найти в документации по [встроенным директивам](../templates/directives.md).
 
-Lit offers two directives, `classMap` and `styleMap`, to conveniently apply classes and styles in HTML templates.
+Чтобы использовать `styleMap` и/или `classMap`:
 
-For more information on these and other directives, see the documentation on [built-in directives](/docs/v3/templates/directives/).
-
-To use `styleMap` and/or `classMap`:
-
-1.  Import `classMap` and/or `styleMap`:
+1.  Импортируйте `classMap` и/или `styleMap`:
 
     ```js
     import { classMap } from 'lit/directives/class-map.js';
     import { styleMap } from 'lit/directives/style-map.js';
     ```
 
-2.  Use `classMap` and/or `styleMap` in your element template:
+2.  Используйте `classMap` и/или `styleMap` в шаблоне элемента:
 
-{% playground-example "v3-docs/components/style/maps" "my-element.ts" %}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:24;
+               --litdev-example-editor-lines-js:29;
+               --litdev-example-preview-height:80px" project="v3-docs/components/style/maps" filename="my-element.ts"></litdev-example>
 
-See [classMap](/docs/v3/templates/directives/#classmap) and [styleMap](/docs/v3/templates/directives/#stylemap) for more information.
+Дополнительную информацию см. в [classMap](../templates/directives.md#classmap) и [styleMap](../templates/directives.md#stylemap).
 
-## Theming {#theming}
+## Темизация {#theming}
 
-By using [CSS inheritance](#inheritance) and [CSS variables and custom properties](#customprops) together, it's easy to create themable elements. By applying css selectors to customize CSS custom properties, tree-based and per-instance theming is straightforward to apply. Here's an example:
+Используя [CSS-наследование](#inheritance) и [CSS-переменные и пользовательские свойства](#customprops) вместе, можно легко создавать тематические элементы. Применяя селекторы css для настройки пользовательских свойств CSS, можно легко применять тематизацию на основе деревьев и отдельных экземпляров. Вот пример:
 
-{% playground-example "v3-docs/components/style/theming" "my-element.ts" %}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:20;
+               --litdev-example-editor-lines-js:19;
+               --litdev-example-preview-height:100px" project="v3-docs/components/style/theming" filename="my-element.ts"></litdev-example>
 
-### CSS inheritance {#inheritance}
+### Наследование CSS {#inheritance}
 
-CSS inheritance lets parent and host elements propagate certain CSS properties to their descendants.
+Наследование CSS позволяет родительским и основным элементам передавать определенные CSS-свойства своим потомкам.
 
-Not all CSS properties inherit. Inherited CSS properties include:
+Не все свойства CSS наследуются. К наследуемым свойствам CSS относятся:
 
 -   `color`
--   `font-family` and other `font-*` properties
--   All CSS custom properties (`--*`)
+-   `font-family` и другие свойства `font-*`.
+-   Все пользовательские свойства CSS (`--*`)
 
-See [CSS Inheritance on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/inheritance) for more information.
+Дополнительную информацию см. в [CSS Inheritance on MDN](https://developer.mozilla.org/docs/Web/CSS/inheritance).
 
-You can use CSS inheritance to set styles on an ancestor element that are inherited by its descendants:
+Вы можете использовать наследование CSS для установки стилей элемента-предка, которые наследуются его потомками:
 
 ```html
 <style>
@@ -341,11 +340,11 @@ You can use CSS inheritance to set styles on an ancestor element that are inheri
 <my-element> #shadow-root Will be green </my-element>
 ```
 
-### CSS custom properties {#customprops}
+### Пользовательские свойства CSS {#customprops}
 
-All CSS custom properties (<code>--<var>custom-property-name</var></code>) inherit. You can use this to make your component's styles configurable from outside.
+Наследует все пользовательские свойства CSS (`--custom-property-name`). Вы можете использовать это, чтобы сделать стили вашего компонента настраиваемыми извне.
 
-The following component sets its background color to a CSS variable. The CSS variable uses the value of `--my-background` if it's been set by a selector matching an ancestor in the DOM tree, and otherwise defaults to `yellow`:
+В следующем компоненте цвет фона задается переменной CSS. CSS-переменная использует значение `--my-background`, если оно было задано селектором, соответствующим предку в дереве DOM, а в противном случае по умолчанию принимает значение `yellow`:
 
 ```js
 class MyElement extends LitElement {
@@ -360,7 +359,7 @@ class MyElement extends LitElement {
 }
 ```
 
-Users of this component can set the value of `--my-background`, using the `my-element` tag as a CSS selector:
+Пользователи этого компонента могут установить значение `--my-background`, используя тег `my-element` в качестве CSS-селектора:
 
 ```html
 <style>
@@ -371,7 +370,7 @@ Users of this component can set the value of `--my-background`, using the `my-el
 <my-element></my-element>
 ```
 
-`--my-background` is configurable per instance of `my-element`:
+`--my-background` настраивается для каждого экземпляра `my-element`:
 
 ```html
 <style>
@@ -386,4 +385,4 @@ Users of this component can set the value of `--my-background`, using the `my-el
 <my-element class="stuff"></my-element>
 ```
 
-See [CSS Custom Properties on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/--*) for more information.
+Дополнительную информацию см. в [CSS Custom Properties on MDN](https://developer.mozilla.org/docs/Web/CSS/--*).
