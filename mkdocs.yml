@@ -11,6 +11,12 @@ theme:
     name: material
     custom_dir: overrides
     palette:
+        - media: '(prefers-color-scheme)'
+          primary: deep purple
+          accent: deep purple
+          toggle:
+              icon: material/brightness-auto
+              name: Светлая тема
         - media: '(prefers-color-scheme: light)'
           scheme: default
           primary: deep purple
@@ -24,7 +30,7 @@ theme:
           accent: deep purple
           toggle:
               icon: material/toggle-switch
-              name: Светлая тема
+              name: Системная тема
     language: ru
     features:
         - navigation.prune
@@ -84,10 +90,6 @@ plugins:
               - en
     - awesome-pages
     - social
-    - git-revision-date-localized:
-          enable_creation_date: true
-    - git-committers:
-          repository: xsltdev/pwadev.ru
     - minify:
           minify_html: true
           htmlmin_opts:

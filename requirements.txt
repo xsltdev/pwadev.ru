@@ -9,8 +9,6 @@ mkdocs-material
 mkdocs-awesome-pages-plugin
 mkdocs-minify-plugin
 mkdocs-glightbox
-mkdocs-git-revision-date-localized-plugin
-mkdocs-git-committers-plugin-2
 PyYAML
 six
 tornado
