@@ -1,21 +1,16 @@
 ---
-title: Conditionals
-eleventyNavigation:
-    key: Conditionals
-    parent: Templates
-    order: 3
-versionLinks:
-    v1: components/templates/#use-properties-loops-and-conditionals-in-a-template
-    v2: templates/conditionals/
+description: Поскольку Lit использует обычные выражения Javascript, вы можете использовать стандартные конструкции потока управления Javascript, такие как условные операторы, вызовы функций и операторы if или switch для отображения условного содержимого
 ---
 
-Since Lit leverages normal Javascript expressions, you can use standard Javascript control flow constructs like [conditional operators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator), function calls, and `if` or `switch` statements to render conditional content.
+# Условные операторы
 
-JavaScript conditionals also let you combine nested template expressions, and you can even store template results in variables to use elsewhere.
+Поскольку Lit использует обычные выражения Javascript, вы можете использовать стандартные конструкции потока управления Javascript, такие как [условные операторы](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/Conditional_Operator), вызовы функций и операторы `if` или `switch` для отображения условного содержимого.
 
-## Conditionals with the conditional (ternary) operator
+Условные выражения JavaScript также позволяют комбинировать вложенные шаблонные выражения, и вы даже можете сохранять результаты шаблонов в переменных, чтобы использовать их в других местах.
 
-Ternary expressions with the conditional operator, `?`, are a great way to add inline conditionals:
+## Условные выражения с условным (тернарным) оператором
+
+Тернарные выражения с условным оператором `?` - отличный способ добавления встроенных условий:
 
 ```ts
 render() {
@@ -25,9 +20,9 @@ render() {
 }
 ```
 
-## Conditionals with if statements
+## Условные выражения с помощью операторов if
 
-You can express conditional logic with if statements outside of a template to compute values to use inside of the template:
+Вы можете выразить условную логику с помощью операторов `if` вне шаблона, чтобы вычислить значения для использования внутри шаблона:
 
 ```ts
 render() {
@@ -41,7 +36,7 @@ render() {
 }
 ```
 
-Alternately, you can factor logic into a separate function to simplify your template:
+В качестве альтернативы можно вынести логику в отдельную функцию, чтобы упростить шаблон:
 
 ```ts
 getUserMessage() {
@@ -56,11 +51,11 @@ render() {
 }
 ```
 
-## Caching template results: the cache directive
+## Кэширование результатов работы шаблона: директива `cache`
 
-In most cases, JavaScript conditionals are all you need for conditional templates. However, if you're switching between large, complicated templates, you might want to save the cost of recreating DOM on each switch.
+В большинстве случаев JavaScript-условия - это все, что вам нужно для условных шаблонов. Однако если вы переключаетесь между большими и сложными шаблонами, вам, возможно, захочется избежать затрат на воссоздание DOM при каждом переключении.
 
-In this case, you can use the `cache` _directive_. The cache directive caches DOM for templates that aren't being rendered currently.
+В этом случае вы можете использовать директиву `cache` _directive_. Директива `cache` кэширует DOM для шаблонов, которые не отображаются в данный момент.
 
 ```ts
 render() {
@@ -71,15 +66,15 @@ render() {
 }
 ```
 
-See the [cache directive](/docs/v3/templates/directives/#cache) for more information.
+Дополнительную информацию см. в директиве [cache](directives.md#cache).
 
-## Conditionally rendering nothing { #conditionally-rendering-nothing }
+## Условный рендеринг ничего {#conditionally-rendering-nothing}
 
-Sometimes, you may want to render nothing in one branch of a conditional operator. This is commonly needed for child expressions and also sometimes needed in attribute expressions.
+Иногда в одной из ветвей условного оператора нужно вывести ничего. Это обычно требуется для дочерних выражений, а также иногда в выражениях атрибутов.
 
-For child expressions, the values `undefined`, `null`, the empty string (`''`), and Lit's [nothing](https://lit.dev/docs/v3/api/templates/#nothing) sentinel value all render no nodes. See [Removing child content](/docs/v3/templates/expressions/#removing-child) for more information.
+Для дочерних выражений значения `undefined`, `null`, пустая строка (`''`) и значение посыла Lit [nothing](https://lit.dev/docs/v3/api/templates/#nothing) не отображают узлы. Дополнительные сведения см. в разделе [Удаление дочернего содержимого](expressions.md#removing-child).
 
-This example renders a value if it exists, and otherwise renders nothing:
+В этом примере значение отображается, если оно существует, а в противном случае ничего не отображается:
 
 ```ts
 render() {
@@ -87,9 +82,9 @@ render() {
 }
 ```
 
-For attribute expressions, Lit's [nothing](https://lit.dev/docs/v3/api/templates/#nothing) sentinel value removes the attribute. See [Removing an attribute](/docs/v3/templates/expressions/#removing-attribute) for more information.
+Для выражений с атрибутами значение смыслового блока Lit [nothing](https://lit.dev/docs/v3/api/templates/#nothing) удаляет атрибут. Дополнительную информацию см. в разделе [Удаление атрибута](expressions.md#removing-attribute).
 
-This example conditionally renders the `aria-label` attribute:
+В этом примере условно отображается атрибут `aria-label`:
 
 ```ts
 html`<button

@@ -1,36 +1,25 @@
 ---
-title: Templates overview
-eleventyNavigation:
-  key: Overview
-  parent: Templates
-  order: 1
-versionLinks:
-  v1: components/templates/
-  v2: templates/overview/
+description: Lit-шаблоны пишутся с помощью литералов шаблонов JavaScript, помеченных тегом html. Содержимое литерала - это в основном обычный, декларативный HTML
 ---
 
-{% todo %}
+# Обзор шаблонов
 
-If time permits, add new page on working with inputs, per outline.
-
-{% endtodo %}
-
-Lit templates are written using JavaScript template literals tagged with the `html` tag. The contents of the literal are mostly plain, declarative, HTML:
+Lit-шаблоны пишутся с помощью литералов шаблонов JavaScript, помеченных тегом `html`. Содержимое литерала - это в основном обычный, декларативный HTML:
 
 ```js
-html`<h1>Hello ${name}</h1>`
+html`<h1>Hello ${name}</h1>`;
 ```
 
-The template syntax might look like you're just doing string interpolation. But with tagged template literals, the browser passes the tag function an array of strings (the static portions of the template) and an array of expressions (the dynamic portions). Lit uses this to build an efficient representation of your template, so it can re-render only the parts of template that have changed.
+Синтаксис шаблона может выглядеть так, будто вы просто выполняете интерполяцию строк. Но при использовании тегированных литералов шаблонов браузер передает функции тегов массив строк (статические части шаблона) и массив выражений (динамические части). Lit использует это для создания эффективного представления вашего шаблона, чтобы повторно отобразить только те части шаблона, которые изменились.
 
-Lit templates are extremely expressive and allow you to render dynamic content in a variety of ways:
+Шаблоны Lit чрезвычайно выразительны и позволяют отображать динамический контент различными способами:
 
- - [Expressions](/docs/v3/templates/expressions/): Templates can include dynamic values called *expressions* that can be used to render attributes, text, properties, event handlers, and even other templates.
- - [Conditionals](/docs/v3/templates/conditionals/): Expressions can render conditional content using standard JavaScript flow control.
- - [Lists](/docs/v3/templates/lists/): Render lists by transforming data into arrays of templates using standard JavaScript looping and array techniques.
- - [Built-in directives](/docs/v3/templates/directives/): Directives are functions that can extend Lit's templating functionality. The library includes a set of built-in directives to help with a variety of rendering needs.
- - [Custom directives](/docs/v3/templates/custom-directives/): You can also write your own directives to customize Lit's rendering as needed.
+-   [Выражения](expressions.md): Шаблоны могут включать динамические значения, называемые _выражениями_, которые могут быть использованы для отображения атрибутов, текста, свойств, обработчиков событий и даже других шаблонов.
+-   [Условные выражения](conditionals.md): Выражения могут выводить условное содержимое, используя стандартный контроль потока JavaScript.
+-   [Списки](lists.md): Вывод списков путем преобразования данных в массивы шаблонов с использованием стандартных методов циклов и массивов JavaScript.
+-   [Встроенные директивы](directives.md): Директивы - это функции, которые могут расширить функциональность шаблонов Lit. Библиотека включает в себя набор встроенных директив, которые помогают в различных задачах рендеринга.
+-   [Пользовательские директивы](custom-directives.md): Вы также можете написать свои собственные директивы, чтобы настроить рендеринг Lit по своему усмотрению.
 
-## Standalone templating
+## Автономный шаблонизатор
 
-You can also use Lit's templating library for standalone templating, outside of a Lit component. For details, see [Standalone lit-html templates](/docs/v3/libraries/standalone-templates).
+Вы также можете использовать библиотеку шаблонов Lit для автономного шаблонирования, вне компонента Lit. Подробности см. в [Автономные шаблоны lit-html](../libraries/standalone-templates.md).

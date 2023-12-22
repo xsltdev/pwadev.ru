@@ -8,4 +8,4 @@ nav:
     - lifecycle.md
     - shadow-dom.md
     - events.md
-    #- decorators.md
+    - decorators.md

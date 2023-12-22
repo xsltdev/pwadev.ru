@@ -3,7 +3,7 @@ nav:
     - index.md
     - getting-started.md
     - components
-    #- templates
+    - templates
     #- composition
     #- data
     #- tools

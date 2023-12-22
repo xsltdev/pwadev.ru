@@ -20,33 +20,33 @@ export class MyElement extends LitElement {
 }
 ```
 
-{% aside "info" "no-header"%}
+!!!info ""
 
-Lit supports two different versions of the JavaScript decorators proposal – an early version supported by TypeScript that we refer to as _experimental decorators_ and a new and final version we refer to as _standard decorators_.
+    Lit поддерживает две различные версии предложения декораторов JavaScript - раннюю версию, поддерживаемую TypeScript, которую мы называем _экспериментальными декораторами_, и новую, окончательную версию, которую мы называем _стандартными декораторами_.
 
-There are some small differences in usage between the two proposals (standard decorators often require the `accessor` keyword). Our code samples are written for experimental decorators because we recommend them for production at the moment.
+    Между этими двумя предложениями есть небольшие различия в использовании (стандартные декораторы часто требуют ключевого слова `accessor`). Наши примеры кода написаны для экспериментальных декораторов, потому что мы рекомендуем их для производства в настоящее время.
 
-See [Decorator versions](#decorator-versions) for more details.
+    Более подробную информацию смотрите в разделе [Версии декораторов](#decorator-versions).
 
-{% endaside %}
+## Встроенные декораторы
 
-## Built-in decorators
-
-| Decorator | Summary | More Info |
+| Декоратор | Резюме | Дополнительная информация |
 | --- | --- | --- |
-| {% api-v3 "@customElement" "customElement" %} | Defines a custom element. | [Defining](/docs/v3/components/defining/) |
-| {% api-v3 "@eventOptions" "eventOptions" %} | Adds event listener options. | [Events](/docs/v3/components/events/#event-options-decorator) |
-| {% api-v3 "@property" "property" %} | Defines a public property. | [Properties](/docs/v3/components/properties/#declare-with-decorators) |
-| {% api-v3 "@state" "state" %} | Defines a private state property | [Properties](/docs/v3/components/properties/#declare-with-decorators) |
-| {% api-v3 "@query" "query" %} | Defines a property that returns an element in the component template. | [Shadow DOM](/docs/v3/components/shadow-dom/#query) |
-| {% api-v3 "@queryAll" "queryAll" %} | Defines a property that returns a list of elements in the component template. | [Shadow DOM](/docs/v3/components/shadow-dom/#query-all) |
-| {% api-v3 "@queryAsync" "queryAsync" %} | Defines a property that returns a promise that resolves to an element in the component template. | [Shadow DOM](/docs/v3/components/shadow-dom/#query-async) |
-| {% api-v3 "@queryAssignedElements" "queryAssignedElements" %} | Defines a property that returns the child elements assigned to a specific slot. | [Shadow DOM](/docs/v3/components/shadow-dom/#query-assigned-nodes) |
-| {% api-v3 "@queryAssignedNodes" "queryAssignedNodes" %} | Defines a property that returns the child nodes assigned to a specific slot. | [Shadow DOM](/docs/v3/components/shadow-dom/#query-assigned-nodes) |
+| [`@customElement`](https://lit.dev/docs/api/decorators#customElement) | Определяет пользовательский элемент. | [Defining](defining.md) |
+| [`@eventOptions`](https://lit.dev/docs/api/decorators#eventOptions) | Добавляет опции слушателя событий. | [События](events.md#event-options-decorator) |
+| [`@property`](https://lit.dev/docs/api/decorators#property) | Определяет публичное свойство. | [Properties](properties.md#declare-with-decorators) |
+| [`@state`](https://lit.dev/docs/api/decorators#state) | Определяет частное свойство состояния | [Properties](properties.md#declare-with-decorators) |
+| [`@query`](https://lit.dev/docs/api/decorators#query) | Определяет свойство, которое возвращает элемент в шаблоне компонента. | [Shadow DOM](shadow-dom.md#query) |
+| [`@queryAll`](https://lit.dev/docs/api/decorators#queryAll) | Определяет свойство, которое возвращает список элементов в шаблоне компонента. | [Shadow DOM](shadow-dom.md#query-all) |
+| [`@queryAsync`](https://lit.dev/docs/api/decorators#queryAsync) | Определяет свойство, которое возвращает обещание, разрешающее элемент в шаблоне компонента. | [Shadow DOM](shadow-dom.md#query-async) |
+| [`@queryAssignedElements`](https://lit.dev/docs/api/decorators#queryAssignedElements) | Определяет свойство, которое возвращает дочерние элементы, назначенные определенному слоту. | [Shadow DOM](shadow-dom.md#query-assigned-nodes) |
+| [`@queryAssignedNodes`](https://lit.dev/docs/api/decorators#queryAssignedNodes) | Определяет свойство, которое возвращает дочерние узлы, назначенные определенному слоту. | [Shadow DOM](shadow-dom.md#query-assigned-nodes) |
 
-## Importing decorators
+## Импорт декораторов
 
-You can import all of the Lit decorators via the `lit/decorators.js` module:
+Вы можете импортировать все декораторы Lit через модуль `lit/decorators.js`:
+
+Переведено с помощью DeepL.com (бесплатная версия)
 
 ```js
 import {
@@ -57,26 +57,26 @@ import {
 } from 'lit/decorators.js';
 ```
 
-To reduce the amount of code needed to run the component, decorators can be imported individually into component code. All decorators are available at `lit/decorators/<decorator-name>.js`. For example,
+Чтобы сократить объем кода, необходимого для запуска компонента, декораторы можно импортировать в код компонента по отдельности. Все декораторы доступны по адресу `lit/decorators/<decorator-name>.js`. Например,
 
 ```js
 import { customElement } from 'lit/decorators/custom-element.js';
 import { eventOptions } from 'lit/decorators/event-options.js';
 ```
 
-## Enabling decorators { #enabling-decorators }
+## Включение декораторов {#enabling-decorators}
 
-To use decorators, you need to build your code with a compiler such as [TypeScript](#decorators-typescript) or [Babel](#decorators-babel).
+Чтобы использовать декораторы, необходимо собрать код с помощью компилятора, например [TypeScript](#decorators-typescript) или [Babel](#decorators-babel).
 
-In the future when decorators are supported natively in browsers, this will no longer be necessary
+В будущем, когда декораторы будут нативно поддерживаться в браузерах, в этом больше не будет необходимости
 
-### Using decorators with TypeScript { #decorators-typescript }
+### Использование декораторов в TypeScript {#decorators-typescript}
 
-TypeScript supports both experimental decorators and standard decorators. We recommend that TypeScript developers use experimental decorators for now for [optimal compiler output](#compiler-output-considerations). If your project requires using standard decorators or setting `"useDefineForClassFields": true`, skip down to [migrating to standard decorators](#migrating-typescript-standard-decorators).
+TypeScript поддерживает как экспериментальные, так и стандартные декораторы. Мы рекомендуем разработчикам TypeScript пока использовать экспериментальные декораторы для [оптимального вывода компилятора](#compiler-output-considerations). Если ваш проект требует использования стандартных декораторов или установки `"useDefineForClassFields": true`, перейдите к разделу [миграция на стандартные декораторы](#migrating-typescript-standard-decorators).
 
-To use experimental decorators you must enable the `experimentalDecorators` compiler option.
+Чтобы использовать экспериментальные декораторы, необходимо включить опцию компилятора `experimentalDecorators`.
 
-You should also ensure that the `useDefineForClassFields` setting is `false`. This is only required when `target` is set to `ES2022` or greater, but it is recommended to explicitly set this to `false`. This is needed to [avoid issues with class fields when declaring properties](/docs/v3/components/properties/#avoiding-issues-with-class-fields).
+Также необходимо убедиться, что параметр `useDefineForClassFields` имеет значение `false`. Это требуется только в том случае, если `target` установлен на `ES2022` или выше, но рекомендуется явно установить значение `false`. Это необходимо для того, чтобы [избежать проблем с полями классов при объявлении свойств](properties.md#avoiding-issues-with-class-fields).
 
 ```json
 // tsconfig.json
@@ -88,13 +88,13 @@ You should also ensure that the `useDefineForClassFields` setting is `false`. Th
 }
 ```
 
-Enabling `emitDecoratorMetadata` is not required and not recommended.
+Включение `emitDecoratorMetadata` не требуется и не рекомендуется.
 
-#### Migrating TypeScript experimental decorators to standard decorators { #migrating-typescript-standard-decorators }
+#### Миграция экспериментальных декораторов TypeScript в стандартные декораторы {#migrating-typescript-standard-decorators}
 
-Lit decorators are designed to support [standard decorator syntax](#standard-decorators) (using `accessor` on class field decorators) with TypeScript's experimental decorator mode.
+Декораторы Lit разработаны для поддержки [стандартного синтаксиса декораторов](#standard-decorators) (с использованием `accessor` в декораторах полей классов) в режиме экспериментальных декораторов TypeScript.
 
-This allows incremental migration off of experimental decorators starting with the addition of the `accessor` keyword to decorated properties without a change of behavior. Once all decorated class field use the `accessor` keyword, you can change your compiler options to complete the migration to standard decorators:
+Это позволяет постепенно переходить от экспериментальных декораторов, начиная с добавления ключевого слова `accessor` к декорированным свойствам без изменения поведения. Когда все декорированные поля класса будут использовать ключевое слово `accessor`, вы можете изменить опции компилятора, чтобы завершить переход на стандартные декораторы:
 
 ```json
 // tsconfig.json
@@ -106,13 +106,13 @@ This allows incremental migration off of experimental decorators starting with t
 }
 ```
 
-Note: The `accessor` keyword was introduced in TypeScript 4.9 and standard decorators with metadata require TypeScript ≥5.2.
+Примечание: Ключевое слово `accessor` появилось в TypeScript 4.9, а стандартные декораторы с метаданными требуют TypeScript ≥5.2.
 
-### Using decorators with Babel { #decorators-babel }
+### Использование декораторов в Babel {#decorators-babel}
 
-[Babel](https://babeljs.io/docs/en/) supports standard decorators with the [`@babel/plugin-proposal-decorators`](https://babeljs.io/docs/en/babel-plugin-proposal-decorators) plugin as of version 7.23. Babel does not support TypeScript experimental decorators, so you must use Lit decorators with [standard decorator syntax](#standard-decorators) using the `accessor` keyword on decorated class fields.
+[Babel](https://babeljs.io/docs/en/) поддерживает стандартные декораторы с плагином [`@babel/plugin-proposal-decorators`](https://babeljs.io/docs/en/babel-plugin-proposal-decorators) начиная с версии 7.23. Babel не поддерживает экспериментальные декораторы TypeScript, поэтому вы должны использовать декораторы Lit с [стандартным синтаксисом декораторов](#standard-decorators), используя ключевое слово `accessor` для декорированных полей класса.
 
-Enable decorators by adding [`@babel/plugin-proposal-decorators`](https://babeljs.io/docs/en/babel-plugin-proposal-decorators) with these Babel configuration settings:
+Включите декораторы, добавив [`@babel/plugin-proposal-decorators`](https://babeljs.io/docs/en/babel-plugin-proposal-decorators) с этими настройками конфигурации Babel:
 
 ```json
 // babel.config.json
@@ -126,39 +126,35 @@ Enable decorators by adding [`@babel/plugin-proposal-decorators`](https://babelj
 }
 ```
 
-Note: Lit decorators only work with `"version": "2023-05"`. Other versions, including the formerly supported `"2018-09"`, are not supported.
+Примечание: Декораторы Lit работают только с `"версией": "2023-05"`. Другие версии, включая ранее поддерживаемую `"2018-09"`, не поддерживаются.
 
-## Decorator versions
+## Версии декораторов
 
-Decorators are a [stage 3 proposal](https://github.com/tc39/proposal-decorators) for addition to the ECMAScript standard. Compilers like [Babel](https://babeljs.io/) and [TypeScript](https://www.typescriptlang.org/) support decorators, though no browsers have implemented them yet. Lit decorators work with Babel and TypeScript, and will work in browsers when they implement them natively.
+Декораторы являются [stage 3 proposal](https://github.com/tc39/proposal-decorators) для добавления в стандарт ECMAScript. Такие компиляторы, как [Babel](https://babeljs.io/) и [TypeScript](https://www.typescriptlang.org/), поддерживают декораторы, хотя ни в одном браузере они пока не реализованы. Декораторы Lit работают в Babel и TypeScript, и будут работать в браузерах, когда они реализуют их нативно.
 
-{% aside "info" %}
+!!!info "Что означает этап 3?"
 
-What does stage 3 mean?
+    Это означает, что текст спецификации завершен и готов к внедрению в браузеры. После того как спецификация будет реализована в нескольких браузерах, она может перейти на финальную стадию, стадию 4, и быть добавлена в стандарт ECMAScript. Предложение на стадии 3 будет изменено только в том случае, если в процессе реализации будут обнаружены критические проблемы.
 
-It means that the specification text is complete, and ready for browsers to implement. Once the specification has been implemented in multiple browsers, it can move to the final stage, stage 4, and be added to the ECMAScript standard. A stage 3 proposal will only change if critical issues are discovered during implementation.
+### Более ранние предложения по декораторам
 
-{% endaside %}
+До того как предложение TC39 достигло стадии 3, компиляторы реализовывали ранние версии спецификации декораторов.
 
-### Earlier decorator proposals
+Наиболее заметным из них является [TypeScript's _experimental decorators_](https://www.typescriptlang.org/docs/handbook/decorators.html), который Lit поддерживал с момента своего появления и является нашей текущей рекомендацией к использованию.
 
-Before the TC39 proposal reached stage 3, compilers implemented earlier versions of the decorator specification.
+Babel также поддерживал различные версии спецификации с течением времени, как видно из опции [`"version"` плагина декораторов](https://babeljs.io/docs/babel-plugin-proposal-decorators#version). В прошлом Лит 2 поддерживал версию `"2018-09"` для пользователей Babel, но теперь от нее отказались в пользу _стандартной_ версии `"2023-05"`, описанной ниже.
 
-Most notable of these is [TypeScript's _experimental decorators_](https://www.typescriptlang.org/docs/handbook/decorators.html) which Lit has supported since its inception and is our current recommendation for use.
+### Стандартные декораторы {#standard-decorators}
 
-Babel has also supported different versions of the specification over time as can be seen from the [`"version"` option of the decorator plugin](https://babeljs.io/docs/babel-plugin-proposal-decorators#version). In the past, Lit 2 has supported the `"2018-09"` version for Babel users but that has now been dropped in favor of the _standard_ `"2023-05"` version described below.
+_Стандартные декораторы_ - это версия декораторов, которая достигла 3-й стадии консенсуса в TC39, органе, определяющем ECMAScript/JavaScript.
 
-### Standard decorators { #standard-decorators }
+Стандартные декораторы поддерживаются в TypeScript и Babel, а в ближайшем будущем появятся и в родном браузере.
 
-_Standard decorators_ is the version of decorators that has reached Stage 3 consensus at TC39, the body that defines ECMAScript/JavaScript.
+Самое большое отличие стандартных декораторов от экспериментальных заключается в том, что по соображениям производительности стандартные декораторы не могут изменять _вид_ декорируемого и заменяемого члена класса - поля, аксессоры и методы - и будут создавать только член того же типа.
 
-Standard decorators are supported in TypeScript and Babel, with native browser coming in the near future.
+Поскольку многие декораторы Lit генерируют аксессоры, это означает, что декораторы нужно применять к аксессорам, а не к полям класса.
 
-The biggest difference between standard decorators and experimental decorators is that, for performance reasons, standard decorators cannot change the _kind_ of a class member – fields, accessors, and methods – being decorated and replaced, and will only produce the same kind of member.
-
-Since many Lit decorators generate accessors, this means that the decorators need to be applied to accessors, not class fields.
-
-To make this convenient, the standard decorator specification adds the `accessor` keyword to declare "auto-accessors":
+Чтобы сделать это удобным, стандартная спецификация декораторов добавляет ключевое слово `accessor` для объявления "автоаксессоров":
 
 ```ts
 class MyClass {
@@ -166,9 +162,9 @@ class MyClass {
 }
 ```
 
-Auto-accessors create a getter and setter pair that read and write from a private field. Decorators can then wrap these getters and setters.
+Автоаксессоры создают пару геттеров и сеттеров, которые считывают и записывают данные из приватного поля. Декораторы могут обернуть эти геттеры и сеттеры.
 
-Lit decorators that work on class fields with experimental decorators – such as `@property()`, `@state()`, `@query()`, etc. – must be applied to accessors or auto-accessors with standard decorators:
+Декораторы Lit, работающие с полями класса с экспериментальными декораторами - такими как `@property()`, `@state()`, `@query()` и др. - должны применяться к аксессорам или автоаксессорам со стандартными декораторами:
 
 ```ts
 @customElement('my-element')
@@ -178,10 +174,10 @@ export class MyElement extends LitElement {
 }
 ```
 
-### Compiler output considerations
+### Соображения по поводу вывода компилятора {#compiler-output-considerations}
 
-Compiler output for standard decorators is unfortunately large due to the need to generate the accessors, private storage, and other objects that are part of the decorators API.
+Вывод компилятора для стандартных декораторов, к сожалению, велик из-за необходимости генерировать аксессоры, приватные хранилища и другие объекты, которые являются частью API декораторов.
 
-So we recommend that users who wish to use decorators, if possible, use TypeScript experimental decorators for now.
+Поэтому мы рекомендуем пользователям, желающим использовать декораторы, по возможности пока использовать экспериментальные декораторы TypeScript.
 
-In the future the Lit team plans on adding decorator transforms to our optional Lit Compiler in order to compile standard decorators to a more compact compiler output. Native browser support will also eliminate the need for any compiler transforms at all.
+В будущем команда Lit планирует добавить преобразования декораторов в наш дополнительный компилятор Lit Compiler, чтобы компилировать стандартные декораторы в более компактный вывод компилятора. Поддержка нативных браузеров также устранит необходимость в каких-либо преобразованиях компилятора.

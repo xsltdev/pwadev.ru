@@ -16,21 +16,21 @@ theme:
           accent: deep purple
           toggle:
               icon: material/brightness-auto
-              name: Светлая тема
+              name: Переключиться на светлую тему
         - media: '(prefers-color-scheme: light)'
           scheme: default
           primary: deep purple
           accent: deep purple
           toggle:
               icon: material/toggle-switch-off-outline
-              name: Тёмная тема
+              name: Переключиться на тёмную тему
         - media: '(prefers-color-scheme: dark)'
           scheme: slate
           primary: deep purple
           accent: deep purple
           toggle:
               icon: material/toggle-switch
-              name: Системная тема
+              name: Переключиться на системную тему
     language: ru
     features:
         - navigation.prune
