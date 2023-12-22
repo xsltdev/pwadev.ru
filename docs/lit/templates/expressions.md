@@ -1,37 +1,20 @@
 ---
-title: Expressions
-eleventyNavigation:
-    key: Expressions
-    parent: Templates
-    order: 2
-versionLinks:
-    v1: components/templates/#bind-properties-to-templated-elements
-    v2: templates/expressions/
+description: Шаблоны Lit могут включать динамические значения, называемые выражениями. Выражением может быть любое выражение JavaScript
 ---
 
-Lit templates can include dynamic values called expressions. An expression can be any JavaScript expression. The expression is evaluated when the template is evaluated, and the result of the expression is included when the template renders. In a Lit component, this means whenever the `render` method is called.
+# Выражения
 
-Expressions can only be placed in specific locations in the template, and how an expression is interpreted depends on where it appears. Expressions inside the element tag itself affect the element. Expressions inside the element's content, where child nodes go, render child nodes or text.
+<big>
+Шаблоны Lit могут включать динамические значения, называемые **выражениями**. Выражением может быть любое выражение JavaScript. Выражение оценивается, когда оценивается шаблон, и результат выражения включается при рендеринге шаблона. В компоненте Lit это означает, что метод `render` вызывается каждый раз.
+</big>
 
-Valid values for expressions differ based on where the expression occurs. Generally all expressions accept primitive values like strings and numbers, and some expressions support additional value types. In addition, all expressions can accept _directives_, which are special functions that customize the way an expression is processed and rendered. See [Custom directives](/docs/v3/templates/custom-directives/) for more information.
+Выражения можно размещать только в определенных местах шаблона, и интерпретация выражения зависит от того, где оно появляется. Выражения внутри тега элемента влияют на сам элемент. Выражения внутри содержимого элемента, где находятся дочерние узлы, отображают дочерние узлы или текст.
 
-Here's a quick reference followed by more detailed information about each expression type.
+Допустимые значения для выражений различаются в зависимости от того, где встречается выражение. Как правило, все выражения принимают примитивные значения, такие как строки и числа, а некоторые выражения поддерживают дополнительные типы значений. Кроме того, все выражения могут принимать _директивы_, которые представляют собой специальные функции, настраивающие способ обработки и отображения выражения. Дополнительные сведения см. в разделе [Пользовательские директивы](custom-directives.md).
 
-<table class="wide-table">
-<thead>
-<tr>
-<th class="no-wrap-cell">Type</th>
-<th class="wide-cell">Example</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell">
+Вот краткая справка, за которой следует более подробная информация о каждом типе выражений.
 
-[Child nodes](#child-expressions)
-
-</td>
-<td>
+[Дочерние узлы](#child-expressions):
 
 ```js
 html` <h1>Hello ${name}</h1>
@@ -40,132 +23,89 @@ html` <h1>Hello ${name}</h1>
     </ul>`;
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell">
-
-[Attributes](#attribute-expressions)
-
-</td>
-<td>
+[Атрибуты](#attribute-expressions):
 
 ```js
 html`<div class=${highlightClass}></div>`;
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell">
-
-[Boolean Attributes](#boolean-attribute-expressions)
-
-</td>
-<td>
+[Булевые атрибуты](#boolean-attribute-expressions):
 
 ```js
 html`<div ?hidden=${!show}></div>`;
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell">
-
-[Properties](#property-expressions)
-
-</td>
-<td>
+[Свойства](#property-expressions):
 
 ```js
 html`<input .value=${value} />`;
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell">
-
-[Event listeners](#event-listener-expressions)
-
-</td>
-<td>
+[Слушатели событий](#event-listener-expressions):
 
 ```js
 html`<button @click=${this._clickHandler}>Go</button>`;
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell">
-
-[Element directives](#element-expressions)
-
-</td>
-<td>
+[Директивы элементов](#element-expressions):
 
 ```js
 html`<input ${ref(inputRef)} />`;
 ```
 
-</td>
-</tr>
-</tbody>
-</table>
+Этот базовый пример демонстрирует множество различных видов выражений.
 
-This basic example shows a variety of different kinds of expressions.
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:12.059999999999999;
+               --litdev-example-editor-lines-js:17.060000000000002;
+               --litdev-example-preview-height:160px" project="v3-docs/templates/expressions" filename="my-element.ts"></litdev-example>
 
-{% playground-example "v3-docs/templates/expressions" "my-element.ts" %}
+В следующих разделах каждый вид выражения описан более подробно. Дополнительные сведения о структуре шаблонов см. в разделах [Хорошо сформированный HTML](#well-formed-html) и [Допустимые места расположения выражений](#expression-locations).
 
-The following sections describe each kind of expression in more detail. For more information about the structure of templates, see [Well-formed HTML](#well-formed-html) and [Valid expression locations](#expression-locations).
+## Дочерние выражения {#child-expressions}
 
-## Child expressions { #child-expressions }
-
-An expression that occurs between the start and end tags of an element can add child nodes to the element. For example:
+Выражение, которое встречается между начальным и конечным тегами элемента, может добавлять дочерние узлы к этому элементу. Например:
 
 ```js
 html`<p>Hello, ${name}</p>`;
 ```
 
-Or:
+Или:
 
 ```js
 html`<main>${bodyText}</main>`;
 ```
 
-Expressions in the child position can take many kinds of values:
+Выражения в дочерней позиции могут принимать различные значения:
 
--   Primitive values likes strings, numbers, and booleans.
--   `TemplateResult` objects created with the [`html`](https://lit.dev/docs/v3/api/templates/#html) function (or the [`svg`](https://lit.dev/docs/v3/api/templates/#svg) function, if the expression is inside an `<svg>` element).
--   DOM nodes.
--   The sentinel values [`nothing`](/docs/v3/templates/conditionals/#conditionally-rendering-nothing) and [`noChange`](/docs/v3/templates/custom-directives/#signaling-no-change).
--   Arrays or iterables of any of the supported types.
+-   Примитивные значения, такие как строки, числа и булевы.
+-   Объекты `TemplateResult`, созданные с помощью функции [`html`](https://lit.dev/docs/v3/api/templates/#html) (или функции [`svg`](https://lit.dev/docs/v3/api/templates/#svg), если выражение находится внутри элемента `<svg>`).
+-   Узлы DOM.
+-   Значения sentinel [`nothing`](conditionals.md#conditionally-rendering-nothing) и [`noChange`](custom-directives.md#signaling-no-change).
+-   Массивы или итеративные таблицы любого из поддерживаемых типов.
 
-### Primitive values
+### Примитивные значения
 
-Lit can render almost all [primitive values](https://developer.mozilla.org/en-US/docs/Glossary/Primitive) and converts them to strings when interpolated into text content.
+Lit может отображать почти все [примитивные значения](https://developer.mozilla.org/docs/Glossary/Primitive) и преобразует их в строки при интерполяции в текстовый контент.
 
-Numbers values like `5` will render the string `'5'`. Bigints are treated similarly.
+Числовые значения, такие как `5`, будут отображаться как строка `'5``. Бигинты обрабатываются аналогично.
 
-A boolean value `true` will render `'true'`, and `false` will render `'false'`, but rendering a boolean like this is uncommon. Instead booleans are typically used in conditionals to render other appropriate values. For more on conditionals, see [Conditionals](/docs/v3/templates/conditionals/).
+Булево значение `true` будет отображаться как `'true'`, а `false` - как `'false'`, но такое отображение булевых значений встречается нечасто. Вместо этого булевы значения обычно используются в условных операторах для отображения других подходящих значений. Подробнее об условных выражениях см. в [Conditionals](conditionals.md).
 
-The empty string `''`, `null`, and `undefined` are specially treated and render nothing. See [Removing child content](#removing-child) for more information.
+Пустая строка `''`, `null` и `undefined` обрабатываются особым образом и ничего не отображают. Дополнительную информацию см. в разделе [Удаление дочернего содержимого](#removing-child).
 
-Symbol values cannot be converted to strings and throw when placed in child expressions.
+Символьные значения не могут быть преобразованы в строки и отбрасываются при помещении в дочерние выражения.
 
-### Sentinel values
+### Значения посылок
 
-Lit supplies a couple of special sentinel values that can be used in child expressions.
+Lit предоставляет несколько специальных значений-доминант, которые можно использовать в дочерних выражениях.
 
-The `noChange` sentinel value does not change the expression's existing value. It is typically used in custom directives. See [Signaling no change](/docs/v3/templates/custom-directives/#signaling-no-change) for more information.
+Дозорное значение `noChange` не изменяет существующее значение выражения. Обычно оно используется в пользовательских директивах. Дополнительные сведения см. в разделе [Сигнализация отсутствия изменений](custom-directives.md#signaling-no-change).
 
-The `nothing` sentinel renders nothing. See [Removing child content](#removing-child) for more information.
+Сентинел `nothing` ничего не отображает. Дополнительную информацию см. в разделе [Удаление дочернего содержимого](#removing-child).
 
-### Templates
+### Шаблоны
 
-Since an expression in the child position can return a `TemplateResult`, you can nest and compose templates:
+Поскольку выражение в дочерней позиции может возвращать `TemplateResult`, вы можете вставлять и компоновать шаблоны:
 
 ```js
 const nav = html`<nav>...</nav>`;
@@ -175,7 +115,7 @@ const page = html`
 `;
 ```
 
-This means you can use plain JavaScript to create conditional templates, repeating templates, and more.
+Это означает, что вы можете использовать обычный JavaScript для создания условных шаблонов, повторяющихся шаблонов и т. д.
 
 ```js
 html`
@@ -185,13 +125,13 @@ html`
 `;
 ```
 
-For more on conditionals, see [Conditionals](/docs/v3/templates/conditionals/).
+Подробнее об условных знаках см. в разделе [Условные операторы](conditionals.md).
 
-For more on using JavaScript to create repeating templates, see [Lists](/docs/v3/templates/lists/).
+Подробнее об использовании JavaScript для создания повторяющихся шаблонов см. в [Списки](lists.md).
 
-### DOM nodes
+### Узлы DOM
 
-Any DOM node can be passed to a child expression. Typically DOM nodes should be rendered by specifying a template using `html`, but a DOM node can be directly rendered like this when needed. The node is attached to the DOM tree at that point, and so removed from any current parent:
+Любой узел DOM может быть передан в дочернее выражение. Обычно DOM-узлы следует отображать, указав шаблон с помощью `html`, но при необходимости DOM-узел можно отобразить напрямую. В этот момент узел прикрепляется к дереву DOM и, таким образом, удаляется от любого текущего родителя:
 
 ```js
 const div = document.createElement('div');
@@ -201,41 +141,41 @@ const page = html`
 `;
 ```
 
-### Arrays or iterables of any of the supported types
+### Массивы или итерабельные таблицы любого из поддерживаемых типов
 
-An expression can also return an array or iterable of any of the supported types, in any combination. You can use this feature along with standard JavaScript like the Array `map` method to create repeating templates and lists. For examples, see [Lists](/docs/v3/templates/lists/).
+Выражение также может возвращать массив или итерабельную таблицу любого из поддерживаемых типов в любой комбинации. Вы можете использовать эту возможность вместе со стандартными средствами JavaScript, такими как метод `map` массива, для создания повторяющихся шаблонов и списков. Примеры смотрите в [Lists](lists.md).
 
-### Removing child content {#removing-child}
+### Удаление дочернего содержимого {#removing-child}
 
-The values `null`, `undefined`, the empty string `''`, and Lit's [nothing](https://lit.dev/docs/v3/api/templates/#nothing) sentinel value remove any previously rendered content and render no node.
+Значения `null`, `undefined`, пустая строка `''` и значение сентинеля Lit [nothing](https://lit.dev/docs/v3/api/templates/#nothing) удаляют все ранее отрисованное содержимое и не отрисовывают ни одного узла.
 
-Setting or removing child content is often done based on a condition. See [Conditionally rendering nothing](/docs/v3/templates/conditionals/#conditionally-rendering-nothing) for more information.
+Установка или удаление дочернего содержимого часто выполняется на основе условия. Дополнительную информацию см. в разделе [Conditionally rendering nothing](conditionals.md#conditionally-rendering-nothing).
 
-Rendering no node can be important when an expression is a child of an element with Shadow DOM that includes a `slot` with fallback content. Rendering no node ensures the fallback content is rendered. See [fallback content](/docs/v3/components/shadow-dom/#fallback) for more information.
+Рендеринг no node может быть важен, когда выражение является дочерним элементом элемента с Shadow DOM, который включает `slot` с fallback-контентом. Рендеринг no node гарантирует, что содержимое fallback будет отображено. Дополнительную информацию см. в [fallback content](../components/shadow-dom.md#fallback).
 
-## Attribute expressions {#attribute-expressions }
+## Выражения атрибутов {#attribute-expressions}
 
-In addition to using expressions to add child nodes, you can use them to set an elements's attributes and properties, too.
+Помимо использования выражений для добавления дочерних узлов, вы можете использовать их для установки атрибутов и свойств элементов.
 
-By default, an expression in the value of an attribute sets the attribute:
+По умолчанию выражение в значении атрибута устанавливает атрибут:
 
 ```js
 html`<div class=${this.textClass}>Stylish text.</div>`;
 ```
 
-Since attribute values are always strings, the expression should return a value that can be converted into a string.
+Поскольку значения атрибутов всегда являются строками, выражение должно возвращать значение, которое можно преобразовать в строку.
 
-If the expression makes up the entire attribute value, you can leave off the quotes. If the expression makes up only part of the attribute value, you need to quote the entire value:
+Если выражение составляет все значение атрибута, кавычки можно не ставить. Если выражение составляет только часть значения атрибута, необходимо заключить в кавычки все значение:
 
 ```js
 html`<img src="/images/${this.image}" />`;
 ```
 
-Note, some primitive values are handled specially in attributes. Boolean values are converted to strings so, for example, `false` renders `'false'`. Both `undefined` and `null` render to an attribute as an empty string.
+Обратите внимание, что некоторые примитивные значения обрабатываются в атрибутах особым образом. Булевы значения преобразуются в строки, поэтому, например, `false` отображается как `'false'`. Значения `undefined` и `null` отображаются в атрибуте как пустая строка.
 
-### Boolean attributes {#boolean-attribute-expressions }
+### Булевы атрибуты {#boolean-attribute-expressions}
 
-To set a boolean attribute, use the `?` prefix with the attribute name. The attribute is added if the expression evaluates to a truthy value, removed if it evaluates to a falsy value:
+Чтобы задать булевский атрибут, используйте префикс `?` с именем атрибута. Атрибут добавляется, если выражение оценивается как истинное значение, и удаляется, если оценивается как ложное значение:
 
 ```js
 html`<div ?hidden=${!this.showAdditional}>
@@ -243,11 +183,11 @@ html`<div ?hidden=${!this.showAdditional}>
 </div>`;
 ```
 
-### Removing an attribute { #removing-attribute }
+### Удаление атрибута {#removing-attribute}
 
-Sometimes you want to set an attribute only under certain conditions, and otherwise remove the attribute. For common "boolean attributes" like `disabled` and `hidden` where you want to set the attribute to an empty string for a truthy value and remove it otherwise, use a [boolean attribute](#boolean-attribute-expressions). Sometimes, however, you might require a different condition for adding or removing an attribute.
+Иногда вы хотите установить атрибут только при определенных условиях, а в противном случае удалить его. Для обычных "булевых атрибутов", таких как `disabled` и `hidden`, где вы хотите установить атрибут в пустую строку для истинного значения и удалить его в противном случае, используйте [булевый атрибут](#boolean-attribute-expressions). Однако иногда вам может потребоваться другое условие для добавления или удаления атрибута.
 
-For example, consider:
+Например:
 
 ```js
 html`<img
@@ -255,9 +195,9 @@ html`<img
 />`;
 ```
 
-If `this.imagePath` or `this.imageFile` is not defined, the `src` attribute should not be set or an invalid network request will occur.
+Если `this.imagePath` или `this.imageFile` не определены, атрибут `src` не должен быть установлен, иначе произойдет некорректный сетевой запрос.
 
-Lit's [nothing](https://lit.dev/docs/v3/api/templates/#nothing) sentinel value addresses this by removing the attribute when any expression in the attribute value evaluates to `nothing`.
+Дозорное значение Lit [nothing](https://lit.dev/docs/v3/api/templates/#nothing) решает эту проблему, удаляя атрибут, когда любое выражение в значении атрибута оценивается как `nothing`.
 
 ```js
 html`<img
@@ -266,9 +206,9 @@ html`<img
 />`;
 ```
 
-In this example **both** the `this.imagePath` and `this.imageFile` properties must be defined for the `src` attribute to be set. The `??` [nullish coalescing operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator) returns the right-hand value if the left-hand value is `null` or `undefined`.
+В данном примере для установки атрибута `src` должны быть определены оба\*\* свойства `this.imagePath` и `this.imageFile`. Оператор `??` [nullish coalescing operator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator) возвращает правое значение, если левое значение `null` или `undefined`.
 
-Lit also provides an [ifDefined](https://lit.dev/docs/v3/api/directives/#ifDefined) directive which is sugar for `value ?? nothing`.
+Lit также предоставляет директиву [`ifDefined`](https://lit.dev/docs/v3/api/directives/#ifDefined), которая является сахаром для `value ?? nothing`.
 
 ```js
 html`<img
@@ -278,7 +218,7 @@ html`<img
 />`;
 ```
 
-You might also want to remove the attribute if the value is not truthy so that values of `false` or empty string `''` remove the attribute. For example, consider an element that has default value for `this.ariaLabel` of empty string `''`:
+Вы также можете захотеть удалить атрибут, если его значение не является истинным, так что значения `false` или пустая строка `''` удаляют атрибут. Например, рассмотрим элемент, у которого значение по умолчанию для `this.ariaLabel` равно пустой строке `''`:
 
 ```js
 html`<button
@@ -286,37 +226,37 @@ html`<button
 ></button>`;
 ```
 
-In this example the `aria-label` attribute is rendered only if `this.ariaLabel` is not an empty string.
+В этом примере атрибут `aria-label` отображается только в том случае, если `this.ariaLabel` не является пустой строкой.
 
-Setting or removing an attribute is often done based on a condition. See [Conditionally rendering nothing](/docs/v3/templates/conditionals/#conditionally-rendering-nothing) for more information.
+Установка или удаление атрибута часто выполняется на основе условия. Дополнительную информацию см. в [Conditionally rendering nothing](conditionals.md#conditionally-rendering-nothing).
 
-## Property expressions {#property-expressions}
+## Выражения свойств {#property-expressions}
 
-You can set a JavaScript property on an element using the `.` prefix and the property name:
+Вы можете задать свойство JavaScript для элемента, используя префикс `.` и имя свойства:
 
 ```js
 html`<input .value=${this.itemCount} />`;
 ```
 
-The behavior of the code above is the same as directly setting the `value` property on the `input` element, e.g.:
+Поведение приведенного выше кода аналогично прямому заданию свойства `value` для элемента `input`, например:
 
 ```js
 inputEl.value = this.itemCount;
 ```
 
-You can use the property expression syntax to pass complex data down the tree to subcomponents. For example, if you have a `my-list` component with a `listItems` property, you could pass it an array of objects:
+Вы можете использовать синтаксис выражения свойств для передачи сложных данных по дереву в подкомпоненты. Например, если у вас есть компонент `my-list` со свойством `listItems`, вы можете передать ему массив объектов:
 
 ```js
 html`<my-list .listItems=${this.items}></my-list>`;
 ```
 
-Note that the property name in this example—`listItems`—is mixed case. Although HTML _attributes_ are case-insensitive, Lit preserves the case for property names when it processes the template.
+Обратите внимание, что имя свойства в этом примере - `listItems` - имеет смешанный регистр. Хотя HTML _атрибуты_ не чувствительны к регистру, Lit сохраняет регистр для имен свойств при обработке шаблона.
 
-For more information about component properties, see [Reactive properties](/docs/v3/components/properties/).
+Более подробную информацию о свойствах компонентов можно найти в [Reactive properties](../components/properties.md).
 
-## Event listener expressions {#event-listener-expressions}
+## Выражения для слушателей событий {#event-listener-expressions}
 
-Templates can also include declarative event listeners. Use the prefix `@` followed by the event name. The expression should evaluate to an event listener.
+Шаблоны также могут включать декларативные слушатели событий. Используйте префикс `@`, за которым следует имя события. Выражение должно оцениваться как слушатель событий.
 
 ```js
 html`<button @click=${this.clickHandler}>
@@ -324,11 +264,11 @@ html`<button @click=${this.clickHandler}>
 </button>`;
 ```
 
-This is similar to calling `addEventListener('click', this.clickHandler)` on the button element.
+Это аналогично вызову `addEventListener('click', this.clickHandler)` для элемента кнопки.
 
-The event listener can be either a plain function, or an object with a `handleEvent` method — the same as the `listener` argument to the standard [`addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) method.
+Слушатель событий может быть как простой функцией, так и объектом с методом `handleEvent` - таким же, как аргумент `listener` в стандартном методе [`addEventListener`](https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener).
 
-In a Lit component, the event listener is automatically bound to the component, so you can use the `this` value inside the handler to refer to the component instance.
+В компоненте Lit слушатель событий автоматически привязывается к компоненту, поэтому вы можете использовать значение `this` внутри обработчика для ссылки на экземпляр компонента.
 
 ```js
 clickHandler() {
@@ -336,35 +276,35 @@ clickHandler() {
 }
 ```
 
-For more information about component events, see [Events](/docs/v3/components/events/).
+Более подробную информацию о событиях компонентов можно найти в [Events](../components/events.md).
 
-## Element expressions {#element-expressions}
+## Выражения для элементов {#element-expressions}
 
-You can also add an expression that accesses an element instance, instead of a single property or attribute on an element:
+Вы также можете добавить выражение, которое обращается к экземпляру элемента, а не к отдельному свойству или атрибуту элемента:
 
 ```js
 html`<div ${myDirective()}></div>`;
 ```
 
-Element expressions only work with [directives](/docs/v3/templates/directives/). Any other value type in an element expression is ignored.
+Выражения элементов работают только с [директивами](directives.md). Любой другой тип значения в выражении элемента игнорируется.
 
-One built-in directive that can be used in an element expression is the `ref` directive. It provides a reference to the rendered element.
+Одна из встроенных директив, которая может быть использована в выражении элемента, - это директива `ref`. Она предоставляет ссылку на отображаемый элемент.
 
 ```js
 html`<button ${ref(this.myRef)}`;
 ```
 
-See [ref](/docs/v3/templates/directives/#ref) for more information.
+Дополнительную информацию см. в [ref](directives.md#ref).
 
-## Well-formed HTML { #well-formed-html }
+## Хорошо сформированный HTML {#well-formed-html}
 
-Lit templates must be well-formed HTML. The templates are parsed by the browser's built-in HTML parser before any values are interpolated. Follow these rules for well-formed templates:
+Шаблоны Lit должны быть хорошо сформированным HTML. Перед интерполяцией значений шаблоны разбираются встроенным HTML-парсером браузера. Следуйте этим правилам для хорошо сформированных шаблонов:
 
--   Templates must be well-formed HTML when all expressions are replaced by empty values.
+-   Шаблоны должны быть хорошо сформированным HTML, когда все выражения заменяются пустыми значениями.
 
--   Templates can have multiple top-level elements and text.
+-   Шаблоны могут содержать несколько элементов верхнего уровня и текст.
 
--   Templates _should not contain_ unclosed elements—they will be closed by the HTML parser.
+-   Шаблоны _не должны содержать_ незакрытых элементов - они будут закрыты HTML-парсером.
 
     ```js
     // HTML parser closes this div after "Some text"
@@ -375,15 +315,13 @@ Lit templates must be well-formed HTML. The templates are parsed by the browser'
     const template2 = html`${template1} more text. </div>`;
     ```
 
-<div class="alert alert-info">
+!!!info ""
 
-Because the browser's built-in parser is very lenient, most cases of malformed templates are not detectable at runtime, so you won't see warnings—just templates that don't behave as you expect. We recommend using <a href="/docs/tools/development/#linting">linting tools</a> and <a href="/docs/tools/development/#ide-plugins">IDE plugins</a> to find issues in your templates during development.
+    Поскольку встроенный парсер браузера очень снисходителен, большинство случаев неправильного формирования шаблонов не обнаруживается во время выполнения, поэтому вы не увидите предупреждений - только шаблоны, которые ведут себя не так, как вы ожидаете. Мы рекомендуем использовать [linting tools](../tools/development.md#linting) и [IDE plugins](../tools/development.md#ide-plugins) для поиска проблем в ваших шаблонах во время разработки.
 
-</div>
+## Допустимые места расположения выражений {#expression-locations}
 
-## Valid expression locations { #expression-locations }
-
-Expressions **_can only occur_** where you can place attribute values and child elements in HTML.
+Выражения _могут встречаться_ только там, где вы можете разместить значения атрибутов и дочерних элементов в HTML.
 
 ```html
 <!-- attribute values -->
@@ -396,17 +334,17 @@ Expressions **_can only occur_** where you can place attribute values and child 
 </button>
 ```
 
-Element expressions can occur inside the opening tag after the tag name:
+Выражения элементов могут находиться внутри открывающего тега после имени тега:
 
 ```html
 <div ${ref(elementReference)}></div>
 ```
 
-### Invalid locations { #invalid-locations }
+### Недопустимые места {#invalid-locations}
 
-Expressions should generally not appear in the following locations:
+Выражения, как правило, не должны появляться в следующих местах:
 
--   Where tag or attribute names would appear. Lit does not support dynamically changing values in this position and will error in development mode.
+-   В местах, где могут появляться имена тегов или атрибутов. Lit не поддерживает динамически изменяемые значения в этом месте и в режиме разработки будет выдавать ошибку.
 
     ```html
     <!-- ERROR -->
@@ -416,7 +354,7 @@ Expressions should generally not appear in the following locations:
     <div ${attrName}=true></div>
     ```
 
--   Inside `<template>` element content (attribute expressions on the template element itself are allowed). Lit does not recurse into template content to dynamically update expressions and will error in development mode.
+-   Внутри содержимого элемента `<template>` (допускаются выражения атрибутов на самом элементе шаблона). Lit не выполняет рекурсию в содержимое шаблона для динамического обновления выражений и будет ошибаться в режиме разработки.
 
     ```html
     <!-- ERROR -->
@@ -426,7 +364,7 @@ Expressions should generally not appear in the following locations:
     <template id="${attrValue}">static content ok</template>
     ```
 
--   Inside `<textarea>` element content (attribute expressions on the textarea element itself are allowed). Note that Lit can render content into textarea, however editing the textarea will break references to the DOM that Lit uses to dynamically update, and Lit will warn in development mode. Instead, bind to the `.value` property of textarea.
+-   Внутри содержимого элемента `<textarea>` (допускаются выражения атрибутов для самого элемента `textarea`). Обратите внимание, что Lit может выводить содержимое в `textarea`, однако при редактировании `textarea` будут нарушены ссылки на DOM, которые Lit использует для динамического обновления, и Lit выдаст предупреждение в режиме разработки. Вместо этого привязывайтесь к свойству `.value` `textarea`.
 
     ```html
     <!-- BEWARE -->
@@ -439,7 +377,7 @@ Expressions should generally not appear in the following locations:
     <textarea id="${attrValue}">static content ok</textarea>
     ```
 
--   Similarly, inside elements with the `contenteditable` attribute. Instead, bind to the `.innerText` property of the element.
+-   Аналогично, внутри элементов с атрибутом `contenteditable`. Вместо этого привяжитесь к свойству `.innerText` элемента.
 
     ```html
     <!-- BEWARE -->
@@ -454,180 +392,178 @@ Expressions should generally not appear in the following locations:
     </div>
     ```
 
--   Inside HTML comments. Lit will not update expressions in comments, and the expressions will instead be rendered with a Lit token string. However, this will not break subsequent expressions, so commenting out blocks of HTML during development that may contain expressions is safe.
+-   Внутри HTML-комментариев. Lit не будет обновлять выражения в комментариях, и вместо них будет отображаться строка маркеров Lit. Однако это не приведет к поломке последующих выражений, поэтому комментирование блоков HTML во время разработки, которые могут содержать выражения, безопасно.
 
     ```html
     <!-- will not update: ${value} -->
     ```
 
--   Inside `<style>` elements when using the ShadyCSS polyfill. See [Expressions and style elements](/docs/v3/components/styles/#style-element) for more details.
+-   Внутри элементов `<style>` при использовании полифилла ShadyCSS. Подробнее см. в разделе [Выражения и элементы стиля](../components/styles.md#style-element).
 
-Note that expressions in all the invalid cases above are valid when using [static expressions](#static-expressions), although these should not be used for performance-sensitive updates due to the inefficiencies involved (see below).
+Обратите внимание, что выражения во всех приведенных выше недействительных случаях действительны при использовании [статических выражений](#static-expressions), хотя их не следует использовать для чувствительных к производительности обновлений из-за неэффективности (см. ниже).
 
-## Static expressions { #static-expressions }
+## Статические выражения {#static-expressions}
 
-Static expressions return special values that are interpolated into the template _before_ the template is processed as HTML by Lit. Because they become part of the template's static HTML, they can be placed anywhere in the template - even where expressions would normally be disallowed, such as in attribute and tag names.
+Статические выражения возвращают специальные значения, которые интерполируются в шаблон _до_ того, как шаблон будет обработан Lit как HTML. Поскольку они становятся частью статического HTML шаблона, их можно размещать в любом месте шаблона - даже там, где обычно выражения запрещены, например, в именах атрибутов и тегов.
 
-To use static expressions, you must import a special version of the `html` or `svg` template tags from Lit's `static-html` module:
+Чтобы использовать статические выражения, вы должны импортировать специальную версию тегов шаблонов `html` или `svg` из модуля Lit `static-html`:
 
 ```ts
 import { html, literal } from 'lit/static-html.js';
 ```
 
-The `static-html` module contains `html` and `svg` tag functions which support static expressions and should be used instead of the standard versions provided in the `lit` module. Use the `literal` tag function to create static expressions.
+Модуль `static-html` содержит функции тегов `html` и `svg`, которые поддерживают статические выражения и должны использоваться вместо стандартных версий, предоставляемых в модуле `lit`. Для создания статических выражений используйте функцию тега `literal`.
 
-You can use static expressions for configuration options that are unlikely to change or for customizing parts of the template you cannot with normal expressions - see the section on [Valid expression locations](#expression-locations) for details. For example, a `my-button` component might render a `<button>` tag, but a subclass might render an `<a>` tag, instead. This is a good place to use a static expression because the setting does not change frequently and customizing an HTML tag cannot be done with a normal expression.
+Вы можете использовать статические выражения для параметров конфигурации, которые вряд ли изменятся, или для настройки частей шаблона, которые нельзя использовать с помощью обычных выражений - подробнее см. в разделе [Расположение допустимых выражений](#expression-locations). Например, компонент `my-button` может отображать тег `<button>`, но его подкласс может вместо этого отображать тег `<a>`. Здесь хорошо использовать статическое выражение, потому что настройки меняются нечасто, а настройка HTML-тега не может быть выполнена с помощью обычного выражения.
 
-{% switchable-sample %}
+=== "TS"
 
-```ts
-import { LitElement } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { html, literal } from 'lit/static-html.js';
+    ```ts
+    import { LitElement } from 'lit';
+    import { customElement, property } from 'lit/decorators.js';
+    import { html, literal } from 'lit/static-html.js';
 
-@customElement('my-button')
-class MyButton extends LitElement {
-    tag = literal`button`;
-    activeAttribute = literal`active`;
-    @property() caption = 'Hello static';
-    @property({ type: Boolean }) active = false;
+    @customElement('my-button')
+    class MyButton extends LitElement {
+    	tag = literal`button`;
+    	activeAttribute = literal`active`;
+    	@property() caption = 'Hello static';
+    	@property({ type: Boolean }) active = false;
 
-    render() {
-        return html`
-      <${this.tag} ${this.activeAttribute}=${this.active}>
-        <p>${this.caption}</p>
-      </${this.tag}>`;
+    	render() {
+    		return html`
+    	<${this.tag} ${this.activeAttribute}=${this.active}>
+    		<p>${this.caption}</p>
+    	</${this.tag}>`;
+    	}
     }
-}
-```
+    ```
 
-```js
-import { LitElement } from 'lit';
-import { html, literal } from 'lit/static-html.js';
+=== "JS"
 
-class MyButton extends LitElement {
-    static properties = {
-        caption: {},
-        active: { type: Boolean },
-    };
+    ```js
+    import { LitElement } from 'lit';
+    import { html, literal } from 'lit/static-html.js';
 
-    tag = literal`button`;
-    activeAttribute = literal`active`;
+    class MyButton extends LitElement {
+    	static properties = {
+    		caption: {},
+    		active: { type: Boolean },
+    	};
 
-    constructor() {
-        super();
-        this.caption = 'Hello static';
-        this.active = false;
+    	tag = literal`button`;
+    	activeAttribute = literal`active`;
+
+    	constructor() {
+    		super();
+    		this.caption = 'Hello static';
+    		this.active = false;
+    	}
+
+    	render() {
+    		return html`
+    	<${this.tag} ${this.activeAttribute}=${this.active}>
+    		<p>${this.caption}</p>
+    	</${this.tag}>`;
+    	}
     }
+    customElements.define('my-button', MyButton);
+    ```
 
-    render() {
-        return html`
-      <${this.tag} ${this.activeAttribute}=${this.active}>
-        <p>${this.caption}</p>
-      </${this.tag}>`;
+---
+
+=== "TS"
+
+    ```ts
+    @customElement('my-anchor')
+    class MyAnchor extends MyButton {
+    	tag = literal`a`;
     }
-}
-customElements.define('my-button', MyButton);
-```
+    ```
 
-{% endswitchable-sample %}
+=== "JS"
 
-{% switchable-sample %}
+    ```js
+    class MyAnchor extends MyButton {
+    	tag = literal`a`;
+    }
+    customElements.define('my-anchor', MyAnchor);
+    ```
 
-```ts
-@customElement('my-anchor')
-class MyAnchor extends MyButton {
-    tag = literal`a`;
-}
-```
+!!!warning "Изменение значений статических выражений требует больших затрат"
 
-```js
-class MyAnchor extends MyButton {
-    tag = literal`a`;
-}
-customElements.define('my-anchor', MyAnchor);
-```
+    Выражения, использующие `литеральные` значения, не должны часто изменяться, так как они приводят к повторному разбору нового шаблона, и каждая вариация хранится в памяти.
 
-{% endswitchable-sample %}
+В приведенном выше примере, если шаблон рендерится и изменяются `this.caption` или `this.active`, Lit обновляет шаблон эффективно, изменяя только затронутые выражения. Однако при изменении `this.tag` или `this.activeAttribute`, поскольку они являются статическими значениями, помеченными `literal`, создается совершенно новый шаблон; обновление неэффективно, поскольку DOM полностью перерисовывается. Кроме того, изменение значений `literal`, передаваемых выражениям, увеличивает использование памяти, поскольку каждый уникальный шаблон кэшируется в памяти для повышения производительности повторного рендеринга.
 
-<div class="alert alert-warning">
+По этим причинам рекомендуется свести к минимуму изменения в выражениях, использующих `literal`, и избегать использования реактивных свойств для изменения `literal` значений, поскольку реактивные свойства предназначены для изменения.
 
-**Changing the value of static expressions is expensive.** Expressions using `literal` values should not change frequently, as they cause a new template to be re-parsed and each variation is held in memory.
+### Структура шаблона
 
-</div>
+После интерполяции статических значений шаблон должен быть хорошо сформирован, как обычные шаблоны Lit, иначе динамические выражения в шаблоне могут не работать должным образом. Дополнительную информацию см. в разделе [Хорошо сформированный HTML](#well-formed-html).
 
-In the example above, if the template re-renders and `this.caption` or `this.active` change, Lit updates the template efficiently, only changing the affected expressions. However, if `this.tag` or `this.activeAttribute` change, since they are static values tagged with `literal`, an entirely new template is created; the update is inefficient since the DOM is completely re-rendered. In addition, changing `literal` values passed to expressions increases memory use since each unique template is cached in memory to improve re-render performance.
+### Нелитеральная статика
 
-For these reasons, it's a good idea keep changes to expressions using `literal` to a minimum and avoid using reactive properties to change `literal` values, since reactive properties are intended to change.
-
-### Template structure
-
-After static values have been interpolated, the template must be well-formed like normal Lit templates, otherwise the dynamic expressions in the template might not function properly. See the [Well-formed HTML](#well-formed-html) section for more information.
-
-### Non-literal statics
-
-In rare cases, you may need to interpolate static HTML into a template that is not defined in your script, and thus cannot be tagged with the `literal` function. For these cases, the `unsafeStatic()` function can be used to create static HTML based on strings from non-script sources.
+В редких случаях вам может понадобиться интерполировать статический HTML в шаблон, который не определен в вашем скрипте и поэтому не может быть помечен функцией `literal`. Для таких случаев можно использовать функцию `unsafeStatic()` для создания статического HTML на основе строк из нескриптовых источников.
 
 ```ts
 import { html, unsafeStatic } from 'lit/static-html.js';
 ```
 
-<div class="alert alert-warning">
+!!!warning "Только для доверенного содержимого"
 
-**Only for trusted content.** Note the use of _unsafe_ in `unsafeStatic()`. The string passed to `unsafeStatic()` must be developer-controlled and not include untrusted content, because it will be parsed directly as HTML with no sanitization. Examples of untrusted content include query string parameters and values from user inputs. Untrusted content rendered with this directive could lead to [cross-site scripting (XSS)](https://en.wikipedia.org/wiki/Cross-site_scripting) vulnerabilities.
+    Обратите внимание на использование _unsafe_ в `unsafeStatic()`. Строка, передаваемая в `unsafeStatic()`, должна контролироваться разработчиком и не содержать недоверенного содержимого, поскольку она будет разобрана непосредственно как HTML без какой-либо санитарной обработки. Примерами недоверенного содержимого являются параметры строки запроса и значения из пользовательского ввода. Недоверенное содержимое, отображаемое с помощью этой директивы, может привести к [межсайтовому скриптингу (XSS)](https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D0%B6%D1%81%D0%B0%D0%B9%D1%82%D0%BE%D0%B2%D1%8B%D0%B9_%D1%81%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D0%B8%D0%BD%D0%B3) уязвимостям.
 
-</div>
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    @customElement('my-button')
+    class MyButton extends LitElement {
+    	@property() caption = 'Hello static';
+    	@property({ type: Boolean }) active = false;
 
-```ts
-@customElement('my-button')
-class MyButton extends LitElement {
-    @property() caption = 'Hello static';
-    @property({ type: Boolean }) active = false;
-
-    render() {
-        // These strings MUST be trusted, otherwise this is an XSS vulnerability
-        const tag = getTagName();
-        const activeAttribute = getActiveAttribute();
-        return html`
-      <${unsafeStatic(tag)} ${unsafeStatic(
-          activeAttribute,
-      )}=${this.active}>
-        <p>${this.caption}</p>
-      </${unsafeStatic(tag)}>`;
+    	render() {
+    		// These strings MUST be trusted, otherwise this is an XSS vulnerability
+    		const tag = getTagName();
+    		const activeAttribute = getActiveAttribute();
+    		return html`
+    	<${unsafeStatic(tag)} ${unsafeStatic(
+    		activeAttribute,
+    	)}=${this.active}>
+    		<p>${this.caption}</p>
+    	</${unsafeStatic(tag)}>`;
+    	}
     }
-}
-```
+    ```
 
-```js
-class MyButton extends LitElement {
-    static properties = {
-        caption: {},
-        active: { type: Boolean },
-    };
+=== "JS"
 
-    constructor() {
-        super();
-        this.caption = 'Hello static';
-        this.active = false;
+    ```js
+    class MyButton extends LitElement {
+    	static properties = {
+    		caption: {},
+    		active: { type: Boolean },
+    	};
+
+    	constructor() {
+    		super();
+    		this.caption = 'Hello static';
+    		this.active = false;
+    	}
+
+    	render() {
+    		// These strings MUST be trusted, otherwise this is an XSS vulnerability
+    		const tag = getTagName();
+    		const activeAttribute = getActiveAttribute();
+    		return html`
+    	<${unsafeStatic(tag)} ${unsafeStatic(
+    		activeAttribute,
+    	)}=${this.active}>
+    		<p>${this.caption}</p>
+    	</${unsafeStatic(tag)}>`;
+    	}
     }
+    customElements.define('my-button', MyButton);
+    ```
 
-    render() {
-        // These strings MUST be trusted, otherwise this is an XSS vulnerability
-        const tag = getTagName();
-        const activeAttribute = getActiveAttribute();
-        return html`
-      <${unsafeStatic(tag)} ${unsafeStatic(
-          activeAttribute,
-      )}=${this.active}>
-        <p>${this.caption}</p>
-      </${unsafeStatic(tag)}>`;
-    }
-}
-customElements.define('my-button', MyButton);
-```
-
-{% endswitchable-sample %}
-
-Note that the behavior of using `unsafeStatic` carries the same caveats as `literal`: because changing values causes a new template to be parsed and cached in memory, they should not change frequently.
+Обратите внимание, что поведение при использовании `unsafeStatic` имеет те же предостережения, что и `literal`: поскольку изменение значений приводит к разбору и кэшированию в памяти нового шаблона, они не должны часто меняться.

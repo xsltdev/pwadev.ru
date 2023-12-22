@@ -1,37 +1,36 @@
 ---
-title: Lists
-eleventyNavigation:
-  key: Lists
-  parent: Templates
-  order: 4
-versionLinks:
-  v1: components/templates/#use-properties-loops-and-conditionals-in-a-template
-  v2: templates/lists/
+description: Вы можете использовать стандартные конструкции JavaScript для создания повторяющихся шаблонов
 ---
 
-You can use standard JavaScript constructs to create repeating templates.
+# Списки
 
-Lit also provides a `repeat` directive to build certain kinds of dynamic lists more efficiently.
+Вы можете использовать стандартные конструкции JavaScript для создания повторяющихся шаблонов.
 
-## Rendering arrays
+Lit также предоставляет директиву `repeat` для более эффективного построения некоторых видов динамических списков.
 
-When an expression in the child position in returns an array or iterable, Lit renders all of the items in the array:
+## Рендеринг массивов
 
-{% playground-example "v3-docs/templates/lists-arrays/" "my-element.ts" %}
+Если выражение в дочерней позиции in возвращает массив или итерируемую переменную, Lit отображает все элементы массива:
 
-In most cases, you'll want to transform the array items into a more useful form.
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:7;
+               --litdev-example-editor-lines-js:14;
+               --litdev-example-preview-height:50px" project="v3-docs/templates/lists-arrays" filename="my-element.ts"></litdev-example>
 
-##  Repeating templates with map
+В большинстве случаев вы захотите преобразовать элементы массива в более удобную форму.
 
-To render lists, you can use `map` to transform a list of data into a list of templates:
+## Повторение шаблонов с помощью `map`
 
-{% playground-example "v3-docs/templates/lists-map/" "my-element.ts" %}
+Для визуализации списков можно использовать `map` для преобразования списка данных в список шаблонов:
 
-Note that this expression returns an array of `TemplateResult` objects. Lit will render an array or iterable of sub-templates and other values.
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:13;
+               --litdev-example-editor-lines-js:20;
+               --litdev-example-preview-height:85px" project="v3-docs/templates/lists-map" filename="my-element.ts"></litdev-example>
 
-## Repeating templates with looping statements
+Обратите внимание, что это выражение возвращает массив объектов `TemplateResult`. Lit отобразит массив или итерабельную таблицу подшаблонов и других значений.
 
-You can also build an array of templates and pass it into a template expression.
+## Повторение шаблонов с помощью циклических операторов
+
+Вы также можете создать массив шаблонов и передать его в выражение шаблона.
 
 ```ts
 render() {
@@ -48,57 +47,57 @@ render() {
 }
 ```
 
-## The repeat directive
+## Директива `repeat`
 
-In most cases, using loops or `map` is an efficient way to build repeating templates. However, if you want to reorder a large list, or mutate it by adding and removing individual entries, this approach can involve updating a large number of DOM nodes.
+В большинстве случаев использование циклов или `map` является эффективным способом построения повторяющихся шаблонов. Однако если вы хотите переупорядочить большой список или изменить его, добавляя и удаляя отдельные элементы, такой подход может потребовать обновления большого количества узлов DOM.
 
-The `repeat` directive can help here.
+Здесь может помочь директива `repeat`.
 
-The repeat directive performs efficient updates of lists based on user-supplied keys:
+Директива repeat выполняет эффективное обновление списков на основе заданных пользователем ключей:
 
 ```ts
-repeat(items, keyFunction, itemTemplate)
+repeat(items, keyFunction, itemTemplate);
 ```
 
-Where:
+Где:
 
-*   `items` is an array or iterable.
-*   `keyFunction` is a function that takes a single item as an argument and returns a guaranteed unique key for that item.
-*   `itemTemplate` is a template function that takes the item and its current index as arguments, and returns a `TemplateResult`.
+-   `items` - массив или итерируемый список.
+-   `keyFunction` - функция, принимающая в качестве аргумента один элемент и возвращающая гарантированно уникальный ключ для этого элемента.
+-   `itemTemplate` - шаблонная функция, которая принимает в качестве аргументов элемент и его текущий индекс, а возвращает `TemplateResult`.
 
-For example:
+Например:
 
-{% playground-example "v3-docs/templates/lists-repeat/" "my-element.ts" %}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:14;--litdev-example-editor-lines-js:18;--litdev-example-preview-height:130px" project="v3-docs/templates/lists-repeat" filename="my-element.ts"></litdev-example>
 
-If you re-sort the `employees` array, the `repeat` directive reorders the existing DOM nodes.
+Если вы пересортируете массив `employees`, директива `repeat` изменит порядок существующих узлов DOM.
 
-To compare this to Lit's default handling for lists, consider reversing a large list of names:
+Чтобы сравнить это с тем, как Lit по умолчанию работает со списками, рассмотрим пересортировку большого списка имен:
 
-*   For a list created using `map`, Lit maintains the DOM nodes for the list items, but reassigns the values.
-*   For a list created using `repeat`, the `repeat` directive reorders the _existing_ DOM nodes, so the nodes representing the first list item move to the last position.
+-   Для списка, созданного с помощью `map`, Lit сохраняет узлы DOM для элементов списка, но переназначает значения.
+-   Для списка, созданного с помощью `repeat`, директива `repeat` переупорядочивает _существующие_ узлы DOM, так что узлы, представляющие первый элемент списка, перемещаются на последнюю позицию.
 
+### Когда использовать `map` или `repeat`
 
-### When to use map or repeat
+Что эффективнее - `repeat`, зависит от вашего случая использования:
 
-Which repeat is more efficient depends on your use case:
+-   Если обновление узлов DOM обходится дороже, чем их перемещение, используйте директиву `repeat`.
 
-*   If updating the DOM nodes is more expensive than moving them, use the `repeat` directive.
+-   Если узлы DOM имеют состояние, которое _не_ контролируется шаблонным выражением, используйте директиву `repeat`.
 
-*   If the DOM nodes have state that _isn't_ controlled by a template expression, use the `repeat` directive.
-
-    For example, consider this list:
+    Например, рассмотрим этот список:
 
     ```js
-    html`${this.users.map((user) =>
-      html`
-        <div><input type="checkbox"> ${user.name}</div>
-      `)
-    }`
+    html`${this.users.map(
+        (user) => html`
+            <div>
+                <input type="checkbox" /> ${user.name}
+            </div>
+        `,
+    )}`;
     ```
 
-    The checkbox has a checked or unchecked state, but it isn't controlled by a template expression.
+    Флажок имеет установленное или снятое состояние, но оно не управляется выражением шаблона.
 
-    If  you reorder the list after the user has checked one or more checkboxes, Lit would update the names associated with the checkboxes, but not the state of the checkboxes.
+    Если вы измените порядок списка после того, как пользователь установит один или несколько флажков, Lit обновит имена, связанные с флажками, но не их состояние.
 
- If neither of these situations apply, use `map` or looping statements.
-
+Если ни одна из этих ситуаций не применима, используйте операторы `map` или циклические операторы.

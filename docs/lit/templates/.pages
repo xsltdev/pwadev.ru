@@ -1,8 +1,8 @@
 title: Композиция
 nav:
     - overview.md
-    #- expressions.md
+    - expressions.md
     - conditionals.md
-    #- lists.md
+    - lists.md
     #- directives.md
     #- custom-directives.md
