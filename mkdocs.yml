@@ -84,6 +84,10 @@ plugins:
               - en
     - awesome-pages
     - social
+    - git-revision-date-localized:
+          enable_creation_date: true
+    - git-committers:
+          repository: xsltdev/pwadev.ru
     - minify:
           minify_html: true
           htmlmin_opts:
