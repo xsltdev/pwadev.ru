@@ -6,6 +6,6 @@ nav:
     - properties.md
     - styles.md
     - lifecycle.md
-    #- shadow-dom.md
-    #- events.md
+    - shadow-dom.md
+    - events.md
     #- decorators.md

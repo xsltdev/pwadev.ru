@@ -1,33 +1,30 @@
 ---
-title: Events
-eleventyNavigation:
-  key: Events
-  parent: Components
-  order: 7
-versionLinks:
-  v1: components/events/
-  v2: components/events/
+description: События - это стандартный способ, с помощью которого элементы сообщают об изменениях. Эти изменения обычно происходят из-за взаимодействия с пользователем
 ---
 
-Events are the standard way that elements communicate changes. These changes typically occur due to user interaction. For example, a button dispatches a click event when a user clicks on it; an input dispatches a change event when the user enters a value in it.
+# События
 
-In addition to these standard events that are automatically dispatched, Lit elements can dispatch custom events. For example, a menu element might dispatch an event to indicate the selected item changed; a popup element might dispatch an event when the popup opens or closes.
+**События** - это стандартный способ, с помощью которого элементы сообщают об изменениях. Эти изменения обычно происходят из-за взаимодействия с пользователем. Например, кнопка отправляет событие `click`, когда пользователь нажимает на нее; элемент `input` отправляет событие `change`, когда пользователь вводит в него значение.
 
-Any Javascript code, including Lit elements themselves, can listen for and take action based on events. For example, a toolbar element might filter a list when a menu item is selected; a login element might process a login when it handles a click on the login button.
+В дополнение к этим стандартным событиям, которые автоматически отправляются, элементы Lit могут отправлять пользовательские события. Например, элемент меню может отправлять событие, указывающее на изменение выбранного пункта; всплывающий элемент может отправлять событие, когда всплывающее окно открывается или закрывается.
 
-## Listening to events
+Любой код Javascript, включая сами элементы Lit, может прослушивать события и выполнять действия на их основе. Например, элемент панели инструментов может фильтровать список при выборе пункта меню; элемент входа в систему может обрабатывать вход в систему при нажатии на кнопку входа.
 
-In addition to the standard `addEventListener` API, Lit introduces a declarative way to add event listeners.
+## Прослушивание событий
 
-### Adding event listeners in the element template
+В дополнение к стандартному API `addEventListener`, Lit предлагает декларативный способ добавления слушателей событий.
 
-You can use `@` expressions in your template to add event listeners to elements in your component's template. Declarative event listeners are added when the template is rendered.
+### Добавление слушателей событий в шаблоне элемента
 
-{% playground-example "v3-docs/components/events/child/" "my-element.ts" %}
+Вы можете использовать выражения `@` в своем шаблоне, чтобы добавить слушателей событий в элементы шаблона компонента. Декларативные слушатели событий добавляются при отрисовке шаблона.
 
-#### Customizing event listener options {#event-options-decorator}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:17;
+               --litdev-example-editor-lines-js:23;
+               --litdev-example-preview-height:100px" project="v3-docs/components/events/child" filename="my-element.ts"></litdev-example>
 
-If you need to customize the event options used for a declarative event listener (like `passive` or `capture`), you can specify these on the listener using the `@eventOptions` decorator. The object passed to `@eventOptions` is passed as the `options` parameter to `addEventListener`.
+#### Настройка параметров слушателя событий {#event-options-decorator}
+
+Если вам нужно настроить параметры события, используемые для декларативного слушателя событий (например, `passive` или `capture`), вы можете указать их в слушателе с помощью декоратора `@eventOptions`. Объект, переданный в `@eventOptions`, передается в качестве параметра `options` в `addEventListener`.
 
 ```js
 import {LitElement, html} from 'lit';
@@ -37,30 +34,26 @@ import {eventOptions} from 'lit/decorators.js';
 private _handleTouchStart(e) { console.log(e.type) }
 ```
 
-<div class="alert alert-info">
+!!!alert "Использование декораторов"
 
-**Using decorators.** Decorators are a proposed JavaScript feature, so you’ll need to use a compiler like Babel or TypeScript to use decorators. See [Enabling decorators](/docs/v3/components/decorators/#enabling-decorators) for details.
+    **Декораторы** - это предложенная функция JavaScript, поэтому для использования декораторов вам потребуется компилятор типа Babel или TypeScript. Подробности см. в разделе [Включение декораторов](decorators.md#enabling-decorators).
 
-</div>
-
-If you're not using decorators, you can customize event listener options by passing an object to the event listener expression. The object must have a `handleEvent()` method and can include any the options that would normally appear in the `options` argument to `addEventListener()`.
-
-[comment]: <> (The `raw` macro is necessary to prevent the double handlebar in the code sample from messing with the liquid templating syntax)
-{% raw %}
+Если вы не используете декораторы, вы можете настроить параметры слушателя событий, передав объект в выражение слушателя событий. Объект должен иметь метод `handleEvent()` и может включать любые опции, которые обычно указываются в аргументе `options` в выражении `addEventListener()`.
 
 ```js
 render() {
-  return html`<button @click=${{handleEvent: () => this.onClick(), once: true}}>click</button>`
+  return html`<button @click=${{
+	handleEvent: () => this.onClick(),
+	once: true,
+  }}>click</button>`
 }
 ```
 
-{% endraw %}
+### Добавление слушателей событий в компонент или его теневой корень
 
-### Adding event listeners to the component or its shadow root
+Чтобы получать уведомления о событиях, отправляемых от дочерних элементов компонента, а также дочерних элементов, выводимых в теневой DOM через шаблон компонента, вы можете добавить слушателя в сам компонент с помощью стандартного DOM-метода `addEventListener`. Подробности см. в [EventTarget.addEventListener()](https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener) на MDN.
 
-To be notified of an event dispatched from the component's slotted children as well as children rendered into shadow DOM via the component template, you can add a listener to the component itself using the standard `addEventListener` DOM method. See [EventTarget.addEventListener()](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) on MDN for full details.
-
-The component constructor is a good place to add event listeners on the component.
+Конструктор компонента - хорошее место для добавления слушателей событий в компонент.
 
 ```js
 constructor() {
@@ -69,21 +62,23 @@ constructor() {
 }
 ```
 
-Adding event listeners to the component itself is a form of event delegation and can be done to reduce code or improve performance. See [event delegation](#event-delegation) for details. Typically when this is done, the event's `target` property is used to take action based on which element fired the event.
+Добавление слушателей событий в сам компонент является формой делегирования событий и может быть сделано для сокращения кода или повышения производительности. Подробности см. в разделе [Делегирование событий](#event-delegation). Обычно при таком делегировании используется свойство `target` события для выполнения действий в зависимости от того, какой элемент вызвал событие.
 
-However, events fired from the component's shadow DOM are retargeted when heard by an event listener on the component. This means the event target is the component itself. See [Working with events in shadow DOM](#shadowdom) for more information.
+Однако события, запускаемые из теневого DOM компонента, ретаргетируются, когда их слышит слушатель событий компонента. Это означает, что целью события является сам компонент. Дополнительные сведения см. в разделе [Работа с событиями в теневом DOM](#shadowdom).
 
-Retargeting can interfere with event delegation, and to avoid it, event listeners can be added to the component's shadow root itself. Since the `shadowRoot` is not available in the `constructor`, event listeners can be added in the `createRenderRoot` method as follows. Please note that it's important to make sure to return the shadow root from the `createRenderRoot` method.
+Ретаргетинг может помешать делегированию событий, и чтобы избежать этого, слушатели событий могут быть добавлены в сам теневой корень компонента. Поскольку `shadowRoot` недоступен в `конструкторе`, слушатели событий могут быть добавлены в методе `createRenderRoot` следующим образом. Обратите внимание, что важно убедиться в том, что метод `createRenderRoot` возвращает корень тени.
 
-{% playground-example "v3-docs/components/events/host/" "my-element.ts" %}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:26;
+               --litdev-example-editor-lines-js:30;
+               --litdev-example-preview-height:120px" project="v3-docs/components/events/host" filename="my-element.ts"></litdev-example>
 
-### Adding event listeners to other elements
+### Добавление слушателей событий к другим элементам
 
-If your component adds an event listener to anything except itself or its templated DOM – for example, to `Window`, `Document`, or some element in the main DOM – you should add the listener in `connectedCallback` and remove it in `disconnectedCallback`.
+Если ваш компонент добавляет слушателя событий к чему-либо, кроме себя или своего шаблона DOM - например, к `Window`, `Document` или какому-либо элементу в основном DOM - вы должны добавить слушателя в `connectedCallback` и удалить его в `disconnectedCallback`.
 
-*   Removing the event listener in `disconnectedCallback` ensures that any memory allocated by your component will be cleaned up when your component is destroyed or disconnected from the page.
+-   Удаление слушателя событий в `disconnectedCallback` гарантирует, что вся память, выделенная вашим компонентом, будет очищена, когда ваш компонент будет уничтожен или отключен от страницы.
 
-*   Adding the event listener in `connectedCallback` (instead of, for example, the constructor or `firstUpdated`) ensures that your component will re-create its event listener if it is disconnected and subsequently reconnected to DOM.
+-   Добавление слушателя событий в `connectedCallback` (вместо, например, конструктора или `firstUpdated`) гарантирует, что ваш компонент будет заново создавать свой слушатель событий, если он будет отключен и впоследствии снова подключен к DOM.
 
 ```js
 connectedCallback() {
@@ -96,29 +91,31 @@ disconnectedCallback() {
 }
 ```
 
-See the MDN documentation on using custom elements [lifecycle callbacks](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements#Using_the_lifecycle_callbacks) for more information on `connectedCallback` and `disconnectedCallback`.
+Дополнительные сведения о `connectedCallback` и `disconnectedCallback` см. в документации MDN по использованию пользовательских элементов [lifecycle callbacks](https://developer.mozilla.org/docs/Web/Web_Components/Using_custom_elements#Using_the_lifecycle_callbacks).
 
-### Optimizing for performance
+### Оптимизация для производительности
 
-Adding event listeners is extremely fast and typically not a performance concern. However, for components that are used in high frequency and need a lot of event listeners, you can optimize first render performance by reducing the number of listeners used via [event delegation](#event-delegation) and adding listeners [asynchronously](#async-events) after rendering.
+Добавление слушателей событий происходит очень быстро и обычно не вызывает проблем с производительностью. Однако для компонентов, которые используются очень часто и нуждаются в большом количестве слушателей событий, вы можете оптимизировать производительность первого рендеринга, уменьшив количество используемых слушателей с помощью [делегирования событий](#event-delegation) и добавив слушателей [асинхронно](#async-events) после рендеринга.
 
-#### Event delegation { #event-delegation }
+#### Делегирование событий {#event-delegation}
 
-Using event delegation can reduce the number of event listeners used and therefore improve performance. It is also sometimes convenient to centralize event handling to reduce code. Event delegation can only be use to handle events that `bubble`. See [Dispatching events](#dispatching-events) for details on bubbling.
+Делегирование событий позволяет уменьшить количество используемых слушателей событий и, следовательно, повысить производительность. Также иногда удобно централизовать обработку событий, чтобы сократить объем кода. Делегирование событий можно использовать только для обработки событий, которые `пузырятся`. Подробности о пузырьках см. в разделе [Диспетчеризация событий](#dispatching-events).
 
-Bubbling events can be heard on any ancestor element in the DOM. You can take advantage of this by adding a single event listener on an ancestor component to be notified of a bubbling event dispatched by any of its descendants in the DOM. Use the event's `target` property to take specific action based on the element that dispatched the event.
+Пузырящиеся события могут быть услышаны на любом элементе-предке в DOM. Вы можете воспользоваться этим преимуществом, добавив единственный слушатель событий на компонент-предок, чтобы получать уведомления о событии пузырения, отправленном любым из его потомков в DOM. Используйте свойство `target` события, чтобы предпринять конкретные действия в зависимости от элемента, отправившего событие.
 
-{% playground-example "v3-docs/components/events/delegation/" "my-element.ts" %}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:22;
+               --litdev-example-editor-lines-js:28;
+               --litdev-example-preview-height:80px" project="v3-docs/components/events/delegation" filename="my-element.ts"></litdev-example>
 
-#### Asynchronously adding event listeners { #async-events }
+#### Асинхронное добавление слушателей событий {#async-events}
 
-To add an event listener after rendering, use the `firstUpdated` method. This is a Lit lifecycle callback which runs after the component first updates and renders its templated DOM.
+Чтобы добавить слушателя событий после рендеринга, используйте метод `firstUpdated`. Это обратный вызов жизненного цикла Lit, который запускается после того, как компонент впервые обновляет и рендерит свой шаблон DOM.
 
-The `firstUpdated` callback fires after the first time your component has been updated and called its `render` method, but **before** the browser has had a chance to paint.
+Обратный вызов `firstUpdated` срабатывает после первого обновления компонента и вызова его метода `render`, но **до того, как** браузер успел отрисовать.
 
-See [firstUpdated](/docs/v3/components/lifecycle/#firstupdated) in the Lifecycle documentation for more information.
+Дополнительную информацию см. в разделе [firstUpdated](lifecycle.md#firstupdated) документации Lifecycle.
 
-To ensure the listener is added after the user can see the component, you can await a Promise that resolves after the browser paints.
+Чтобы убедиться, что слушатель будет добавлен после того, как пользователь увидит компонент, вы можете ожидать Promise, который разрешится после того, как браузер закрасит компонент.
 
 ```js
 async firstUpdated() {
@@ -128,126 +125,140 @@ async firstUpdated() {
 }
 ```
 
-### Understanding `this` in event listeners
+### Понимание `this` в слушателях событий
 
-Event listeners added using the declarative `@` syntax in the template are automatically _bound_ to the component.
+Слушатели событий, добавленные с помощью декларативного синтаксиса `@` в шаблоне, автоматически _привязываются_ к компоненту.
 
-Therefore, you can use `this` to refer to your component instance inside any declarative event handler:
+Поэтому вы можете использовать `this` для ссылки на ваш экземпляр компонента в любом декларативном обработчике событий:
 
 ```js
 class MyElement extends LitElement {
-  render() {
-    return html`<button @click="${this._handleClick}">click</button>`;
-  }
-  _handleClick(e) {
-    console.log(this.prop);
-  }
+    render() {
+        return html`<button @click="${this._handleClick}">
+            click
+        </button>`;
+    }
+    _handleClick(e) {
+        console.log(this.prop);
+    }
 }
 ```
 
-When adding listeners imperatively with `addEventListener`, you'll want to use an arrow function so that `this` refers to the component:
+При императивном добавлении слушателей с помощью `addEventListener` необходимо использовать функцию-стрелку, чтобы `this` ссылался на компонент:
 
 ```ts
 export class MyElement extends LitElement {
-  private _handleResize = () => {
-    // `this` refers to the component
-    console.log(this.isConnected);
-  }
+    private _handleResize = () => {
+        // `this` refers to the component
+        console.log(this.isConnected);
+    };
 
-  constructor() {
-    window.addEventListener('resize', this._handleResize);
-  }
+    constructor() {
+        window.addEventListener(
+            'resize',
+            this._handleResize,
+        );
+    }
 }
 ```
 
-See the [documentation for `this` on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this) for more information.
+Дополнительную информацию см. в [документации по `this` на MDN](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/this).
 
-### Listening to events fired from repeated templates
+### Прослушивание событий, запускаемых из повторяющихся шаблонов
 
-When listening to events on repeated items, it's often convenient to use [event delegation](#event-delegation) if the event bubbles. When an event does not bubble, a listener can be added on the repeated elements. Here's an example of both methods:
+При прослушивании событий на повторяющихся элементах часто удобно использовать [делегирование событий](#event-delegation), если событие пузырится. Если же событие не пузырится, можно добавить слушателя на повторяющиеся элементы. Вот пример использования обоих методов:
 
-{% playground-example "v3-docs/components/events/list/" "my-element.ts" %}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:26;
+               --litdev-example-editor-lines-js:35;
+               --litdev-example-preview-height:120px" project="v3-docs/components/events/list" filename="my-element.ts"></litdev-example>
 
-### Removing event listeners
+### Удаление слушателей событий
 
-Passing `null`, `undefined` or `nothing` to an `@` expression will cause any existing listener to be removed.
+Передача `null`, `undefined` или `nothing` в выражение `@` приведет к удалению любого существующего слушателя.
 
-## Dispatching events { #dispatching-events }
+## Диспетчеризация событий {#dispatching-events}
 
-All DOM nodes can dispatch events using the `dispatchEvent` method. First, create an event instance, specifying the event type and options. Then pass it to `dispatchEvent` as follows:
+Все узлы DOM могут отправлять события с помощью метода `dispatchEvent`. Сначала создайте экземпляр события, указав его тип и параметры. Затем передайте его в `dispatchEvent` следующим образом:
 
 ```js
-const event = new Event('my-event', {bubbles: true, composed: true});
+const event = new Event('my-event', {
+    bubbles: true,
+    composed: true,
+});
 myElement.dispatchEvent(event);
 ```
 
-The `bubbles` option allows the event to flow up the DOM tree to ancestors of the dispatching element. It's important to set this flag if you want the event to be able to participate in [event delegation](#event-delegation).
+Опция `bubbles` позволяет событию распространяться вверх по дереву DOM к предкам отправляющего элемента. Важно установить этот флаг, если вы хотите, чтобы событие могло участвовать в [делегировании событий](#event-delegation).
 
-The `composed` option is useful to set to allow the event to be dispatched above the shadow DOM tree in which the element exists.
+Опцию `composed` полезно установить, чтобы позволить событию быть отправленным выше теневого DOM-дерева, в котором существует элемент.
 
-See [Working with events in shadow DOM](#shadowdom) for more information.
+Дополнительную информацию см. в разделе [Работа с событиями в теневом DOM](#shadowdom).
 
-See [EventTarget.dispatchEvent()](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent) on MDN for a full description of dispatching events.
+Полное описание диспетчеризации событий см. в [EventTarget.dispatchEvent()](https://developer.mozilla.org/docs/Web/API/EventTarget/dispatchEvent) на MDN.
 
-### When to dispatch an event
+### Когда отправлять событие
 
-Events should be dispatched in response to user interaction or asynchronous changes in the component's state. They should generally **not** be dispatched in response to state changes made by the owner of the component via its property or attribute APIs. This is generally how native web platform elements work.
+События следует отправлять в ответ на взаимодействие с пользователем или асинхронные изменения состояния компонента. Как правило, они **не** должны отправляться в ответ на изменения состояния, сделанные владельцем компонента через API его свойств или атрибутов. Именно так обычно работают нативные элементы веб-платформы.
 
-For example, when a user types a value into an `input` element a `change` event is dispatched, but if code sets the `input`'s `value` property, a `change` event is **not** dispatched.
+Например, когда пользователь вводит значение в элемент `input`, диспетчеризируется событие `change`, но если код устанавливает свойство `value` элемента `input`, событие `change` **не** диспетчеризируется.
 
-Similarly, a menu component should dispatch an event when the user selects a menu item, but it should not dispatch an event if, for example, the menu's `selectedItem` property is set.
+Аналогично, компонент меню должен отправлять событие, когда пользователь выбирает пункт меню, но он не должен отправлять событие, если, например, установлено свойство `selectedItem` меню.
 
-This typically means that a component should dispatch an event in response to another event to which it is listening.
+Обычно это означает, что компонент должен отправлять событие в ответ на другое событие, к которому он прислушивается.
 
-{% playground-ide "v3-docs/components/events/dispatch/" "my-dispatcher.ts" %}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:25;
+             --litdev-example-editor-lines-js:26;
+             --litdev-example-preview-height:120px" project="v3-docs/components/events/dispatch"></litdev-example>
 
-### Dispatching events after an element updates
+### Отправка событий после обновления элемента
 
-Often, an event should be fired only after an element updates and renders. This might be necessary if an event is intended to communicate a change in rendered state based on user interaction. In this case, the component's `updateComplete` Promise can be awaited after changing state, but before dispatching the event.
+Часто событие должно срабатывать только после обновления и рендеринга элемента. Это может быть необходимо, если событие предназначено для передачи информации об изменении состояния рендеринга на основе взаимодействия с пользователем. В этом случае можно дождаться обещания компонента `updateComplete` после изменения состояния, но перед отправкой события.
 
-{% playground-ide "v3-docs/components/events/update/" "my-dispatcher.ts" %}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:20;
+             --litdev-example-editor-lines-js:28;
+             --litdev-example-preview-height:120px" project="v3-docs/components/events/update"></litdev-example>
 
-### Using standard or custom events { #standard-custom-events }
+### Использование стандартных или пользовательских событий {#standard-custom-events}
 
-Events can be dispatched either by constructing an `Event` or a `CustomEvent`. Either is a reasonable approach. When using a `CustomEvent`, any event data is passed in the event's `detail` property. When using an `Event`, an event subclass can be made and custom API attached to it.
+События могут быть отправлены либо путем создания `Event`, либо `CustomEvent`. Любой из этих способов является разумным. При использовании `CustomEvent` любые данные о событии передаются в свойстве `detail` события. При использовании `Event` можно создать подкласс события и прикрепить к нему пользовательский API.
 
-See [Event](https://developer.mozilla.org/en-US/docs/Web/API/Event/Event) on MDN for details about constructing events.
+Подробности о создании событий см. в [Event](https://developer.mozilla.org/docs/Web/API/Event/Event) на MDN.
 
-#### Firing a custom event:
+#### Запуск пользовательского события:
 
 ```js
 const event = new CustomEvent('my-event', {
-  detail: {
-    message: 'Something important happened'
-  }
+    detail: {
+        message: 'Something important happened',
+    },
 });
 this.dispatchEvent(event);
 ```
 
-See the [MDN documentation on custom events](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) for more information.
+Дополнительные сведения см. в [документации MDN по пользовательским событиям](https://developer.mozilla.org/docs/Web/API/CustomEvent).
 
-#### Firing a standard event:
+#### Вызов стандартного события:
 
 ```js
 class MyEvent extends Event {
-  constructor(message) {
-    super();
-    this.type = 'my-event';
-    this.message = message;
-  }
+    constructor(message) {
+        super();
+        this.type = 'my-event';
+        this.message = message;
+    }
 }
 
 const event = new MyEvent('Something important happened');
 this.dispatchEvent(event);
 ```
 
-## Working with events in shadow DOM {#shadowdom}
+## Работа с событиями в теневом DOM {#shadowdom}
 
-When using shadow DOM there are a few modifications to the standard event system that are important to understand. Shadow DOM exists primarily to provide a scoping mechanism in the DOM that encapsulates details about these "shadow" elements. As such, events in shadow DOM encapsulate certain details from outside DOM elements.
+При использовании теневого DOM есть несколько модификаций стандартной системы событий, которые важно понимать. Теневой DOM существует в первую очередь для того, чтобы обеспечить механизм определения масштаба в DOM, который инкапсулирует детали об этих "теневых" элементах. Как таковые, события в теневом DOM инкапсулируют определенные детали из внешних элементов DOM.
 
-### Understanding composed event dispatching {#shadowdom-composed}
+### Понимание диспетчеризации составленных событий {#shadowdom-composed}
 
-By default, an event dispatched inside a shadow root will not be visible outside that shadow root. To make an event pass through shadow DOM boundaries, you must set the [`composed` property](https://developer.mozilla.org/en-US/docs/Web/API/Event/composed) to `true`. It's common to pair `composed` with `bubbles` so that all nodes in the DOM tree can see the event:
+По умолчанию событие, отправленное внутри теневого корня, не будет видно вне этого теневого корня. Чтобы событие проходило через границы теневого DOM, необходимо установить свойство [`composed`](https://developer.mozilla.org/docs/Web/API/Event/composed) в `true`. Обычно используется пара `composed` с `bubbles`, чтобы все узлы в дереве DOM могли видеть событие:
 
 ```js
 _dispatchMyEvent() {
@@ -259,17 +270,21 @@ _dispatchMyEvent() {
 }
 ```
 
-If an event is `composed` and does `bubble`, it can be received by all ancestors of the element that dispatches the event—including ancestors in outer shadow roots. If an event is `composed` but does not `bubble`, it can only be received on the element that dispatches the event and on the host element containing the shadow root.
+Если событие `составное` и `пузырьковое`, оно может быть получено всеми предками элемента, отправляющего событие, включая предков во внешних теневых корнях. Если событие `составное`, но не `пузырьковое`, оно может быть получено только на элементе, который отправляет событие, и на главном элементе, содержащем теневой корень.
 
-Note that most standard user interface events, including all mouse, touch, and keyboard events, are both bubbling and composed. See the [MDN documentation on composed events](https://developer.mozilla.org/en-US/docs/Web/API/Event/composed) for more information.
+Обратите внимание, что большинство стандартных событий пользовательского интерфейса, включая все события мыши, касания и клавиатуры, являются одновременно и пузырьковыми, и составными. Дополнительную информацию см. в [MDN документации по составленным событиям](https://developer.mozilla.org/docs/Web/API/Event/composed).
 
-### Understanding event retargeting {#shadowdom-retargeting}
+### Понимание ретаргетинга событий {#shadowdom-retargeting}
 
-[Composed](#shadowdom-composed) events dispatched from within a shadow root are retargeted, meaning that to any listener on an element hosting a shadow root or any of its ancestors, they appear to come from the hosting element. Since Lit components render into shadow roots, all composed events dispatched from inside a Lit component appear to be dispatched by the Lit component itself. The event's `target` property is the Lit component.
+[Composed](#shadowdom-composed) события, отправленные из теневого корня, ретаргетируются, то есть для любого слушателя элемента, содержащего теневой корень или любого из его предков, они кажутся исходящими от содержащего элемента. Поскольку Lit-компоненты рендерятся в теневые корни, все составленные события, отправленные изнутри Lit-компонента, выглядят так, будто они отправлены самим Lit-компонентом. Свойством `target` события является компонент Lit.
 
 ```html
-<my-element onClick="(e) => console.log(e.target)"></my-element>
+<my-element
+    onClick="(e) => console.log(e.target)"
+></my-element>
 ```
+
+---
 
 ```js
 render() {
@@ -280,23 +295,26 @@ render() {
 }
 ```
 
-In advanced cases where it is required to determine the origin of an event, use the `event.composedPath()` API. This method returns an array of all the nodes traversed by the event dispatch, including those within shadow roots. Because this breaks encapsulation, care should be taken to avoid relying on implementation details that may be exposed.  Common use cases include determining if the element clicked was an anchor tag, for purposes of client-side routing.
+В сложных случаях, когда требуется определить происхождение события, используйте API `event.composedPath()`. Этот метод возвращает массив всех узлов, пройденных диспетчером события, включая узлы в теневых корнях. Поскольку при этом нарушается инкапсуляция, следует позаботиться о том, чтобы не полагаться на детали реализации, которые могут быть раскрыты. К распространенным случаям использования относится определение того, был ли элемент, на котором щелкнули, тегом якоря, для целей маршрутизации на стороне клиента.
 
 ```js
 handleMyEvent(event) {
   console.log('Origin: ', event.composedPath()[0]);
 }
 ```
-See the [MDN documentation on composedPath](https://developer.mozilla.org/en-US/docs/Web/API/Event/composedPath) for more information.
 
-## Communicating between the event dispatcher and listener
+Дополнительные сведения см. в [MDN документации по composedPath](https://developer.mozilla.org/en-US/docs/Web/API/Event/composedPath).
 
-Events exist primarily to communicate changes from the event dispatcher to the event listener, but events can also be used to communicate information from the listener back to the dispatcher.
+## Общение между диспетчером событий и слушателем
 
-One way you can do this is to expose API on events which listeners can use to customize component behavior. For example, a listener can set a property on a custom event's detail property which the dispatching component then uses to customize behavior.
+События существуют в основном для передачи изменений от диспетчера событий к слушателю, но события также можно использовать для передачи информации от слушателя обратно диспетчеру.
 
-Another way to communicate between the dispatcher and listener is via the `preventDefault()` method. It can be called to indicate the event's standard action should not occur. When the listener calls `preventDefault()`, the event's `defaultPrevented` property becomes true. This flag can then be used by the listener to customize behavior.
+Один из способов сделать это - предоставить API для событий, которые слушатели могут использовать для настройки поведения компонента. Например, слушатель может установить свойство detail пользовательского события, которое диспетчерский компонент затем использует для настройки поведения.
 
-Both of these techniques are used in the following example:
+Еще один способ взаимодействия между диспетчером и слушателем - метод `preventDefault()`. Он может быть вызван, чтобы указать, что стандартное действие события не должно происходить. Когда слушатель вызывает `preventDefault()`, свойство события `defaultPrevented` становится истинным. Этот флаг может быть использован слушателем для настройки поведения.
 
-{% playground-ide "v3-docs/components/events/comm/" "my-listener.ts" %}
+Обе эти техники используются в следующем примере:
+
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:31;
+             --litdev-example-editor-lines-js:45;
+             --litdev-example-preview-height:180px" project="v3-docs/components/events/comm"></litdev-example>

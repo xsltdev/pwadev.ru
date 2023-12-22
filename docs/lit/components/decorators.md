@@ -1,36 +1,31 @@
 ---
-title: Decorators
-eleventyNavigation:
-  key: Decorators
-  parent: Components
-  order: 8
-versionLinks:
-  v1: components/decorators/
-  v2: components/decorators/
+description: Декораторы - это функции, которые можно использовать для декларативного аннотирования и изменения поведения классов
 ---
 
-Decorators are functions that can be used to declaratively annotate and modify the behavior of classes.
+# Декораторы
 
-Lit provides a set of optional decorators that enable declarative APIs for things like registering elements, defining reactive properties and query properties, or adding event options to event handler methods.
+<big>
+**Декораторы** &mdash; это функции, которые можно использовать для декларативного аннотирования и изменения поведения классов.
+</big>
 
-For example, the `@customElement` and `@property()` decorators let you register a custom element and define a reactive property in a compact, declarative way:
+Lit предоставляет набор дополнительных декораторов, которые позволяют использовать декларативные API для регистрации элементов, определения реактивных свойств и свойств запросов или добавления опций событий в методы обработчиков событий.
+
+Например, декораторы `@customElement` и `@property()` позволяют компактно и декларативно зарегистрировать пользовательский элемент и определить реактивное свойство:
 
 ```ts
 @customElement('my-element')
 export class MyElement extends LitElement {
-
-  @property()
-  greeting = 'Welcome';
-
+    @property()
+    greeting = 'Welcome';
 }
 ```
 
 {% aside "info" "no-header"%}
 
 Lit supports two different versions of the JavaScript decorators proposal – an early version supported by TypeScript that we refer to as _experimental decorators_ and a new and final version we refer to as _standard decorators_.
- 
+
 There are some small differences in usage between the two proposals (standard decorators often require the `accessor` keyword). Our code samples are written for experimental decorators because we recommend them for production at the moment.
- 
+
 See [Decorator versions](#decorator-versions) for more details.
 
 {% endaside %}
@@ -38,7 +33,7 @@ See [Decorator versions](#decorator-versions) for more details.
 ## Built-in decorators
 
 | Decorator | Summary | More Info |
-|-----------|---------|--------------|
+| --- | --- | --- |
 | {% api-v3 "@customElement" "customElement" %} | Defines a custom element. | [Defining](/docs/v3/components/defining/) |
 | {% api-v3 "@eventOptions" "eventOptions" %} | Adds event listener options. | [Events](/docs/v3/components/events/#event-options-decorator) |
 | {% api-v3 "@property" "property" %} | Defines a public property. | [Properties](/docs/v3/components/properties/#declare-with-decorators) |
@@ -54,14 +49,19 @@ See [Decorator versions](#decorator-versions) for more details.
 You can import all of the Lit decorators via the `lit/decorators.js` module:
 
 ```js
-import {customElement, property, eventOptions, query} from 'lit/decorators.js';
+import {
+    customElement,
+    property,
+    eventOptions,
+    query,
+} from 'lit/decorators.js';
 ```
 
 To reduce the amount of code needed to run the component, decorators can be imported individually into component code. All decorators are available at `lit/decorators/<decorator-name>.js`. For example,
 
 ```js
-import {customElement} from 'lit/decorators/custom-element.js';
-import {eventOptions} from 'lit/decorators/event-options.js';
+import { customElement } from 'lit/decorators/custom-element.js';
+import { eventOptions } from 'lit/decorators/event-options.js';
 ```
 
 ## Enabling decorators { #enabling-decorators }
@@ -81,10 +81,10 @@ You should also ensure that the `useDefineForClassFields` setting is `false`. Th
 ```json
 // tsconfig.json
 {
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "useDefineForClassFields": false,
-  }
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "useDefineForClassFields": false
+    }
 }
 ```
 
@@ -99,10 +99,10 @@ This allows incremental migration off of experimental decorators starting with t
 ```json
 // tsconfig.json
 {
-  "compilerOptions": {
-    "experimentalDecorators": false, // default for TypeScript 5.0 and up
-    "useDefineForClassFields": true, // default when "target" is "ES2022" or higher
-  }
+    "compilerOptions": {
+        "experimentalDecorators": false, // default for TypeScript 5.0 and up
+        "useDefineForClassFields": true // default when "target" is "ES2022" or higher
+    }
 }
 ```
 
@@ -117,9 +117,12 @@ Enable decorators by adding [`@babel/plugin-proposal-decorators`](https://babelj
 ```json
 // babel.config.json
 {
-  "plugins": [
-    ["@babel/plugin-proposal-decorators", {"version": "2023-05"}]
-  ]
+    "plugins": [
+        [
+            "@babel/plugin-proposal-decorators",
+            { "version": "2023-05" }
+        ]
+    ]
 }
 ```
 
@@ -159,7 +162,7 @@ To make this convenient, the standard decorator specification adds the `accessor
 
 ```ts
 class MyClass {
-  accessor foo = 42;
+    accessor foo = 42;
 }
 ```
 
@@ -170,10 +173,8 @@ Lit decorators that work on class fields with experimental decorators – such a
 ```ts
 @customElement('my-element')
 export class MyElement extends LitElement {
-
-  @property()
-  accessor greeting = 'Welcome';
-
+    @property()
+    accessor greeting = 'Welcome';
 }
 ```
 

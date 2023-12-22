@@ -1,44 +1,33 @@
 ---
-title: Working with Shadow DOM
-eleventyNavigation:
-  key: Shadow DOM
-  parent: Components
-  order: 6
-versionLinks:
-  v1: components/templates/#accessing-nodes-in-the-shadow-dom
-  v2: components/shadow-dom/
+description: Компоненты Lit используют shadow DOM для инкапсуляции своего DOM. Теневой DOM предоставляет возможность добавить к элементу отдельное изолированное и инкапсулированное дерево DOM
 ---
 
-Lit components use [shadow DOM](https://developers.google.com/web/fundamentals/web-components/shadowdom) to encapsulate their DOM. Shadow DOM provides a way to add a separate isolated and encapsulated DOM tree to an element. DOM encapsulation is the key to unlocking interoperability with any other code—including other web components or Lit components—functioning on the page.
+# Теневой DOM
 
-Shadow DOM provides three benefits:
+Компоненты Lit используют [shadow DOM](https://developers.google.com/web/fundamentals/web-components/shadowdom) для инкапсуляции своего DOM. Теневой DOM предоставляет возможность добавить к элементу отдельное изолированное и инкапсулированное дерево DOM. Инкапсуляция DOM - это ключ к обеспечению совместимости с любым другим кодом, включая другие веб-компоненты или компоненты Lit, функционирующие на странице.
 
-* DOM scoping. DOM APIs like `document.querySelector` won't find elements in the
-  component's shadow DOM, so it's harder for global scripts to accidentally break your component.
-* Style scoping. You can write encapsulated styles for your shadow DOM that don't
-  affect the rest of the DOM tree.
-* Composition. The component's shadow root, which contains its internal DOM, is separate from the component's children. You can choose how children are rendered in your component's internal DOM.
+Shadow DOM обеспечивает три преимущества:
 
-For more information on shadow DOM:
+-   DOM scoping. API DOM, такие как `document.querySelector`, не найдут элементов в теневой DOM компонента, поэтому глобальным скриптам сложнее случайно сломать ваш компонент.
+-   Разграничение стилей. Вы можете писать инкапсулированные стили для теневого DOM, которые не не влияют на остальную часть дерева DOM.
+-   Композиция. Теневой корень компонента, который содержит его внутренний DOM, отделен от дочерних элементов компонента. Вы можете выбрать, как дочерние элементы будут отображаться во внутреннем DOM компонента.
 
-* [Shadow DOM v1: Self-Contained Web Components](https://developers.google.com/web/fundamentals/web-components/shadowdom) on Web Fundamentals.
-* [Using shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) on MDN.
+Дополнительная информация о теневом DOM:
 
+-   [Shadow DOM v1: Self-Contained Web Components](https://developers.google.com/web/fundamentals/web-components/shadowdom) на сайте Web Fundamentals.
+-   [Использование теневого DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) на MDN.
 
-<div class="alert alert-info">
+!!!alert "Старые браузеры"
 
-**Older browsers.** On older browsers where native shadow DOM isn't available, the [web components polyfills](https://github.com/webcomponents/polyfills/tree/master/packages/webcomponentsjs) may be used. Please note that Lit's `polyfill-support` module must be loaded along with the web components polyfills. See [Requirements for legacy browsers](/docs/v3/tools/requirements/#building-for-legacy-browsers) for details.
+    В старых браузерах, где нативный теневой DOM недоступен, можно использовать [полифиллы веб-компонентов](https://github.com/webcomponents/polyfills/tree/master/packages/webcomponentsjs). Обратите внимание, что модуль `polyfill-support` от Lit должен быть загружен вместе с полифиллами веб-компонентов. Подробности см. в [Требования для устаревших браузеров](../tools/requirements.md#building-for-legacy-browsers).
 
-</div>
+## Доступ к узлам в теневом DOM
 
-## Accessing nodes in the shadow DOM
+Lit рендерит компоненты в свой `renderRoot`, который по умолчанию является теневым корнем. Чтобы найти внутренние элементы, вы можете использовать API запросов DOM, например `this.renderRoot.querySelector()`.
 
+Корень `renderRoot` всегда должен быть либо теневым корнем, либо элементом, для которого используются такие API, как `.querySelectorAll()` и `.children`.
 
-Lit renders components to its `renderRoot`, which is a shadow root by default. To find internal elements, you can use DOM query APIs, such as `this.renderRoot.querySelector()`.
-
-The `renderRoot` should always be either a shadow root or an element, which share APIs like `.querySelectorAll()` and `.children`.
-
-You can query internal DOM after component initial render (for example, in `firstUpdated`), or use a getter pattern:
+Вы можете запросить внутренний DOM после первоначального рендеринга компонента (например, в `firstUpdated`), или использовать геттерный шаблон:
 
 ```js
 firstUpdated() {
@@ -50,40 +39,38 @@ get _closeButton() {
 }
 ```
 
-LitElement supplies a set of decorators that provide a shorthand way of defining getters like this.
+LitElement предоставляет набор декораторов, которые обеспечивают сокращенный способ определения геттеров, подобных этому.
 
-### @query, @queryAll, and @queryAsync decorators
+### `@query`, `@queryAll` и `@queryAsync` декораторы
 
-The `@query`, `@queryAll`, and `@queryAsync` decorators all provide a convenient way to access nodes in the internal component DOM.
+Декораторы `@query`, `@queryAll` и `@queryAsync` предоставляют удобный способ доступа к узлам во внутреннем DOM компонента.
 
-<div class="alert alert-info">
+!!!alert "Использование декораторов"
 
-**Using decorators.** Decorators are a proposed JavaScript feature, so you’ll need to use a compiler like Babel or TypeScript to use decorators. See [Using decorators](/docs/v3/components/decorators/) for details.
+    **Декораторы** - это предложенная функция JavaScript, поэтому для использования декораторов вам потребуется компилятор типа Babel или TypeScript. Подробности см. в [Использование декораторов](decorators.md).
 
-</div>
+#### `@query` { #query }
 
-#### @query { #query }
-
-Modifies a class property, turning it into a getter that returns a node from the render root. The optional second argument when true performs the DOM query only once and caches the result. This can be used as a performance optimization in cases when the node being queried will not change.
+Изменяет свойство класса, превращая его в геттер, который возвращает узел из корня рендеринга. Необязательный второй аргумент при значении `true` выполняет запрос DOM только один раз и кэширует результат. Это может быть использовано в качестве оптимизации производительности в случаях, когда запрашиваемый узел не будет меняться.
 
 ```js
-import {LitElement, html} from 'lit';
-import {query} from 'lit/decorators/query.js';
+import { LitElement, html } from 'lit';
+import { query } from 'lit/decorators/query.js';
 
 class MyElement extends LitElement {
-  @query('#first')
-  _first;
+    @query('#first')
+    _first;
 
-  render() {
-    return html`
-      <div id="first"></div>
-      <div id="second"></div>
-    `;
-  }
+    render() {
+        return html`
+            <div id="first"></div>
+            <div id="second"></div>
+        `;
+    }
 }
 ```
 
-This decorator is equivalent to:
+Этот декоратор эквивалентен:
 
 ```js
 get _first() {
@@ -91,94 +78,97 @@ get _first() {
 }
 ```
 
-#### @queryAll { #query-all }
+#### `@queryAll` { #query-all }
 
-Identical to `query` except that it returns all matching nodes, instead of a single node. It's the equivalent of calling `querySelectorAll`.
+Идентичен `query`, за исключением того, что возвращает все совпадающие узлы, а не один узел. Это эквивалентно вызову `querySelectorAll`.
 
 ```js
-import {LitElement, html} from 'lit';
-import {queryAll} from 'lit/decorators/queryAll.js';
+import { LitElement, html } from 'lit';
+import { queryAll } from 'lit/decorators/queryAll.js';
 
 class MyElement extends LitElement {
-  @queryAll('div')
-  _divs;
+    @queryAll('div')
+    _divs;
 
-  render() {
-    return html`
-      <div id="first"></div>
-      <div id="second"></div>
-    `;
-  }
+    render() {
+        return html`
+            <div id="first"></div>
+            <div id="second"></div>
+        `;
+    }
 }
 ```
 
-Here, `_divs` would return both `<div>` elements in the template. For TypeScript, the typing of a `@queryAll` property is `NodeListOf<HTMLElement>`. If you know exactly what kind of nodes you'll retrieve, the typing can be more specific:
+Здесь `_divs` вернет оба элемента `<div>` в шаблоне. Для TypeScript типизация свойства `@queryAll` - это `NodeListOf<HTMLElement>`. Если вы точно знаете, какой тип узлов вы хотите получить, тип может быть более конкретным:
 
 ```js
 @queryAll('button')
 _buttons!: NodeListOf<HTMLButtonElement>
 ```
 
-The exclamation point (`!`) after `buttons` is TypeScript's [non-null assertion operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator). It tells the compiler to treat `buttons` as always being defined, never `null` or `undefined`.
+Восклицательный знак (`!`) после `buttons` - это оператор TypeScript [non-null assertion operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator). Он указывает компилятору, что `кнопки` всегда должны быть определены, и никогда не должны быть `null` или `undefined`.
 
-#### @queryAsync { #query-async }
+#### `@queryAsync` { #query-async }
 
-Similar to `@query`, except that instead of returning a node directly, it returns a `Promise` that resolves to that node after any pending element render is completed. Code can use this instead of waiting for the `updateComplete` promise.
+Аналогичен `@query`, только вместо непосредственного возврата узла возвращает `Promise`, который разрешается в этот узел после завершения рендеринга любого ожидающего элемента. Код может использовать это вместо ожидания обещания `updateComplete`.
 
-This is useful, for example, if the node returned by `@queryAsync` can change as a result of another property change.
+Это полезно, например, если узел, возвращаемый `@queryAsync`, может измениться в результате изменения другого свойства.
 
-## Rendering children with slots {#slots}
+## Рендеринг дочерних узлов со слотами {#slots}
 
-Your component may accept children (like a `<ul>` element can have `<li>` children).
+Ваш компонент может принимать дочерние элементы (например, элемент `<ul>` может иметь дочерние элементы `<li>`).
 
 ```html
 <my-element>
-  <p>A child</p>
+    <p>A child</p>
 </my-element>
 ```
-By default, if an element has a shadow tree, its children don't render at all.
 
-To render children, your template needs to include one or more [`<slot>` elements](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot), which act as placeholders for child nodes.
+По умолчанию, если элемент имеет теневое дерево, его дочерние узлы не отображаются вообще.
 
-### Using the slot element
+Чтобы отобразить дочерние элементы, ваш шаблон должен включать один или несколько [`<slot>` элементов](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot), которые выступают в качестве держателей для дочерних узлов.
 
-To render an element's children, create a `<slot>` for them in the element's template. The children aren't _moved_ in the DOM tree, but they're rendered _as if_ they were children of the `<slot>`. For example:
+### Использование элемента `slot`
 
-{% playground-ide "v3-docs/components/shadowdom/slots/" %}
+Чтобы отобразить дочерние элементы, создайте для них элемент `<slot>` в шаблоне элемента. Дочерние элементы не _перемещаются_ в дереве DOM, но они отображаются так, как если бы они были дочерними элементами `<slot>`. Например:
 
-### Using named slots
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:14;
+             --litdev-example-editor-lines-js:14;
+             --litdev-example-preview-height:165px" project="v3-docs/components/shadowdom/slots"></litdev-example>
 
-To assign a child to a specific slot, ensure that the child's `slot` attribute matches the slot's `name` attribute:
+### Использование именованных слотов
 
-* **Named slots only accept children with a matching `slot` attribute.**
+Чтобы назначить ребенка на определенный слот, убедитесь, что атрибут `slot` ребенка совпадает с атрибутом `name` слота:
 
-  For example, `<slot name="one"></slot>` only accepts children with the attribute `slot="one"`.
+-   **Именованные слоты принимают детей только с совпадающим атрибутом `slot`**
 
-* **Children with a `slot` attribute will only be rendered in a slot with a matching `name` attribute.**
+    Например, `<slot name="one"></slot>` принимает детей только с атрибутом `slot="one"`.
 
-  For example, `<p slot="one">...</p>` will only be placed in `<slot name="one"></slot>`.
+-   **Дети с атрибутом `slot` будут отображаться только в слоте с соответствующим атрибутом `name`**
 
-{% playground-ide "v3-docs/components/shadowdom/namedslots/" %}
+    Например, `<p slot="one">...</p>` будет помещен только в `<slot name="one"></slot>`.
 
-### Specifying slot fallback content {#fallback}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:14;
+             --litdev-example-editor-lines-js:14;
+             --litdev-example-preview-height:120px" project="v3-docs/components/shadowdom/namedslots"></litdev-example>
 
-You can specify fallback content for a slot. The fallback content is shown when no child is assigned to the slot.
+### Указание содержимого обратного хода слота {#fallback}
+
+Вы можете указать содержимое отката для слота. Запасной контент отображается, когда слоту не назначен ребенок.
 
 ```html
 <slot>I am fallback content</slot>
 ```
 
-<div class="alert alert-info">
+!!!alert "Рендеринг резервного содержимого"
 
-**Rendering fallback content.** If any child nodes are assigned to a slot, its fallback content doesn't render. A default slot with no name accepts any child nodes. It won't render fallback content even if the only assigned nodes are text nodes containing whitespace, for example `<example-element> </example-element>`. When using a Lit expression as a child of a custom element, make sure to use a non-rendering value when appropriate so that any slot fallback content is rendered. See [removing child content](/docs/v3/templates/expressions/#removing-child) for more information.
+    Если слоту назначены дочерние узлы, его содержимое не отображается. Слот по умолчанию без имени принимает любые дочерние узлы. Он не будет отображать резервное содержимое, даже если единственными назначенными узлами являются текстовые узлы, содержащие пробелы, например `<example-element> </example-element>`. При использовании выражения Lit в качестве дочернего элемента пользовательского элемента убедитесь, что в соответствующих случаях используется нерендерируемое значение, чтобы все содержимое слота с возвратом было отрисовано. Дополнительные сведения см. в разделе [удаление дочернего содержимого](../templates/expressions.md#removing-child).
 
-</div>
+## Доступ к дочерним элементам слотов { #accessing-slotted-children }
 
-## Accessing slotted children { #accessing-slotted-children }
+Чтобы получить доступ к дочерним элементам, назначенным слотам в корне тени, вы можете использовать стандартные методы `slot.assignedNodes` или `slot.assignedElements` с событием `slotchange`.
 
-To access children assigned to slots in your shadow root, you can use the standard `slot.assignedNodes` or `slot.assignedElements` methods with the `slotchange` event.
-
-For example, you can create a getter to access assigned elements for a particular slot:
+Например, вы можете создать геттер для доступа к назначенным элементам для определенного слота:
 
 ```js
 get _slottedChildren() {
@@ -187,8 +177,7 @@ get _slottedChildren() {
 }
 ```
 
-You can also use the `slotchange` event to take action when the assigned nodes change.
-The following example extracts the text content of all of the slotted children.
+Вы также можете использовать событие `slotchange` для выполнения действий при изменении назначенных узлов. В следующем примере извлекается текстовое содержимое всех дочерних узлов со слотами.
 
 ```js
 handleSlotchange(e) {
@@ -204,29 +193,25 @@ render() {
 }
 ```
 
-For more information, see [HTMLSlotElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSlotElement) on MDN.
+Для получения дополнительной информации смотрите [HTMLSlotElement](https://developer.mozilla.org/docs/Web/API/HTMLSlotElement) на MDN.
 
-### @queryAssignedElements and @queryAssignedNodes decorators { #query-assigned-nodes }
+### `@queryAssignedElements` и `@queryAssignedNodes` декораторы { #query-assigned-nodes }
 
-`@queryAssignedElements` and `@queryAssignedNodes` convert a class property into a getter that returns the result of calling
-[`slot.assignedElements`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSlotElement/assignedElements) or [`slot.assignedNodes`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSlotElement/assignedNodes) respectively on a given slot in the component's shadow tree.
-Use these to query the elements or nodes assigned to a given slot.
+`@queryAssignedElements` и `@queryAssignedNodes` преобразуют свойство класса в геттер, возвращающий результат вызова [`slot.assignedElements`](https://developer.mozilla.org/docs/Web/API/HTMLSlotElement/assignedElements) или [`slot.assignedNodes`](https://developer.mozilla.org/docs/Web/API/HTMLSlotElement/assignedNodes) соответственно для заданного слота в теневом дереве компонента. Используйте их для запроса элементов или узлов, назначенных данному слоту.
 
-Both accept an optional object with the following properties:
+Обе принимают необязательный объект со следующими свойствами:
 
-| Property       | Description                                                             |
-| -------------- | ----------------------------------------------------------------------- |
-| `flatten` | Boolean specifying whether to flatten the assigned nodes by replacing any child `<slot>` elements with their assigned nodes. |
-| `slot` | Slot name specifying the slot to query. Leave undefined to select the default slot. |
-| `selector` (`queryAssignedElements` only) | If specified, only return assigned elements that match this CSS selector. |
+| Свойство | Описание |
+| --- | --- |
+| `flatten` | Булево значение, указывающее, нужно ли сплющивать назначенные узлы, заменяя все дочерние `<slot>` элементы их назначенными узлами. |
+| `slot` | Имя слота, определяющее слот для запроса. Оставьте неопределенным, чтобы выбрать слот по умолчанию. |
+| `selector` (только для `queryAssignedElements`) | Если указано, возвращаются только те назначенные элементы, которые соответствуют данному CSS-селектору. |
 
-Deciding which decorator to use depends on whether you want to query for text nodes assigned to the slot, or only element nodes. This decision is specific to your use case.
+Решение о том, какой декоратор использовать, зависит от того, хотите ли вы запрашивать текстовые узлы, назначенные слоту, или только узлы элементов. Это решение зависит от конкретного случая использования.
 
-<div class="alert alert-info">
+!!!alert "Использование декораторов"
 
-**Using decorators.** Decorators are a proposed JavaScript feature, so you’ll need to use a compiler like Babel or TypeScript to use decorators. See [Using decorators](/docs/v3/components/decorators/) for details.
-
-</div>
+    **Декораторы** - это предложенная функция JavaScript, поэтому для использования декораторов вам потребуется компилятор типа Babel или TypeScript. Подробности см. в [Использование декораторов](decorators.md).
 
 ```ts
 @queryAssignedElements({slot: 'list', selector: '.item'})
@@ -236,7 +221,7 @@ _listItems!: Array<HTMLElement>;
 _headerNodes!: Array<Node>;
 ```
 
-The examples above are equivalent to the following code:
+Приведенные выше примеры эквивалентны следующему коду:
 
 ```js
 get _listItems() {
@@ -250,48 +235,52 @@ get _headerNodes() {
 }
 ```
 
-## Customizing the render root {#renderroot}
+## Настройка корня рендеринга {#renderroot}
 
-Each Lit component has a **render root**—a DOM node that serves as a container for its internal DOM.
+У каждого компонента Lit есть **корень рендера** - узел DOM, который служит контейнером для его внутреннего DOM.
 
-By default, LitElement creates an open `shadowRoot` and renders inside it, producing the following DOM structure:
+По умолчанию LitElement создает открытый `shadowRoot` и осуществляет рендеринг внутри него, создавая следующую структуру DOM:
 
 ```html
 <my-element>
-  #shadow-root
+    #shadow-root
     <p>child 1</p>
-    <p>child 2</p>
+    <p>child 2</p></my-element
+>
 ```
 
-There are two ways to customize the render root used by LitElement:
+Есть два способа настроить корень рендеринга, используемый LitElement:
 
-* Setting `shadowRootOptions`.
-* Implementing the `createRenderRoot` method.
+-   Установка `shadowRootOptions`.
+-   Реализация метода `createRenderRoot`.
 
-### Setting `shadowRootOptions`
+### Установка `shadowRootOptions`.
 
-The simplest way to customize the render root is to set the `shadowRootOptions` static property. The default implementation of `createRenderRoot` passes `shadowRootOptions` as the options argument to `attachShadow` when creating the component's shadow root. It can be set to customize any options allowed in the [ShadowRootInit](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow#parameters) dictionary, for example `mode` and `delegatesFocus`.
+Самый простой способ настроить корень рендера - установить статическое свойство `shadowRootOptions`. Реализация `createRenderRoot` по умолчанию передает `shadowRootOptions` в качестве аргумента опций в `attachShadow` при создании корня тени компонента. Он может быть установлен для настройки любых опций, разрешенных в словаре [ShadowRootInit](https://developer.mozilla.org/docs/Web/API/Element/attachShadow#parameters), например, `mode` и `delegatesFocus`.
 
 ```js
 class DelegatesFocus extends LitElement {
-  static shadowRootOptions = {...LitElement.shadowRootOptions, delegatesFocus: true};
+    static shadowRootOptions = {
+        ...LitElement.shadowRootOptions,
+        delegatesFocus: true,
+    };
 }
 ```
 
-See [Element.attachShadow()](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow) on MDN for more information.
+Дополнительные сведения см. в [Element.attachShadow()](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow) на MDN.
 
-### Implementing `createRenderRoot`
+### Реализация `createRenderRoot`
 
-The default implementation of `createRenderRoot` creates an open shadow root and adds to it any styles set in the `static styles` class field. For more information on styling see [Styles](/docs/v3/components/styles/).
+Реализация по умолчанию `createRenderRoot` создает открытый корень тени и добавляет к нему любые стили, заданные в поле класса `static styles`. Подробнее о стилях см. в [Styles](styles.md).
 
-To customize a component's render root, implement `createRenderRoot` and return the node you want the template to render into.
+Чтобы настроить корень рендеринга компонента, реализуйте `createRenderRoot` и верните узел, в который должен рендериться шаблон.
 
-For example, to render the template into the main DOM tree as your element's children, implement `createRenderRoot` and return `this`.
+Например, для рендеринга шаблона в основном дереве DOM в качестве дочерних элементов, реализуйте `createRenderRoot` и верните `this`.
 
-<div class="alert alert-info">
+!!!alert "Рендеринг в дочерние элементы"
 
-**Rendering into children.** Rendering into children and not shadow DOM is generally not recommended. Your element will not have access to DOM or style scoping, and it will not be able to compose elements into its internal DOM.
+    Рендеринг в дочерние элементы, а не в теневой DOM, как правило, не рекомендуется. Ваш элемент не будет иметь доступа к DOM или к диапазону стилей, и он не сможет компоновать элементы в своем внутреннем DOM.
 
-</div>
-
-{% playground-ide "v3-docs/components/shadowdom/renderroot/" %}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:12;
+             --litdev-example-editor-lines-js:11;
+             --litdev-example-preview-height:120px" project="v3-docs/components/shadowdom/renderroot"></litdev-example>
