@@ -46,8 +46,6 @@ export class MyElement extends LitElement {
 
 Вы можете импортировать все декораторы Lit через модуль `lit/decorators.js`:
 
-Переведено с помощью DeepL.com (бесплатная версия)
-
 ```js
 import {
     customElement,
