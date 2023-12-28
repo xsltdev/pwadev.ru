@@ -1,477 +1,253 @@
 ---
-title: Built-in directives
-eleventyNavigation:
-  key: Built-in directives
-  parent: Templates
-  order: 5
-versionLinks:
-  v1: lit-html/template-reference/#built-in-directives
-  v2: templates/directives/
+description: Директивы - это функции, которые могут расширить Lit, настраивая способ рендеринга выражения. В Lit есть несколько встроенных директив, которые помогают решать различные задачи рендеринга
 ---
 
-Directives are functions that can extend Lit by customizing the way an expression renders.
-Lit includes a number of built-in directives to help with a variety of rendering needs:
+# Встроенные директивы
 
-<table class="directory">
-  <tr><th>Directive</th><th>Summary</th></tr>
-  <tr class="subheading"><td colspan="2">
+<big>
+**Директивы** - это функции, которые могут расширить Lit, настраивая способ рендеринга выражения. В Lit есть несколько встроенных директив, которые помогают решать различные задачи рендеринга:
+</big>
 
-  Styling
+Стилизация:
 
-  </td></tr>
-  <tr>
-  <td>
+| Декоратор | Описание |
+| --- | --- |
+| [`classMap`](#classmap) | Присваивает список классов элементу на основе объекта. |
+| [`styleMap`](#stylemap) | Устанавливает список свойств стиля для элемента, основанного на объекте. |
 
-  [`classMap`](#classmap)
+Циклы и условия:
 
-  </td>
-  <td>
+| Декоратор | Описание |
+| --- | --- |
+| [`when`](#when) | Выдает один из двух шаблонов на основе условия. |
+| [`choose`](#choose) | Отображает один из многих шаблонов на основе ключевого значения. |
+| [`map`](#map) | Преобразовывает итерируемый объект с помощью функции. |
+| [`repeat`](#repeat) | Выводит значения из итерируемой таблицы в DOM с дополнительным ключом, чтобы обеспечить диффузию данных и стабильность DOM. |
+| [`join`](#join) | Объединяет значения из итерабельной таблицы с помощью объединяющего значения. |
+| [`range`](#range) | Создает итерабельную таблицу чисел в последовательности, полезной для итерации определенное количество раз. |
+| [`ifDefined`](#ifdefined) | Устанавливает атрибут, если его значение определено, и удаляет атрибут, если не определено. |
 
-  Assigns a list of classes to an element based on an object.</td>
-  </tr>
+Кэширование и обнаружение изменений:
 
-  <tr>
-  <td>
+| Декоратор | Описание |
+| --- | --- |
+| [`cache`](#cache) | Кэширует отрисованный DOM при изменении шаблонов, а не удаляет его. |
+| [`keyed`](#keyed) | Связывает отрисовываемое значение с уникальным ключом, заставляя DOM перерисовываться при изменении ключа. |
+| [`guard`](#guard) | Переоценивает шаблон только при изменении одной из его зависимостей. |
+| [`live`](#live) | Устанавливает атрибут или свойство, если оно отличается от живого значения DOM, а не от последнего отрендеренного значения. |
 
-  [`styleMap`](#stylemap)
+Ссылка на рендеринг DOM:
 
-  </td>
-  <td>
+| Декоратор | Описание |
+| --- | --- |
+| [`ref`](#ref) | Получает ссылку на элемент, отрендеренный в шаблоне. |
 
-  Sets a list of style properties to an element based on an object.</td>
-  </tr>
+Рендеринг специальных значений:
 
-  <tr class="subheading"><td colspan="2">
+| Декоратор | Описание |
+| --- | --- |
+| [`templateContent`](#templatecontent) | Рендерит содержимое элемента `<template>`. |
+| [`unsafeHTML`](#unsafehtml) | Возвращает строку в виде HTML, а не текста. |
+| [`unsafeSVG`](#unsafesvg) | Выводит строку не как текст, а как SVG. |
 
-  Loops and Conditionals
+Асинхронный рендеринг:
 
-  </td></tr>
+| Декоратор | Описание |
+| --- | --- |
+| [`until`](#until) | Отрисовывает содержимое, пока не будет выполнено одно или несколько обещаний. |
+| [`asyncAppend`](#asyncappend) | Добавляет значения из `AsyncIterable` в DOM по мере их получения. |
+| [`asyncReplace`](#asyncreplace) | Возвращает последнее значение из `AsyncIterable` в DOM по мере его получения. |
 
-  <tr>
-  <td>
+!!!alert "Объединяйте только то, что используете"
 
-  [`when`](#when)
+    Эти директивы называются "встроенными", потому что они входят в пакет Lit. Но каждая директива - это отдельный модуль, поэтому ваше приложение включает только те директивы, которые вы импортируете.
 
-  </td>
-  <td>Renders one of two templates based on a condition.</td>
-  </tr>
+Вы также можете создавать свои собственные директивы. Для получения дополнительной информации смотрите [Пользовательские директивы](custom-directives.md).
 
-  <tr>
-  <td>
+## Стилизация
 
-  [`choose`](#choose)
+### `classMap`
 
-  </td>
-  <td>Renders one of many templates based on a key value.</td>
-  </tr>
+Устанавливает список классов для элемента на основе объекта.
 
-  <tr>
-  <td>
-
-  [`map`](#map)
-
-  </td>
-  <td>Transforms an iterable with a function.</td>
-  </tr>
-
-  <tr>
-  <td>
-
-  [`repeat`](#repeat)
-
-  </td>
-  <td>Renders values from an iterable into the DOM, with optional keying to enable data diffing and DOM stability.</td>
-  </tr>
-
-  <tr>
-  <td>
-
-  [`join`](#join)
-
-  </td>
-  <td>Interleave values from an iterable with a joiner value.</td>
-  </tr>
-
-  <tr>
-  <td>
-
-  [`range`](#range)
-
-  </td>
-  <td>Creates an iterable of numbers in a sequence, useful for iterating a specific number of times.</td>
-  </tr>
-
-  <tr>
-  <td>
-
-  [`ifDefined`](#ifdefined)
-
-  </td>
-  <td>Sets an attribute if the value is defined and removes the attribute if undefined.</td>
-  </tr>
-
-  <tr class="subheading"><td colspan="2">
-
-  Caching and change detection
-
-  </td></tr>
-
-  <tr>
-  <td>
-
-  [`cache`](#cache)
-
-  </td>
-  <td>Caches rendered DOM when changing templates rather than discarding the DOM.</td>
-  </tr>
-
-  <tr>
-  <td>
-
-  [`keyed`](#keyed)
-
-  </td>
-  <td>Associates a renderable value with a unique key, forcing the DOM to re-render if the key changes.</td>
-  </tr>
-
-  <tr>
-  <td>
-
-  [`guard`](#guard)
-
-  </td>
-  <td>Only re-evaluates the template when one of its dependencies changes.</td>
-  </tr>
-
-  <tr>
-  <td>
-
-  [`live`](#live)
-
-  </td>
-  <td>Sets an attribute or property if it differs from the live DOM value rather than the last-rendered value.</td>
-  </tr>
-
-  <tr class="subheading"><td colspan="2">
-
-  Referencing rendered DOM
-
-  </td></tr>
-
-  <tr>
-  <td>
-
-  [`ref`](#ref)
-
-  </td>
-  <td>Gets a reference to an element rendered in the template.</td>
-  </tr>
-
-  <tr class="subheading"><td colspan="2">
-
-  Rendering special values
-
-  </td></tr>
-
-  <tr>
-  <td>
-
-  [`templateContent`](#templatecontent)
-
-  </td>
-  <td>
-
-  Renders the content of a `<template>` element.
-
-  </td>
-  </tr>
-
-  <tr>
-  <td>
-
-  [`unsafeHTML`](#unsafehtml)
-
-  </td>
-  <td>Renders a string as HTML rather than text.</td>
-  </tr>
-
-  <tr>
-  <td>
-
-  [`unsafeSVG`](#unsafesvg)
-
-  </td>
-  <td>Renders a string as SVG rather than text.</td>
-  </tr>
-
-  <tr class="subheading"><td colspan="2">
-
-  Asynchronous rendering
-
-  </td></tr>
-
-  <tr>
-  <td>
-
-  [`until`](#until)
-
-  </td>
-  <td>Renders placeholder content until one or more promises resolve.</td>
-  </tr>
-
-  <tr>
-  <td>
-
-  [`asyncAppend`](#asyncappend)
-
-  </td>
-  <td>
-
-  Appends values from an `AsyncIterable` into the DOM as they are yielded.
-
-  </td>
-  </tr>
-
-  <tr>
-  <td>
-
-  [`asyncReplace`](#asyncreplace)
-
-  </td>
-  <td>
-
-  Renders the latest value from an `AsyncIterable` into the DOM as it is yielded.
-
-  </td>
-  </tr>
-</table>
-
-<div class="alert alert-info">
-
-**Only bundle what you use.** These are called "built-in" directives because they're part of the Lit package. But each directive is a separate module, so your app only bundles the directives you import.
-
-</div>
-
-You can also build your own directives. For more information, see [Custom directives](/docs/v3/templates/custom-directives/).
-
-## Styling
-
-### classMap
-
-Sets a list of classes to an element based on an object.
-
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {classMap} from 'lit/directives/class-map.js';
+import { classMap } from 'lit/directives/class-map.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис
 
 ```ts
 classMap(classInfo: {[name: string]: string | boolean | number})
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-`class` attribute expression (must be the only expression in the `class` attribute)
+: Выражение атрибута `class` (должно быть единственным выражением в атрибуте `class`)
 
-</td>
-</tr>
-</tbody>
-</table>
+Директива `classMap` использует API `element.classList` для эффективного добавления и удаления классов в элемент на основе объекта, переданного пользователем. Каждый ключ в объекте рассматривается как имя класса, и если значение, связанное с ключом, истинно, то этот класс добавляется в элемент. При последующих рендерах все ранее установленные классы, которые являются ложными или больше не содержатся в объекте, удаляются.
 
-The `classMap` directive uses the `element.classList` API to efficiently add and
-remove classes to an element based on an object passed by the user. Each key in
-the object is treated as a class name, and if the value associated with the key
-is truthy, that class is added to the element. On subsequent renders, any
-previously set classes that are falsy or no longer in the object are removed.
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	@property({ type: Boolean })
+    	enabled = false;
 
-```ts
-@customElement('my-element')
-class MyElement extends LitElement {
+    	render() {
+    		const classes = {
+    			enabled: this.enabled,
+    			hidden: false,
+    		};
+    		return html`<div class=${classMap(classes)}>
+    			Classy text
+    		</div>`;
+    	}
+    }
+    ```
 
-  @property({type: Boolean})
-  enabled = false;
+=== "JS"
 
-  render() {
-    const classes = { enabled: this.enabled, hidden: false };
-    return html`<div class=${classMap(classes)}>Classy text</div>`;
-  }
-}
-```
+    ```js
+    class MyElement extends LitElement {
+    	static properties = {
+    		enabled: { type: Boolean },
+    	};
 
-```js
-class MyElement extends LitElement {
-  static properties = {
-    enabled: {type: Boolean},
-  };
+    	constructor() {
+    		super();
+    		this.enabled = false;
+    	}
 
-  constructor() {
-    super();
-    this.enabled = false;
-  }
+    	render() {
+    		const classes = {
+    			enabled: this.enabled,
+    			hidden: false,
+    		};
+    		return html`<div class=${classMap(classes)}>
+    			Classy text
+    		</div>`;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-  render() {
-    const classes = { enabled: this.enabled, hidden: false };
-    return html`<div class=${classMap(classes)}>Classy text</div>`;
-  }
-}
-customElements.define('my-element', MyElement);
-```
-
-{% endswitchable-sample %}
-
-The `classMap` must be the only expression in the `class` attribute, but it can
-be combined with static values:
+Карта `classMap` должна быть единственным выражением в атрибуте `class`, но она может быть объединена со статическими значениями:
 
 ```ts
-html`<div class="my-widget ${classMap(dynamicClasses)}">Static and dynamic</div>`;
+html`<div class="my-widget ${classMap(dynamicClasses)}">
+    Static and dynamic
+</div>`;
 ```
 
-Explore `classMap` more in the [playground](/playground/#sample=examples/directive-class-map).
+Изучите `classMap` больше в [playground](https://lit.dev/playground/#sample=examples/directive-class-map).
 
-### styleMap
+### `styleMap`
 
-Sets a list of style properties to an element based on an object.
+Устанавливает список свойств стиля для элемента на основе объекта.
 
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {styleMap} from 'lit/directives/style-map.js';
+import { styleMap } from 'lit/directives/style-map.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 styleMap(styleInfo: {[name: string]: string | undefined | null})
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-`style` attribute expression (must be the only expression in the `style` attribute)
+: Выражение атрибута `style` (должно быть единственным выражением в атрибуте `style`)
 
-</td>
-</tr>
-</tbody>
-</table>
+Директива `styleMap` использует API `element.style` для эффективного добавления и удаления встроенных стилей в элемент на основе объекта, переданного пользователем. Каждый ключ в объекте рассматривается как имя свойства стиля, а значение - как значение этого свойства. При последующих рендерах все ранее установленные свойства стиля, которые не определены или `null`, удаляются (устанавливаются в `null`).
 
-The `styleMap` directive uses the `element.style` API to efficiently add and
-remove inline styles to an element based on an object passed by the user. Each
-key in the object is treated as a style property name, the value is treated as
-the value for that property. On subsequent renders, any previously set style
-properties that are undefined or `null` are removed (set to `null`).
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	@property({ type: Boolean })
+    	enabled = false;
 
-```ts
-@customElement('my-element')
-class MyElement extends LitElement {
+    	render() {
+    		const styles = {
+    			backgroundColor: this.enabled ? 'blue' : 'gray',
+    			color: 'white',
+    		};
+    		return html`<p style=${styleMap(styles)}>
+    			Hello style!
+    		</p>`;
+    	}
+    }
+    ```
 
-  @property({type: Boolean})
-  enabled = false;
+=== "JS"
 
-  render() {
-    const styles = { backgroundColor: this.enabled ? 'blue' : 'gray', color: 'white' };
-    return html`<p style=${styleMap(styles)}>Hello style!</p>`;
-  }
-}
-```
+    ```js
+    class MyElement extends LitElement {
+    	static properties = {
+    		enabled: { type: Boolean },
+    	};
 
-```js
-class MyElement extends LitElement {
-  static properties = {
-    enabled: {type: Boolean},
-  };
+    	constructor() {
+    		super();
+    		this.enabled = false;
+    	}
 
-  constructor() {
-    super();
-    this.enabled = false;
-  }
+    	render() {
+    		const styles = {
+    			backgroundColor: this.enabled ? 'blue' : 'gray',
+    			color: 'white',
+    		};
+    		return html`<p style=${styleMap(styles)}>
+    			Hello style!
+    		</p>`;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-  render() {
-    const styles = { backgroundColor: this.enabled ? 'blue' : 'gray', color: 'white' };
-    return html`<p style=${styleMap(styles)}>Hello style!</p>`;
-  }
-}
-customElements.define('my-element', MyElement);
-```
-
-{% endswitchable-sample %}
-
-For CSS properties that contain dashes, you can either use the camel-case equivalent, or put the property name in quotes. For example, you can write the CSS property `font-family` as either `fontFamily` or `'font-family'`:
+Для CSS-свойств, содержащих тире, вы можете использовать эквивалент верблюжьего регистра или заключить имя свойства в кавычки. Например, CSS-свойство `font-family` можно записать как `fontFamily` или `'font-family'`:
 
 ```js
 { fontFamily: 'roboto' }
 { 'font-family': 'roboto' }
 ```
 
-Refer to CSS custom properties such as `--custom-color`, by placing the whole property name in quotes:
+Ссылайтесь на пользовательские свойства CSS, такие как `--custom-color`, заключая все имя свойства в кавычки:
 
 ```js
 { '--custom-color': 'steelblue' }
 ```
 
-
-The `styleMap` must be the only expression in the `style` attribute, but it can
-be combined with static values:
+Карта `styleMap` должна быть единственным выражением в атрибуте `style`, но она может быть объединена со статическими значениями:
 
 ```js
-html`<p style="color: white; ${styleMap(moreStyles)}">More styles!</p>`;
+html`<p style="color: white; ${styleMap(moreStyles)}">
+    More styles!
+</p>`;
 ```
 
-Explore `styleMap` more in the [playground](/playground/#sample=examples/directive-style-map).
+Изучите `styleMap` подробнее в [playground](https://lit.dev/playground/#sample=examples/directive-style-map).
 
-## Loops and conditionals
+## Циклы и условия
 
-### when
+### `when`
 
-Renders one of two templates based on a condition.
+Выводит один из двух шаблонов на основе условия.
 
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт:
 
 ```js
-import {when} from 'lit/directives/when.js';
+import { when } from 'lit/directives/when.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 when<T, F>(
@@ -480,55 +256,40 @@ when<T, F>(
   falseCase?: () => F
 )
 ```
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
 
-Any
+Место использования:
 
-</td>
-</tr>
-</tbody>
-</table>
+: Любое
 
-When `condition` is true, returns the result of calling `trueCase()`, else returns the result of calling `falseCase()` if `falseCase` is defined.
+Если `condition` истинно, возвращает результат вызова `trueCase()`, иначе возвращает результат вызова `falseCase()`, если определено `falseCase`.
 
-This is a convenience wrapper around a ternary expression that makes it a
-little nicer to write an inline conditional without an else.
+Это удобная обертка вокруг тернарного выражения, которая позволяет написать встроенное условие без `else`.
 
 ```ts
 class MyElement extends LitElement {
-  render() {
-    return html`
-      ${when(this.user, () => html`User: ${this.user.username}`, () => html`Sign In...`)}
-    `;
-  }
+    render() {
+        return html`
+            ${when(
+                this.user,
+                () => html`User: ${this.user.username}`,
+                () => html`Sign In...`,
+            )}
+        `;
+    }
 }
 ```
 
-### choose
+### `choose`
 
-Chooses and evaluates a template function from a list of cases based on matching
-the given `value` to a case.
+Выбирает и оценивает шаблонную функцию из списка case, основываясь на соответствии заданного `value`.
 
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {choose} from 'lit/directives/choose.js';
+import { choose } from 'lit/directives/choose.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 choose<T, V>(
@@ -537,61 +298,43 @@ choose<T, V>(
   defaultCase?: () => V
 )
 ```
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
 
-Any
+Место использования:
 
-</td>
-</tr>
-</tbody>
-</table>
+: Любое
 
+Случаи структурируются как `[caseValue, func]`. `value` сопоставляется с `caseValue` по принципу строгого равенства. Выбирается первое совпадение. Значения `case` могут быть любого типа, включая примитивы, объекты и символы.
 
-Cases are structured as `[caseValue, func]`. `value` is matched to
-`caseValue` by strict equality. The first match is selected. Case values
-can be of any type including primitives, objects, and symbols.
-
-This is similar to a switch statement, but as an expression and without
-fallthrough.
+Это похоже на оператор `switch`, но в виде выражения и без отбрасывания.
 
 ```ts
 class MyElement extends LitElement {
-  render() {
-    return html`
-      ${choose(this.section, [
-        ['home', () => html`<h1>Home</h1>`],
-        ['about', () => html`<h1>About</h1>`]
-      ],
-      () => html`<h1>Error</h1>`)}
-    `;
-  }
+    render() {
+        return html`
+            ${choose(
+                this.section,
+                [
+                    ['home', () => html`<h1>Home</h1>`],
+                    ['about', () => html`<h1>About</h1>`],
+                ],
+                () => html`<h1>Error</h1>`,
+            )}
+        `;
+    }
 }
 ```
 
-### map
+### `map`
 
-Returns an iterable containing the result of calling `f(value)` on each value in `items`.
+Возвращает итерабельную таблицу, содержащую результат вызова `f(value)` для каждого значения в `items`.
 
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {map} from 'lit/directives/map.js';
+import { map } from 'lit/directives/map.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 map<T>(
@@ -599,54 +342,36 @@ map<T>(
   f: (value: T, index: number) => unknown
 )
 ```
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
 
-Any
+Место использования:
 
-</td>
-</tr>
-</tbody>
-</table>
+: Любое
 
-`map()` is a simple wrapper around a [for/of loop](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of) that makes working with iterables in expressions a bit easier. `map()` always updates any DOM created in place - it does not do any diffing or DOM movement. If you need that see [repeat](#repeat). `map()` is smaller and faster than `repeat()`, so if you don't need diffing and DOM stability, prefer `map()`.
-
+`map()` - это простая обертка вокруг цикла [for/of loop](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/for...of), которая делает работу с итерациями в выражениях немного проще. `map()` всегда обновляет любой DOM, созданный на месте - он не делает никаких диффирингов или перемещений DOM. Если вам это нужно, смотрите [repeat](#repeat). `map()` меньше и быстрее, чем `repeat()`, поэтому, если вам не нужны диффиринги и стабильность DOM, предпочтите `map()`.
 
 ```ts
 class MyElement extends LitElement {
-  render() {
-    return html`
-      <ul>
-        ${map(items, (i) => html`<li>${i}</li>`)}
-      </ul>
-    `;
-  }
+    render() {
+        return html`
+            <ul>
+                ${map(items, (i) => html`<li>${i}</li>`)}
+            </ul>
+        `;
+    }
 }
 ```
 
-### repeat
+### `repeat`
 
-Renders values from an iterable into the DOM, with optional keying to enable data diffing and DOM stability.
+Выводит значения из итерируемого файла в DOM с дополнительным ключом, чтобы обеспечить диффузию данных и стабильность DOM.
 
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {repeat} from 'lit/directives/repeat.js';
+import { repeat } from 'lit/directives/repeat.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 repeat(items: Iterable<T>, keyfn: KeyFn<T>, template: ItemTemplate<T>)
@@ -655,99 +380,87 @@ type KeyFn<T> = (item: T, index: number) => unknown;
 type ItemTemplate<T> = (item: T, index: number) => unknown;
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Child expression
+: Дочернее выражение
 
-</td>
-</tr>
-</tbody>
-</table>
+Повторяет серию значений (обычно `TemplateResults`), сгенерированных из итерируемой таблицы, и эффективно обновляет эти элементы при изменении итерируемой таблицы. При использовании `keyFn` связь между ключами и DOM поддерживается между обновлениями путем перемещения сгенерированного DOM, когда это необходимо, и это, как правило, самый эффективный способ использования `repeat`, поскольку он выполняет минимум ненужной работы при вставках и удалениях.
 
-Repeats a series of values (usually `TemplateResults`) generated from an
-iterable, and updates those items efficiently when the iterable changes. When
-the `keyFn` is provided, key-to-DOM association is maintained between updates by
-moving generated DOM when required, and is generally the most efficient way to use `repeat` since it performs minimum unnecessary work for insertions and removals.
+Если вы не используете функцию ключа, вам следует рассмотреть возможность использования [`map()`](#map).
 
-If you're not using a key function, you should consider using [`map()`](#map).
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	@property()
+    	items: Array<{ id: number; name: string }> = [];
 
-```ts
-@customElement('my-element')
-class MyElement extends LitElement {
+    	render() {
+    		return html`
+    			<ul>
+    				${repeat(
+    					this.items,
+    					(item) => item.id,
+    					(item, index) =>
+    						html` <li>
+    							${index}: ${item.name}
+    						</li>`,
+    				)}
+    			</ul>
+    		`;
+    	}
+    }
+    ```
 
-  @property()
-  items: Array<{id: number, name: string}> = [];
+=== "JS"
 
-  render() {
-    return html`
-      <ul>
-        ${repeat(this.items, (item) => item.id, (item, index) => html`
-          <li>${index}: ${item.name}</li>`)}
-      </ul>
-    `;
-  }
-}
-```
+    ```js
+    class MyElement extends LitElement {
+    	static properties = {
+    		items: {},
+    	};
 
-```js
-class MyElement extends LitElement {
-  static properties = {
-    items: {},
-  };
+    	constructor() {
+    		super();
+    		this.items = [];
+    	}
 
-  constructor() {
-    super();
-    this.items = [];
-  }
+    	render() {
+    		return html`
+    			<ul>
+    				${repeat(
+    					this.items,
+    					(item) => item.id,
+    					(item, index) =>
+    						html` <li>
+    							${index}: ${item.name}
+    						</li>`,
+    				)}
+    			</ul>
+    		`;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-  render() {
-    return html`
-      <ul>
-        ${repeat(this.items, (item) => item.id, (item, index) => html`
-          <li>${index}: ${item.name}</li>`)}
-      </ul>
-    `;
-  }
-}
-customElements.define('my-element', MyElement);
-```
+Если `keyFn` не указан, `repeat` будет работать аналогично простому отображению элементов в значения, и DOM будет повторно использоваться для потенциально разных элементов.
 
-{% endswitchable-sample %}
+Обсуждение того, когда следует использовать `повтор`, а когда - стандартный контроль потока JavaScript, см. в [Когда использовать map или repeat](lists.md#when-to-use-map-or-repeat).
 
-If no `keyFn` is provided, `repeat` will perform similar to a simple map of
-items to values, and DOM will be reused against potentially different items.
+Подробнее о `repeat можно узнать в [playground](https://lit.dev/playground/#sample=examples/directive-repeat).
 
-See [When to use map or repeat](/docs/v3/templates/lists/#when-to-use-map-or-repeat) for a discussion
-of when to use `repeat` and when to use standard JavaScript flow control.
+### `join`
 
-Explore `repeat` more in the [playground](/playground/#sample=examples/directive-repeat).
+Возвращает итерабельную таблицу, содержащую значения в `items`, чередующиеся со значением `joiner`.
 
-### join
-
-Returns an iterable containing the values in `items` interleaved with the `joiner` value.
-
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {join} from 'lit/directives/join.js';
+import { join } from 'lit/directives/join.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 join<I, J>(
@@ -761,54 +474,40 @@ join<I, J>(
 ): Iterable<I | J>;
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Any
-
-</td>
-</tr>
-</tbody>
-</table>
+: Любое
 
 ```ts
-
 class MyElement extends LitElement {
-
-  render() {
-    return html`
-      ${join(
-        map(menuItems, (i) => html`<a href=${i.href}>${i.label}</a>`),
-        html`<span class="separator">|</span>`
-      )}
-    `;
-  }
+    render() {
+        return html`
+            ${join(
+                map(
+                    menuItems,
+                    (i) =>
+                        html`<a href=${i.href}
+                            >${i.label}</a
+                        >`,
+                ),
+                html`<span class="separator">|</span>`,
+            )}
+        `;
+    }
 }
 ```
 
-### range
+### `range`
 
-Returns an iterable of integers from `start` to `end` (exclusive) incrementing by `step`.
+Возвращает итерабельную таблицу целых чисел от `start` до `end` (эксклюзивных) с инкрементом на `step`.
 
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {range} from 'lit/directives/range.js';
+import { range } from 'lit/directives/range.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 range(end: number): Iterable<number>;
@@ -821,1175 +520,913 @@ range(
 
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Any
-
-</td>
-</tr>
-</tbody>
-</table>
+: Любое
 
 ```ts
-
 class MyElement extends LitElement {
-
-  render() {
-    return html`
-      ${map(range(8), (i) => html`${i + 1}`)}
-    `;
-  }
+    render() {
+        return html`
+            ${map(range(8), (i) => html`${i + 1}`)}
+        `;
+    }
 }
 ```
 
-### ifDefined
+### `ifDefined`
 
-Sets an attribute if the value is defined and removes the attribute if undefined.
+Устанавливает атрибут, если его значение определено, и удаляет атрибут, если не определено.
 
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {ifDefined} from 'lit/directives/if-defined.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 ifDefined(value: unknown)
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Attribute expression
+: Выражение атрибута
 
-</td>
-</tr>
-</tbody>
-</table>
+Для частей AttributeParts устанавливает атрибут, если значение определено, и удаляет атрибут, если значение не определено (`undefined` или `null`). Для других типов частей эта директива не используется.
 
-For AttributeParts, sets the attribute if the value is defined and removes the attribute if the value is undefined (`undefined` or `null`). For other part types, this directive is a no-op.
+Когда в одном значении атрибута содержится более одного выражения, атрибут будет удален, если _любое_ выражение использует `ifDefined` и оценивается как `undefined`/`null`. Это особенно полезно для установки атрибутов URL, когда атрибут не должен устанавливаться, если необходимые части URL не определены, чтобы предотвратить 404.
 
-When more than one expression exists in a single attribute value, the attribute will be removed if _any_ expression uses `ifDefined` and evaluates to `undefined`/`null`. This is especially useful for setting URL attributes, when the attribute should not be set if required parts of the URL are not defined, to prevent 404's.
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	@property()
+    	filename: string | undefined = undefined;
 
-```ts
-@customElement('my-element')
-class MyElement extends LitElement {
+    	@property()
+    	size: string | undefined = undefined;
 
-  @property()
-  filename: string | undefined = undefined;
+    	render() {
+    		// src attribute not rendered if either size or filename are undefined
+    		return html`<img
+    			src="/images/${ifDefined(
+    				this.size,
+    			)}/${ifDefined(this.filename)}"
+    		/>`;
+    	}
+    }
+    ```
 
-  @property()
-  size: string | undefined = undefined;
+=== "JS"
 
-  render() {
-    // src attribute not rendered if either size or filename are undefined
-    return html`<img src="/images/${ifDefined(this.size)}/${ifDefined(this.filename)}">`;
-  }
-}
-```
+    ```js
+    class MyElement extends LitElement {
+    	static properties = {
+    		filename: {},
+    		size: {},
+    	};
 
-```js
-class MyElement extends LitElement {
-  static properties = {
-    filename: {},
-    size: {},
-  };
+    	constructor() {
+    		super();
+    		this.filename = undefined;
+    		this.size = undefined;
+    	}
 
-  constructor() {
-    super();
-    this.filename = undefined;
-    this.size = undefined;
-  }
+    	render() {
+    		// src attribute not rendered if either size or filename are undefined
+    		return html`<img
+    			src="/images/${ifDefined(
+    				this.size,
+    			)}/${ifDefined(this.filename)}"
+    		/>`;
+    	}
+    }
+    customElements.define('my-element', MyEleent);
+    ```
 
-  render() {
-    // src attribute not rendered if either size or filename are undefined
-    return html`<img src="/images/${ifDefined(this.size)}/${ifDefined(this.filename)}">`;
-  }
-}
-customElements.define('my-element', MyEleent);
-```
+Изучите `ifDefined` подробнее в [playground](https://lit.dev/playground/#sample=examples/directive-if-defined).
 
-{% endswitchable-sample %}
+## Кэширование и обнаружение изменений
 
-Explore `ifDefined` more in the [playground](/playground/#sample=examples/directive-if-defined).
+### `cache`
 
-## Caching and change detection
+Кэширует отрисованный DOM при смене шаблонов вместо того, чтобы отбрасывать его. Вы можете использовать эту директиву для оптимизации производительности рендеринга при частом переключении между большими шаблонами.
 
-### cache
-
-Caches rendered DOM when changing templates rather than discarding the DOM. You
-can use this directive to optimize rendering performance when frequently
-switching between large templates.
-
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {cache} from 'lit/directives/cache.js';
+import { cache } from 'lit/directives/cache.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 cache(value: TemplateResult|unknown)
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Child expression
+: Выражение `Child`
 
-</td>
-</tr>
-</tbody>
-</table>
+Когда значение, переданное в `cache`, меняется между одним или несколькими `TemplateResult`, отрисованные DOM-узлы для данного шаблона кэшируются, когда они не используются. Когда шаблон меняется, директива кэширует _текущие_ узлы DOM перед переключением на новое значение и восстанавливает их из кэша при переключении обратно на ранее отрендеренное значение, вместо того чтобы создавать узлы DOM заново.
 
-When the value passed to `cache` changes between one or more `TemplateResult`s,
-the rendered DOM nodes for a given template are cached when they're not in use.
-When the template changes, the directive caches the _current_ DOM nodes before
-switching to the new value, and restores them from the cache when switching back
-to a previously-rendered value, rather than creating the DOM nodes anew.
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    const detailView = (data) => html`<div>...</div>`;
+    const summaryView = (data) => html`<div>...</div>`;
 
-```ts
-const detailView = (data) => html`<div>...</div>`;
-const summaryView = (data) => html`<div>...</div>`;
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	@property()
+    	data = { showDetails: true /*...*/ };
 
-@customElement('my-element')
-class MyElement extends LitElement {
+    	render() {
+    		return html`${cache(
+    			this.data.showDetails
+    				? detailView(this.data)
+    				: summaryView(this.data),
+    		)}`;
+    	}
+    }
+    ```
 
-  @property()
-  data = {showDetails: true, /*...*/ };
+=== "JS"
 
-  render() {
-    return html`${cache(this.data.showDetails
-      ? detailView(this.data)
-      : summaryView(this.data)
-    )}`;
-  }
-}
-```
+    ```js
+    const detailView = (data) => html`<div>...</div>`;
+    const summaryView = (data) => html`<div>...</div>`;
 
-```js
-const detailView = (data) => html`<div>...</div>`;
-const summaryView = (data) => html`<div>...</div>`;
+    class MyElement extends LitElement {
+    	static properties = {
+    		data: {},
+    	};
 
-class MyElement extends LitElement {
-  static properties = {
-    data: {},
-  };
+    	constructor() {
+    		super();
+    		this.data = { showDetails: true /*...*/ };
+    	}
 
-  constructor() {
-    super();
-    this.data = {showDetails: true, /*...*/ };
-  }
+    	render() {
+    		return html`${cache(
+    			this.data.showDetails
+    				? detailView(this.data)
+    				: summaryView(this.data),
+    		)}`;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-  render() {
-    return html`${cache(this.data.showDetails
-      ? detailView(this.data)
-      : summaryView(this.data)
-    )}`;
-  }
-}
-customElements.define('my-element', MyElement);
-```
+Когда Lit перерисовывает шаблон, он обновляет только измененные части: он не создает и не удаляет больше DOM, чем нужно. Но когда вы переключаетесь с одного шаблона на другой, Lit удаляет старый DOM и создает новое дерево DOM.
 
-{% endswitchable-sample %}
+Директива `cache` кэширует сгенерированный DOM для данного выражения и шаблона ввода. В приведенном выше примере она кэширует DOM для шаблонов `summaryView` и `detailView`. Когда вы переключаетесь с одного представления на другое, Lit подменяет кэшированную версию нового представления и обновляет ее последними данными. Это может повысить производительность рендеринга при частом переключении между этими представлениями.
 
-When Lit re-renders a template, it only updates the modified portions: it doesn't create or remove any more DOM than needed. But when you switch from one template to another, Lit removes the old DOM and renders a new DOM tree.
+Подробнее о `cache` можно узнать в [playground](https://lit.dev/playground/#sample=examples/directive-cache).
 
-The `cache` directive caches the generated DOM for a given expression and input template. In the example above, it caches the DOM for both the `summaryView` and `detailView` templates. When you switch from one view to another, Lit swaps in the cached version of the new view and updates it with the latest data. This can improve rendering performance when these views are frequently switched.
+### `keyed`
 
-Explore `cache` more in the [playground](/playground/#sample=examples/directive-cache).
+Связывает отрисовываемое значение с уникальным ключом. При изменении ключа предыдущий DOM удаляется и утилизируется перед рендерингом следующего значения, даже если значение - например, шаблон - остается прежним.
 
-
-### keyed
-
-Associates a renderable value with a unique key. When the key changes, the previous DOM is removed and disposed before rendering the next value, even if the value—such as a template—is the same.
-
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {keyed} from 'lit/directives/keyed.js';
+import { keyed } from 'lit/directives/keyed.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 keyed(key: unknown, value: unknown)
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Any expression
+: Любое выражение
 
-</td>
-</tr>
-</tbody>
-</table>
+`keyed` полезен, когда вы отрисовываете элементы с состоянием и вам нужно убедиться, что все состояние элемента будет очищено при изменении некоторых критических данных. По сути, это отказ от стандартной стратегии повторного использования DOM в Lit.
 
-`keyed` is useful when you're rendering stateful elements and you need to ensure that all state of the element is cleared when some critical data changes. It essentially opts-out of Lit's default DOM reuse strategy.
+`keyed` также полезен в некоторых сценариях анимации, если вам нужно принудительно создать новый элемент для анимации "входа" или "выхода".
 
-`keyed` is also useful in some animation scenarios if you need to force a new element for "enter" or "exit" animations.
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	@property()
+    	userId: string = '';
 
-```ts
-@customElement('my-element')
-class MyElement extends LitElement {
+    	render() {
+    		return html` <div>
+    			${keyed(
+    				this.userId,
+    				html`<user-card
+    					.userId=${this.userId}
+    				></user-card>`,
+    			)}
+    		</div>`;
+    	}
+    }
+    ```
 
-  @property()
-  userId: string = '';
+=== "JS"
 
-  render() {
-    return html`
-      <div>
-        ${keyed(this.userId, html`<user-card .userId=${this.userId}></user-card>`)}
-      </div>`;
-  }
-}
-```
+    ```js
+    class MyElement extends LitElement {
+    	static properties = {
+    		userId: {},
+    	};
 
-```js
-class MyElement extends LitElement {
-  static properties = {
-    userId: {},
-  };
+    	constructor() {
+    		super();
+    		this.userId = '';
+    	}
 
-  constructor() {
-    super();
-    this.userId = '';
-  }
-
-  render() {
-    return html`
-      <div>
-        ${keyed(this.userId, html`<user-card .userId=${this.userId}></user-card>`)}
-      </div>`;
-  }
-}
-customElements.define('my-element', MyElement);
-```
-
-{% endswitchable-sample %}
+    	render() {
+    		return html` <div>
+    			${keyed(
+    				this.userId,
+    				html`<user-card
+    					.userId=${this.userId}
+    				></user-card>`,
+    			)}
+    		</div>`;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
 ### guard
 
-Only re-evaluates the template when one of its dependencies changes, to optimize
-rendering performance by preventing unnecessary work.
+Переоценивает шаблон только при изменении одной из его зависимостей, чтобы оптимизировать производительность рендеринга за счет предотвращения ненужной работы.
 
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {guard} from 'lit/directives/guard.js';
+import { guard } from 'lit/directives/guard.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 guard(dependencies: unknown[], valueFn: () => unknown)
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Any expression
+: Любое выражение
 
-</td>
-</tr>
-</tbody>
-</table>
+Выдает значение, возвращаемое `valueFn`, и переоценивает `valueFn` только тогда, когда одна из зависимостей меняет идентификатор.
 
-Renders the value returned by `valueFn`, and only re-evaluates `valueFn` when one of the
-dependencies changes identity.
+Где:
 
-Where:
+-   `dependencies` - массив значений, которые необходимо отслеживать на предмет изменений.
+-   `valueFn` - функция, возвращающая рендерируемое значение.
 
--   `dependencies` is an array of values to monitor for changes.
--   `valueFn` is a function that returns a renderable value.
+`guard` полезен при работе с неизменяемыми шаблонами данных, предотвращая дорогостоящую работу до обновления данных.
 
-`guard` is useful with immutable data patterns, by preventing expensive work
-until data updates.
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	@property()
+    	value: string = '';
 
-```ts
-@customElement('my-element')
-class MyElement extends LitElement {
+    	render() {
+    		return html` <div>
+    			${guard([this.value], () =>
+    				calculateSHA(this.value),
+    			)}
+    		</div>`;
+    	}
+    }
+    ```
 
-  @property()
-  value: string = '';
+=== "JS"
 
-  render() {
-    return html`
-      <div>
-        ${guard([this.value], () => calculateSHA(this.value))}
-      </div>`;
-  }
-}
-```
+    ```js
+    class MyElement extends LitElement {
+    	static properties = {
+    		value: {},
+    	};
 
-```js
-class MyElement extends LitElement {
-  static properties = {
-    value: {},
-  };
+    	constructor() {
+    		super();
+    		this.value = '';
+    	}
 
-  constructor() {
-    super();
-    this.value = '';
-  }
+    	render() {
+    		return html` <div>
+    			${guard([this.value], () =>
+    				calculateSHA(this.value),
+    			)}
+    		</div>`;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-  render() {
-    return html`
-      <div>
-        ${guard([this.value], () => calculateSHA(this.value))}
-      </div>`;
-  }
-}
-customElements.define('my-element', MyElement);
-```
+В этом случае дорогостоящая функция `calculateSHA` запускается только при изменении свойства `value`.
 
-{% endswitchable-sample %}
-
-In this case, the expensive `calculateSHA` function is only run when the `value` property changes.
-
-Explore `guard` more in the [playground](/playground/#sample=examples/directive-guard).
+Изучите `guard` подробнее на [playground](https://lit.dev/playground/#sample=examples/directive-guard).
 
 ### live
 
-Sets an attribute or property if it differs from the live DOM value rather than the last-rendered value.
+Устанавливает атрибут или свойство, если оно отличается от живого значения DOM, а не от последнего рендерированного значения.
 
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {live} from 'lit/directives/live.js';
+import { live } from 'lit/directives/live.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 live(value: unknown)
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Attribute or property expression
+: Атрибут или выражение свойства
 
-</td>
-</tr>
-</tbody>
-</table>
+При определении того, обновлять ли значение, проверяет значение выражения по _живому_ значению DOM, а не по поведению Lit по умолчанию - по последнему установленному значению.
 
-When determining whether to update the value, checks the expression value
-against the _live_ DOM value, instead of Lit's default behavior of checking
-against the last set value.
+Это полезно для случаев, когда значение DOM может измениться за пределами Lit. Например, при использовании выражения для установки свойства `<input>` элемента `value`, текста редактируемого элемента содержимого или для пользовательского элемента, изменяющего свои свойства или атрибуты.
 
-This is useful for cases where the DOM value may change from outside of Lit. For
-example, when using an expression to set an `<input>` element's `value`
-property, a content editable element's text, or to a custom element that changes
-its own properties or attributes.
+В этих случаях, если значение DOM изменится, а значение, установленное с помощью выражения Lit, нет, Lit не будет знать, что нужно обновить значение DOM, и оставит его в покое. Если вы не хотите этого - если вы хотите перезаписать значение DOM связанным значением независимо ни от чего - используйте директиву `live()`.
 
-In these cases if the DOM value changes, but the value set through Lit
-expression hasn't, Lit won't know to update the DOM value and will leave it
-alone. If this is not what you want—if you want to overwrite the DOM value with
-the bound value no matter what—use the `live()` directive.
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	@property()
+    	data = { value: 'test' };
 
-```ts
-@customElement('my-element')
-class MyElement extends LitElement {
+    	render() {
+    		return html`<input
+    			.value=${live(this.data.value)}
+    		/>`;
+    	}
+    }
+    ```
 
-  @property()
-  data = {value: 'test'};
+=== "JS"
 
-  render() {
-    return html`<input .value=${live(this.data.value)}>`;
-  }
-}
-```
+    ```js
+    class MyElement extends LitElement {
+    	static properties = {
+    		data: {},
+    	};
 
-```js
-class MyElement extends LitElement {
-  static properties = {
-    data: {},
-  };
+    	constructor() {
+    		super();
+    		this.data = { value: 'test' };
+    	}
 
-  constructor() {
-    super();
-    this.data = {value: 'test'};
-  }
+    	render() {
+    		return html`<input
+    			.value=${live(this.data.value)}
+    		/>`;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-  render() {
-    return html`<input .value=${live(this.data.value)}>`;
-  }
-}
-customElements.define('my-element', MyElement);
-```
+`live()` выполняет строгую проверку равенства с живым значением DOM, и если новое значение равно живому значению, ничего не делает. Это означает, что `live()` не следует использовать, если выражение приводит к преобразованию типов. Если вы используете `live()` с выражением атрибута, убедитесь, что в выражении передаются только строки, иначе выражение будет обновляться при каждом рендере.
 
-{% endswitchable-sample %}
+Изучите `live` подробнее на [playground](https://lit.dev/playground/#sample=examples/directive-live).
 
-`live()` performs a strict equality check against the live DOM value, and if
-the new value is equal to the live value, does nothing. This means that
-`live()` should not be used when the expression will cause a type conversion. If
-you use `live()` with an attribute expression, make sure that only strings are
-passed in, or the expression will update every render.
+## Рендеринг специальных значений
 
-Explore `live` more in the [playground](/playground/#sample=examples/directive-live).
+### `templateContent`
 
+Рендерит содержимое элемента `<template>`.
 
-## Rendering special values
-
-### templateContent
-
-Renders the content of a `<template>` element.
-
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {templateContent} from 'lit/directives/template-content.js';
+import { templateContent } from 'lit/directives/template-content.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 templateContent(templateElement: HTMLTemplateElement)
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Child expression
+: Детское выражение
 
-</td>
-</tr>
-</tbody>
-</table>
+Шаблоны Lit закодированы на Javascript, поэтому в них можно встраивать выражения Javascript, которые делают их динамичными. Если у вас есть статичный HTML `<template>`, который нужно включить в шаблон Lit, вы можете использовать директиву `templateContent`, чтобы клонировать содержимое шаблона и включить его в свой шаблон Lit. Если ссылка на элемент шаблона не изменяется между рендерами, последующие рендеры будут безотказными.
 
-Lit templates are encoded in Javascript, so that they can embed Javascript
-expressions that make them dynamic. If you have a static HTML `<template>` that
-you need to include in your Lit template, you can use the `templateContent`
-directive to clone the template content and include it in your Lit template. As
-long as the template element reference does not change between renders,
-subsequent renders will no-op.
+!!!warning ""
 
-<div class="alert alert-warning">
+    Обратите внимание, что содержимое шаблона должно контролироваться разработчиком и не должно быть создано с использованием недоверенной строки. Примерами недоверенного содержимого являются параметры строки запроса и значения пользовательского ввода. Недоверенные шаблоны, созданные с помощью этой директивы, могут привести к уязвимостям [межсайтового скриптинга (XSS)](https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D0%B6%D1%81%D0%B0%D0%B9%D1%82%D0%BE%D0%B2%D1%8B%D0%B9_%D1%81%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D0%B8%D0%BD%D0%B3).
 
-Note, the template content should be developer-controlled and must not be
-created using an untrusted string. Examples of untrusted content include query
-string parameters and values from user inputs. Untrusted templates rendered with
-this directive could lead to [cross-site scripting (XSS)](https://en.wikipedia.org/wiki/Cross-site_scripting) vulnerabilities.
+=== "TS"
 
-</div>
+    ```ts
+    const templateEl = document.querySelector(
+    	'template#myContent',
+    ) as HTMLTemplateElement;
 
-{% switchable-sample %}
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	render() {
+    		return html` Here's some content from a template
+    		element: ${templateContent(templateEl)}`;
+    	}
+    }
+    ```
 
-```ts
-const templateEl = document.querySelector('template#myContent') as HTMLTemplateElement;
+=== "JS"
 
-@customElement('my-element')
-class MyElement extends LitElement {
+    ```js
+    const templateEl = document.querySelector(
+    	'template#myContent',
+    );
 
-  render() {
-    return  html`
-      Here's some content from a template element:
-      ${templateContent(templateEl)}`;
-  }
-}
-```
+    class MyElement extends LitElement {
+    	render() {
+    		return html` Here's some content from a template
+    		element: ${templateContent(templateEl)}`;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-```js
-const templateEl = document.querySelector('template#myContent');
+Изучите `templateContent` больше в [playground](https://lit.dev/playground/#sample=examples/directive-template-content).
 
-class MyElement extends LitElement {
+### `unsafeHTML`
 
-  render() {
-    return  html`
-      Here's some content from a template element:
-      ${templateContent(templateEl)}`;
-  }
-}
-customElements.define('my-element', MyElement);
-```
+Возвращает строку в виде HTML, а не текста.
 
-{% endswitchable-sample %}
-
-Explore `templateContent` more in the [playground](/playground/#sample=examples/directive-template-content).
-
-### unsafeHTML
-
-Renders a string as HTML rather than text.
-
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {unsafeHTML} from 'lit/directives/unsafe-html.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 unsafeHTML(value: string | typeof nothing | typeof noChange)
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Child expression
+: Дочернее выражение
 
-</td>
-</tr>
-</tbody>
-</table>
+Ключевая особенность синтаксиса шаблонов Lit заключается в том, что только строки из литералов шаблонов анализируются как HTML. Поскольку литералы шаблонов могут быть созданы только в доверенных файлах сценариев, это служит естественной защитой от XSS-атак, внедряющих недоверенный HTML. Однако могут быть случаи, когда в шаблоне Lit необходимо отобразить HTML, созданный не в файлах сценариев, например, доверенный HTML-контент, полученный из базы данных. Директива `unsafeHTML` разберет такую строку как HTML и отобразит ее в шаблоне Lit.
 
-A key feature of Lit's templating syntax is that only strings originating in
-template literals are parsed as HTML. Because template literals can only be
-authored in trusted script files, this acts as a natural safeguard against XSS
-attacks injecting untrusted HTML. However, there may be cases when HTML not
-originating in script files needs to be rendered in a Lit template, for example
-trusted HTML content fetched from a database. The `unsafeHTML` directive will
-parse such a string as HTML and render it in a Lit template.
+!!!warning ""
 
-<div class="alert alert-warning">
+    Обратите внимание, что строка, передаваемая в `unsafeHTML`, должна контролироваться разработчиком и не содержать недоверенного содержимого. Примерами недоверенного содержимого могут быть параметры строки запроса и значения из пользовательского ввода. Недоверенное содержимое, отображаемое с помощью этой директивы, может привести к уязвимости [межсайтовый скриптинг (XSS)](https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D0%B6%D1%81%D0%B0%D0%B9%D1%82%D0%BE%D0%B2%D1%8B%D0%B9_%D1%81%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D0%B8%D0%BD%D0%B3).
 
-Note, the string passed to `unsafeHTML` must be developer-controlled and not
-include untrusted content. Examples of untrusted content include query string
-parameters and values from user inputs. Untrusted content rendered with this
-directive could lead to [cross-site scripting (XSS)](https://en.wikipedia.org/wiki/Cross-site_scripting) vulnerabilities.
+=== "TS"
 
-</div>
+    ```ts
+    const markup = '<h3>Some HTML to render.</h3>';
 
-{% switchable-sample %}
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	render() {
+    		return html`
+    			Look out, potentially unsafe HTML ahead:
+    			${unsafeHTML(markup)}
+    		`;
+    	}
+    }
+    ```
 
-```ts
-const markup = '<h3>Some HTML to render.</h3>';
+=== "JS"
 
-@customElement('my-element')
-class MyElement extends LitElement {
+    ```js
+    const markup = '<h3>Some HTML to render.</h3>';
 
-  render() {
-    return html`
-      Look out, potentially unsafe HTML ahead:
-      ${unsafeHTML(markup)}
-    `;
-  }
-}
-```
+    class MyElement extends LitElement {
+    	render() {
+    		return html`
+    			Look out, potentially unsafe HTML ahead:
+    			${unsafeHTML(markup)}
+    		`;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-```js
-const markup = '<h3>Some HTML to render.</h3>';
+Изучите `unsafeHTML` подробнее на [игровой площадке](https://lit.dev/playground/#sample=examples/directive-unsafe-html).
 
-class MyElement extends LitElement {
+### `unsafeSVG`
 
-  render() {
-    return html`
-      Look out, potentially unsafe HTML ahead:
-      ${unsafeHTML(markup)}
-    `;
-  }
-}
-customElements.define('my-element', MyElement);
-```
+Выводит строку в виде SVG, а не текста.
 
-{% endswitchable-sample %}
-
-
-Explore `unsafeHTML` more in the [playground](/playground/#sample=examples/directive-unsafe-html).
-
-### unsafeSVG
-
-Renders a string as SVG rather than text.
-
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {unsafeSVG} from 'lit/directives/unsafe-svg.js';
+import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 unsafeSVG(value: string | typeof nothing | typeof noChange)
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Child expression
+: Дочернее выражение
 
-</td>
-</tr>
-</tbody>
-</table>
+Как и в случае с [`unsafeHTML`](#unsafehtml), возможны случаи, когда в шаблоне Lit необходимо отобразить SVG-контент, не содержащийся в файлах сценариев, например, доверенный SVG-контент, полученный из базы данных. Директива `unsafeSVG` разберет такую строку как SVG и отобразит ее в шаблоне Lit.
 
-Similar to with [`unsafeHTML`](#unsafeHTML), there may be cases when SVG content
-not originating in script files needs to be rendered in a Lit template, for
-example trusted SVG content fetched from a database. The `unsafeSVG` directive
-will parse such a string as SVG and render it in a Lit template.
+!!!warning ""
 
-<div class="alert alert-warning">
+    Обратите внимание, что строка, передаваемая в `unsafeSVG`, должна контролироваться разработчиком и не содержать недоверенного содержимого. Примерами недоверенного содержимого могут быть параметры строки запроса и значения из пользовательского ввода. Недоверенное содержимое, отображаемое с помощью этой директивы, может привести к уязвимостям [межсайтового скриптинга (XSS)](https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D0%B6%D1%81%D0%B0%D0%B9%D1%82%D0%BE%D0%B2%D1%8B%D0%B9_%D1%81%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D0%B8%D0%BD%D0%B3).
 
-Note, the string passed to `unsafeSVG` must be developer-controlled and not
-include untrusted content. Examples of untrusted content include query string
-parameters and values from user inputs. Untrusted content rendered with this
-directive could lead to [cross-site scripting (XSS)](https://en.wikipedia.org/wiki/Cross-site_scripting) vulnerabilities.
+=== "TS"
 
-</div>
+    ```ts
+    const svg = '<circle cx="50" cy="50" r="40" fill="red" />';
 
-{% switchable-sample %}
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	render() {
+    		return html`
+    			Look out, potentially unsafe SVG ahead:
+    			<svg
+    				width="40"
+    				height="40"
+    				viewBox="0 0 100 100"
+    				xmlns="http://www.w3.org/2000/svg"
+    				version="1.1"
+    			>
+    				${unsafeSVG(svg)}
+    			</svg>
+    		`;
+    	}
+    }
+    ```
 
-```ts
-const svg = '<circle cx="50" cy="50" r="40" fill="red" />';
+=== "JS"
 
-@customElement('my-element')
-class MyElement extends LitElement {
+    ```js
+    const svg = '<circle cx="50" cy="50" r="40" fill="red" />';
 
-  render() {
-    return html`
-      Look out, potentially unsafe SVG ahead:
-      <svg width="40" height="40" viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg" version="1.1">
-        ${unsafeSVG(svg)}
-      </svg> `;
-  }
-}
-```
+    class MyElement extends LitElement {
+    	render() {
+    		return html`
+    			Look out, potentially unsafe SVG ahead:
+    			<svg
+    				width="40"
+    				height="40"
+    				viewBox="0 0 100 100"
+    				xmlns="http://www.w3.org/2000/svg"
+    				version="1.1"
+    			>
+    				${unsafeSVG(svg)}
+    			</svg>
+    		`;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-```js
-const svg = '<circle cx="50" cy="50" r="40" fill="red" />';
+Изучите `unsafeSVG` подробнее в [playground](https://lit.dev/playground/#sample=examples/directive-unsafe-svg).
 
-class MyElement extends LitElement {
+## Ссылки на визуализированный DOM
 
-  render() {
-    return html`
-      Look out, potentially unsafe SVG ahead:
-      <svg width="40" height="40" viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg" version="1.1">
-        ${unsafeSVG(svg)}
-      </svg> `;
-  }
-}
-customElements.define('my-element', MyElement);
-```
+### `ref`
 
-{% endswitchable-sample %}
+Получает ссылку на элемент, отображаемый в DOM.
 
-Explore `unsafeSVG` more in the [playground](/playground/#sample=examples/directive-unsafe-svg).
-
-
-## Referencing rendered DOM
-
-### ref
-
-Retrieves a reference to an element rendered into the DOM.
-
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {ref} from 'lit/directives/ref.js';
+import { ref } from 'lit/directives/ref.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 ref(refOrCallback: RefOrCallback)
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Element expression
+: Выражение элемента
 
-</td>
-</tr>
-</tbody>
-</table>
+Хотя большинство манипуляций с DOM в Lit можно выполнять декларативно, используя шаблоны, в сложных ситуациях может потребоваться получить ссылку на элемент, отображенный в шаблоне, и манипулировать им императивно. В качестве примера можно привести фокусировку элемента управления формой или вызов библиотеки императивных манипуляций с DOM на элементе контейнера.
 
-Although most DOM manipulation in Lit can be achieved declaratively using
-templates, advanced situations may required getting a reference to an element
-rendered in the template and manipulating it imperatively. Common examples of
-when this may be useful include focusing a form control or calling an imperative
-DOM manipulation library on a container element.
+При размещении на элементе в шаблоне директива `ref` будет извлекать ссылку на этот элемент после рендеринга. Ссылка на элемент может быть получена одним из двух способов: либо путем передачи объекта `Ref`, либо путем передачи обратного вызова.
 
-When placed on an element in the template, the `ref` directive will retrieve a
-reference to that element once rendered. The element reference may be retrieved
-in one of two ways: either by passing a `Ref` object or by passing a callback.
+Объект `Ref` выступает в качестве контейнера для ссылки на элемент и может быть создан с помощью вспомогательного метода `createRef`, находящегося в модуле `ref`. После рендеринга свойство `Ref` `value` будет установлено на элемент, где к нему можно будет получить доступ в пост-рендерном жизненном цикле, например `updated`.
 
-A `Ref` object acts as a container for a reference to the element, and can be
-created using the `createRef` helper method found in the `ref` module. After
-rendering, the `Ref`'s `value` property will be set to the element, where it
-can be accessed in post-render lifecycle like `updated`.
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	inputRef: Ref<HTMLInputElement> = createRef();
 
-```ts
-@customElement('my-element')
-class MyElement extends LitElement {
+    	render() {
+    		// Passing ref directive a Ref object that will hold the element in .value
+    		return html`<input ${ref(this.inputRef)} />`;
+    	}
 
-  inputRef: Ref<HTMLInputElement> = createRef();
+    	firstUpdated() {
+    		const input = this.inputRef.value!;
+    		input.focus();
+    	}
+    }
+    ```
 
-  render() {
-    // Passing ref directive a Ref object that will hold the element in .value
-    return html`<input ${ref(this.inputRef)}>`;
-  }
+=== "JS"
 
-  firstUpdated() {
-    const input = this.inputRef.value!;
-    input.focus();
-  }
-}
-```
+    ```js
+    class MyElement extends LitElement {
 
-```js
-class MyElement extends LitElement {
+    inputRef = createRef();
 
-  inputRef = createRef();
+    render() {
+    	// Passing ref directive a Ref object that will hold the element in .value
+    	return html`<input ${ref(this.inputRef)}>`;
+    }
 
-  render() {
-    // Passing ref directive a Ref object that will hold the element in .value
-    return html`<input ${ref(this.inputRef)}>`;
-  }
+    firstUpdated() {
+    	const input = this.inputRef.value!;
+    	input.focus();
+    }
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-  firstUpdated() {
-    const input = this.inputRef.value!;
-    input.focus();
-  }
-}
-customElements.define('my-element', MyElement);
-```
+Директиве `ref` также можно передать обратный вызов ref. Обратный вызов будет вызываться каждый раз при изменении элемента, на который ссылается ссылка. Если обратный вызов ref рендерится на другую позицию элемента или удаляется при последующем рендеринге, то сначала он будет вызван с `undefined`, а затем еще один вызов с новым элементом, на который он был рендерирован (если таковой имеется). Обратите внимание, что в `LitElement` обратный вызов будет вызван автоматически, привязанный к главному элементу.
 
-{% endswitchable-sample %}
+=== "TS"
 
-A ref callback can also be passed to the `ref` directive. The callback will be
-called each time the referenced element changes.  If a ref callback is
-rendered to a different element position or is removed in a subsequent render,
-it will first be called with `undefined`, followed by another call with the new
-element it was rendered to (if any). Note that in a `LitElement`, the callback
-will be called bound to the host element automatically.
+    ```ts
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	render() {
+    		// Passing ref directive a change callback
+    		return html`<input ${ref(this.inputChanged)} />`;
+    	}
 
-{% switchable-sample %}
+    	inputChanged(input?: HTMLInputElement) {
+    		input?.focus();
+    	}
+    }
+    ```
 
-```ts
-@customElement('my-element')
-class MyElement extends LitElement {
+=== "JS"
 
-  render() {
-    // Passing ref directive a change callback
-    return html`<input ${ref(this.inputChanged)}>`;
-  }
+    ```js
+    class MyElement extends LitElement {
+    	render() {
+    		// Passing ref directive a change callback
+    		return html`<input ${ref(this.inputChanged)} />`;
+    	}
 
-  inputChanged(input?: HTMLInputElement) {
-    input?.focus();
-  }
-}
-```
+    	inputChanged(input) {
+    		input?.focus();
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-```js
-class MyElement extends LitElement {
+Изучите `ref` больше в [playground](https://lit.dev/playground/#sample=examples/directive-ref).
 
-  render() {
-    // Passing ref directive a change callback
-    return html`<input ${ref(this.inputChanged)}>`;
-  }
+## Асинхронный рендеринг
 
-  inputChanged(input) {
-    input?.focus();
-  }
-}
-customElements.define('my-element', MyElement);
-```
+### `until`
 
-{% endswitchable-sample %}
+Отрисовывает содержимое, пока не разрешится одно или несколько обещаний.
 
-Explore `ref` more in the [playground](/playground/#sample=examples/directive-ref).
-
-## Asynchronous rendering
-
-### until
-
-Renders placeholder content until one or more promises resolve.
-
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {until} from 'lit/directives/until.js';
+import { until } from 'lit/directives/until.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 until(...values: unknown[])
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Any expression
+: Любое выражение
 
-</td>
-</tr>
-</tbody>
-</table>
+Принимает ряд значений, включая `Promise`. Значения отображаются в порядке приоритета: первый аргумент имеет наивысший приоритет, а последний - наименьший. Если значение является обещанием, то до его разрешения будет отображаться значение с более низким приоритетом.
 
-Takes a series of values, including Promises. Values are rendered in priority order,
- with the first argument having the highest priority and the last argument having the
- lowest priority. If a value is a Promise, a lower-priority value will be rendered until it resolves.
+Приоритет значений может быть использован для создания содержимого-заместителя для асинхронных данных. Например, первым (с наивысшим приоритетом) аргументом может быть `Promise` с ожидающим содержимым, а в качестве второго (с более низким приоритетом) аргумента может использоваться шаблон индикатора загрузки, не относящийся к `Promise`. Индикатор загрузки отобразится сразу, а основной контент - после разрешения `Promise`.
 
-The priority of values can be used to create placeholder content for async
-data. For example, a Promise with pending content can be the first
-(highest-priority) argument, and a non-promise loading indicator template can
-be used as the second (lower-priority) argument. The loading indicator
-renders immediately, and the primary content will render when the Promise
-resolves.
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	@state()
+    	private content = fetch('./content.txt').then((r) =>
+    		r.text(),
+    	);
 
-```ts
-@customElement('my-element')
-class MyElement extends LitElement {
+    	render() {
+    		return html`${until(
+    			this.content,
+    			html`<span>Loading...</span>`,
+    		)}`;
+    	}
+    }
+    ```
 
-  @state()
-  private content = fetch('./content.txt').then(r => r.text());
+=== "JS"
 
-  render() {
-    return html`${until(this.content, html`<span>Loading...</span>`)}`;
-  }
-}
-```
+    ```js
+    class MyElement extends LitElement {
+    	static properties = {
+    		content: { state: true },
+    	};
 
-```js
-class MyElement extends LitElement {
-  static properties = {
-    content: {state: true},
-  };
+    	constructor() {
+    		super();
+    		this.content = fetch('./content.txt').then((r) =>
+    			r.text(),
+    		);
+    	}
 
-  constructor() {
-    super();
-    this.content = fetch('./content.txt').then(r => r.text());
-  }
+    	render() {
+    		return html`${until(
+    			this.content,
+    			html`<span>Loading...</span>`,
+    		)}`;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-  render() {
-    return html`${until(this.content, html`<span>Loading...</span>`)}`;
-  }
-}
-customElements.define('my-element', MyElement);
-```
+Изучите `until` больше на [игровой площадке](https://lit.dev/playground/#sample=examples/directive-until).
 
-{% endswitchable-sample %}
+### `asyncAppend`
 
-Explore `until` more in the [playground](/playground/#sample=examples/directive-until).
+Добавляет значения из `AsyncIterable` в DOM по мере их получения.
 
-### asyncAppend
-
-Appends values from an `AsyncIterable` into the DOM as they are yielded.
-
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {asyncAppend} from 'lit/directives/async-append.js';
+import { asyncAppend } from 'lit/directives/async-append.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 asyncAppend(iterable: AsyncIterable)
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Child expression
+: Дочернее выражение
 
-</td>
-</tr>
-</tbody>
-</table>
+`asyncAppend` выводит значения генератора [async iterable](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/for-await...of), добавляя каждое новое значение после предыдущего. Обратите внимание, что генераторы async также реализуют протокол async iterable, и поэтому могут быть использованы `asyncAppend`.
 
-`asyncAppend` renders the values of an [async iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of), appending each new value after the previous. Note that async generators also implement the async iterable protocol, and thus can be consumed by `asyncAppend`.
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    async function* tossCoins(count: number) {
+    	for (let i = 0; i < count; i++) {
+    		yield Math.random() > 0.5 ? 'Heads' : 'Tails';
+    		await new Promise((r) => setTimeout(r, 1000));
+    	}
+    }
 
-```ts
-async function *tossCoins(count: number) {
-  for (let i=0; i<count; i++) {
-    yield Math.random() > 0.5 ? 'Heads' : 'Tails';
-    await new Promise((r) => setTimeout(r, 1000));
-  }
-}
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	@state()
+    	private tosses = tossCoins(10);
 
-@customElement('my-element')
-class MyElement extends LitElement {
+    	render() {
+    		return html` <ul>
+    			${asyncAppend(
+    				this.tosses,
+    				(v: string) => html`<li>${v}</li>`,
+    			)}
+    		</ul>`;
+    	}
+    }
+    ```
 
-  @state()
-  private tosses = tossCoins(10);
+=== "JS"
 
-  render() {
-    return html`
-      <ul>${asyncAppend(this.tosses, (v: string) => html`<li>${v}</li>`)}</ul>`;
-  }
-}
-```
+    ```js
+    async function* tossCoins(count) {
+    	for (let i = 0; i < count; i++) {
+    		yield Math.random() > 0.5 ? 'Heads' : 'Tails';
+    		await new Promise((r) => setTimeout(r, 1000));
+    	}
+    }
 
-```js
-async function *tossCoins(count) {
-  for (let i=0; i<count; i++) {
-    yield Math.random() > 0.5 ? 'Heads' : 'Tails';
-    await new Promise((r) => setTimeout(r, 1000));
-  }
-}
+    class MyElement extends LitElement {
+    	static properties = {
+    		tosses: { state: true },
+    	};
 
-class MyElement extends LitElement {
-  static properties = {
-    tosses: {state: true},
-  };
+    	constructor() {
+    		super();
+    		this.tosses = tossCoins(10);
+    	}
 
-  constructor() {
-    super();
-    this.tosses = tossCoins(10);
-  }
+    	render() {
+    		return html` <ul>
+    			${asyncAppend(
+    				this.tosses,
+    				(v) => html`<li>${v}</li>`,
+    			)}
+    		</ul>`;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-  render() {
-    return html`
-      <ul>${asyncAppend(this.tosses, (v) => html`<li>${v}</li>`)}</ul>`;
-  }
-}
-customElements.define('my-element', MyElement);
-```
+Изучите `asyncAppend` подробнее на [игровой площадке](https://lit.dev/playground/#sample=examples/directive-async-append).
 
-{% endswitchable-sample %}
+### `asyncReplace`
 
-Explore `asyncAppend` more in the [playground](/playground/#sample=examples/directive-async-append).
+Возвращает последнее значение из `AsyncIterable` в DOM по мере его получения.
 
-### asyncReplace
-
-Renders the latest value from an `AsyncIterable` into the DOM as it is yielded.
-
-<table>
-<thead><tr><th></th><th></th></tr></thead>
-<tbody>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Import</td>
-<td class="wide-cell">
+Импорт
 
 ```js
-import {asyncReplace} from 'lit/directives/async-replace.js';
+import { asyncReplace } from 'lit/directives/async-replace.js';
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Signature</td>
-<td class="wide-cell">
+Синтаксис:
 
 ```ts
 asyncReplace(iterable: AsyncIterable)
 ```
 
-</td>
-</tr>
-<tr>
-<td class="no-wrap-cell vcenter-cell">Usable location</td>
-<td class="wide-cell">
+Место использования:
 
-Child expression
+: Дочернее выражение
 
-</td>
-</tr>
-</tbody>
-</table>
+Подобно [`asyncAppend`](#asyncappend), `asyncReplace` отображает значения [async iterable](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/for-await...of), заменяя предыдущее значение на каждое новое.
 
-Similar to [`asyncAppend`](#asyncappend), `asyncReplace` renders the values of an [async iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of), replacing the previous value with each new value.
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    async function* countDown(count: number) {
+    	while (count > 0) {
+    		yield count--;
+    		await new Promise((r) => setTimeout(r, 1000));
+    	}
+    }
 
-```ts
-async function *countDown(count: number) {
-  while (count > 0) {
-    yield count--;
-    await new Promise((r) => setTimeout(r, 1000));
-  }
-}
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	@state()
+    	private timer = countDown(10);
 
-@customElement('my-element')
-class MyElement extends LitElement {
+    	render() {
+    		return html`Timer:
+    			<span>${asyncReplace(this.timer)}</span>.`;
+    	}
+    }
+    ```
 
-  @state()
-  private timer = countDown(10);
+=== "JS"
 
-  render() {
-    return html`Timer: <span>${asyncReplace(this.timer)}</span>.`;
-  }
-}
-```
+    ```js
+    async function* countDown(count) {
+    	while (count > 0) {
+    		yield count--;
+    		await new Promise((r) => setTimeout(r, 1000));
+    	}
+    }
 
-```js
-async function *countDown(count) {
-  while (count > 0) {
-    yield count--;
-    await new Promise((r) => setTimeout(r, 1000));
-  }
-}
+    class MyElement extends LitElement {
+    	static properties = {
+    		timer: { state: true },
+    	};
 
-class MyElement extends LitElement {
-  static properties = {
-    timer: {state: true},
-  };
+    	constructor() {
+    		super();
+    		this.timer = countDown(10);
+    	}
 
-  constructor() {
-    super();
-    this.timer = countDown(10);
-  }
+    	render() {
+    		return html`Timer:
+    			<span>${asyncReplace(this.timer)}</span>.`;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-  render() {
-    return html`Timer: <span>${asyncReplace(this.timer)}</span>.`;
-  }
-}
-customElements.define('my-element', MyElement);
-```
-
-{% endswitchable-sample %}
-
-Explore `asyncReplace` more in the [playground](/playground/#sample=examples/directive-async-replace).
-
+Изучите `asyncReplace` подробнее в [playground](https://lit.dev/playground/#sample=examples/directive-async-replace).

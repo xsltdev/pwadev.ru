@@ -1,8 +1,8 @@
-title: Композиция
+title: Шаблоны
 nav:
     - overview.md
     - expressions.md
     - conditionals.md
     - lists.md
-    #- directives.md
-    #- custom-directives.md
+    - directives.md
+    - custom-directives.md
