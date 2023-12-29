@@ -1,40 +1,36 @@
 ---
-title: Composition overview
-eleventyNavigation:
-  parent: Composition
-  key: Overview
-  order: 1
-versionLinks:
-  v2: composition/overview/
+description: Композиция - это стратегия управления сложностью и организации кода в многократно используемые части. Lit предоставляет несколько вариантов композиции и повторного использования кода
 ---
 
-Composition is a strategy for managing complexity and organizing code into reusable pieces. Lit provides a few options for composition and code reuse:
+# Обзор композиции
 
-*   Component composition.
-*   Reactive controllers.
-*   Class mixins.
+**Композиция** - это стратегия управления сложностью и организации кода в многократно используемые части. Lit предоставляет несколько вариантов композиции и повторного использования кода:
 
-[_Component composition_](/docs/v3/composition/component-composition/) is the process of assembling complex components from simpler components. A component can use subcomponents in its template. Components can use standard DOM mechanisms to communicate: setting properties on subcomponents, and listening for events from subcomponents.
+-   Композиция компонентов.
+-   Реактивные контроллеры.
+-   Миксины классов.
 
-Although component composition is the default way to think about breaking a complex Lit project down into smaller units, there are two other notable code patterns useful for factoring your Lit code:
+[_Компонентная композиция_](component-composition.md) - это процесс сборки сложных компонентов из более простых. Компонент может использовать подкомпоненты в своем шаблоне. Компоненты могут использовать стандартные механизмы DOM для взаимодействия: устанавливать свойства для подкомпонентов и прослушивать события от подкомпонентов.
 
-[_Reactive controllers_](/docs/v3/composition/controllers/) are objects that can hook into the update lifecycle of a Lit component, encapsulating state and behavior related to a feature into a separate unit of code.
+Хотя композиция компонентов - это стандартный способ разбить сложный проект Lit на более мелкие части, есть еще два заметных паттерна кода, полезных для факторизации вашего кода Lit:
 
-[_Class mixins_](/docs/v3/composition/mixins/) let you write reusable partial component definitions and "mix them in" to a component's inheritance chain.
+[_Реактивные контроллеры_](controllers.md) - это объекты, которые могут подключаться к жизненному циклу обновления компонента Lit, инкапсулируя состояние и поведение, связанное с функцией, в отдельную единицу кода.
 
-Both mixins and reactive controllers let you factor component logic related to a given feature into a reusable unit. See the next section for a comparison of controllers and mixins.
+[_Классы-миксины_](mixins.md) позволяют писать многократно используемые частичные определения компонентов и "подмешивать" их в цепочку наследования компонента.
 
-## Controllers and mixins
+И миксины, и реактивные контроллеры позволяют объединить логику компонента, связанную с определенной функцией, в единый модуль многократного использования. Сравнение контроллеров и миксинов приведено в следующем разделе.
 
-Controllers and class mixins are very similar in some ways. They both can hook into a host component's lifecycle, maintain state, and trigger host updates.
+## Контроллеры и миксины
 
-The primary difference between controllers and mixins is their relationship with the component. A component has a "has-a" relationship with a reactive controller, since it owns the controller. A component has an "is-a" relationship with a mixin, since the component is an instance of the mixin class.
+Контроллеры и миксины классов в чем-то очень похожи. Они оба могут подключаться к жизненному циклу хост-компонента, поддерживать состояние и вызывать обновления хоста.
 
-A reactive controller is a separate object owned by a component. The controller can access methods and fields on the component, and the component can access methods and fields on the controller. But the controller can't (easily) be accessed by someone using the component, unless the component exposes a public API to it. The controller's lifecycle methods are called _before_ the corresponding lifecycle method on the component.
+Основное различие между контроллерами и миксинами заключается в их отношениях с компонентом. Компонент имеет отношения "has-a" с реактивным контроллером, поскольку он является его владельцем. Компонент имеет отношения "есть-есть" с миксином, поскольку компонент является экземпляром класса миксина.
 
-A mixin, on the other hand, becomes part of the component's prototype chain. Any public fields or methods defined by the mixin are part of the component's API. And because a mixin is part of the prototype chain, your component has some control of when the mixin's lifecycle callbacks are called.
+Реактивный контроллер - это отдельный объект, принадлежащий компоненту. Контроллер может обращаться к методам и полям компонента, а компонент - к методам и полям контроллера. Но контроллер не может быть (легко) доступен кому-то, кто использует компонент, если только компонент не раскрывает для него публичный API. Методы жизненного цикла контроллера вызываются _прежде_ соответствующего метода жизненного цикла компонента.
 
-In general, if you're trying to decide whether to package a feature as a controller or a mixin, you should choose a controller _unless_ the feature requires one of the following:
+Миксин, с другой стороны, становится частью цепочки прототипов компонента. Любые публичные поля или методы, определенные миксином, являются частью API компонента. А поскольку миксин является частью цепочки прототипов, ваш компонент имеет некоторый контроль над тем, когда вызываются обратные вызовы жизненного цикла миксина.
 
-*   Adding public API to the component.
-*   Very granular access to the component lifecycle.
+В целом, если вы пытаетесь решить, как упаковать функцию - как контроллер или как миксин, вам следует выбрать контроллер, если только функция не требует одного из следующих условий:
+
+-   Добавление публичного API к компоненту.
+-   Очень подробный доступ к жизненному циклу компонента.

@@ -1,0 +1,6 @@
+title: Композиция
+nav:
+    - overview.md
+    - component-composition.md
+    - mixins.md
+    - controllers.md
