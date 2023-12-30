@@ -13,7 +13,7 @@ export class SimpleGreeting extends LitElement {
 }
 ```
 
-Декоратор `@customElement` - это сокращение для вызова [`customElements.define`](https://developer.mozilla.org/docs/Web/API/CustomElementRegistry/define), который регистрирует класс пользовательского элемента в браузере и связывает его с именем элемента (в данном случае `simple-greeting`).
+Декоратор `@customElement` — это сокращение для вызова [`customElements.define`](https://developer.mozilla.org/docs/Web/API/CustomElementRegistry/define), который регистрирует класс пользовательского элемента в браузере и связывает его с именем элемента (в данном случае `simple-greeting`).
 
 Если вы используете JavaScript или не используете декораторы, вы можете вызвать `define()` напрямую:
 
@@ -24,7 +24,7 @@ export class SimpleGreeting extends LitElement {
 customElements.define('simple-greeting', SimpleGreeting);
 ```
 
-## Компонент Lit - это элемент HTML
+## Компонент Lit — это элемент HTML
 
 Когда вы определяете компонент Lit, вы определяете [пользовательский HTML-элемент](https://developer.mozilla.org/docs/Web/Web_Components/Using_custom_elements). Поэтому вы можете использовать новый элемент так же, как и любой другой встроенный элемент:
 
@@ -40,7 +40,7 @@ const greeting = document.createElement('simple-greeting');
 
 В частности, `LitElement` наследуется от `ReactiveElement`, который реализует реактивные свойства, и в свою очередь наследуется от `HTMLElement`.
 
-![Диаграмма наследования показывает, что LitElement наследует от ReactiveElement, который, в свою очередь, наследует от HTMLElement. LitElement отвечает за шаблонизацию, ReactiveElement - за управление реактивными свойствами и атрибутами, HTMLElement - стандартный интерфейс DOM, общий для всех собственных элементов HTML и пользовательских элементов.](lit-element-inheritance.png)
+![Диаграмма наследования показывает, что LitElement наследует от ReactiveElement, который, в свою очередь, наследует от HTMLElement. LitElement отвечает за шаблонизацию, ReactiveElement — за управление реактивными свойствами и атрибутами, HTMLElement — стандартный интерфейс DOM, общий для всех собственных элементов HTML и пользовательских элементов.](lit-element-inheritance.png)
 
 ## Обеспечение хороших типизаций TypeScript {#typescript-typings}
 
