@@ -1,43 +1,40 @@
 ---
-title: Reactive Controllers
-eleventyNavigation:
-  parent: Composition
-  key: Controllers
-  order: 4
-versionLinks:
-  v2: composition/controllers/
+description: Реактивный контроллер - это объект, который может подключаться к циклу реактивного обновления компонента
 ---
 
-A reactive controller is an object that can hook into a component's [reactive update cycle](/docs/v3/components/lifecycle/#reactive-update-cycle). Controllers can bundle state and behavior related to a feature, making it reusable across multiple component definitions.
+# Реактивные контроллеры
 
-You can use controllers to implement features that require their own state and access to the component's lifecycle, such as:
+**Реактивный контроллер** - это объект, который может подключаться к [циклу реактивного обновления](../components/lifecycle.md#reactive-update-cycle) компонента. Контроллеры могут объединять состояние и поведение, связанные с функцией, делая ее многократно используемой в нескольких определениях компонентов.
 
-* Handling global events like mouse events
-* Managing asynchronous tasks like fetching data over the network
-* Running animations
+Вы можете использовать контроллеры для реализации функций, которые требуют собственного состояния и доступа к жизненному циклу компонента, например:
 
+-   Обработка глобальных событий, таких как события мыши.
+-   Управление асинхронными задачами, такими как получение данных по сети
+-   Запуск анимации.
 
-Reactive controllers allow you to build components by composing smaller pieces that aren't themselves components. They can be thought of as reusable, partial component definitions, with their own identity and state.
+Реактивные контроллеры позволяют создавать компоненты путем компоновки более мелких частей, которые сами по себе не являются компонентами. Их можно рассматривать как многократно используемые частичные определения компонентов, обладающие собственной идентичностью и состоянием.
 
-{% playground-ide "v3-docs/controllers/overview" "clock-controller.ts" %}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:28;
+             --litdev-example-editor-lines-js:26;
+             --litdev-example-preview-height:120px" project="v3-docs/controllers/overview"></litdev-example>
 
-Reactive controllers are similar in many ways to class mixins. The main difference is that they have their own identity and don't add to the component's prototype, which helps contain their APIs and lets you use multiple controller instances per host component. See [Controllers and mixins](/docs/v3/composition/overview/#controllers-and-mixins) for more details.
+Реактивные контроллеры во многом похожи на миксины классов. Основное отличие заключается в том, что они имеют свою собственную идентичность и не добавляются к прототипу компонента, что помогает содержать их API и позволяет использовать несколько экземпляров контроллеров для одного компонента. Подробнее см. в разделе [Контроллеры и миксины](overview.md#controllers-and-mixins).
 
-## Using a controller
+## Использование контроллера
 
-Each controller has its own creation API, but typically you will create an instance and store it with the component:
+Каждый контроллер имеет свой собственный API для создания, но обычно вы создаете экземпляр и храните его вместе с компонентом:
 
 ```ts
 class MyElement extends LitElement {
-  private clock = new ClockController(this, 1000);
+    private clock = new ClockController(this, 1000);
 }
 ```
 
-The component associated with a controller instance is called the host component.
+Компонент, связанный с экземпляром контроллера, называется хост-компонентом.
 
-The controller instance registers itself to receive lifecycle callbacks from the host component, and triggers a host update when the controller has new data to render. This is how the `ClockController` example periodically renders the current time.
+Экземпляр контроллера регистрируется для получения обратных вызовов жизненного цикла от хост-компонента и запускает обновление хоста, когда у контроллера появляются новые данные для отображения. Так в примере `ClockController` периодически отображается текущее время.
 
-A controller will typically expose some functionality to be used in the host's `render()` method. For example, many controllers will have some state, like a current value:
+Контроллер обычно предоставляет некоторую функциональность для использования в методе `render()` хоста. Например, многие контроллеры имеют некоторое состояние, например, текущее значение:
 
 ```ts
   render() {
@@ -47,250 +44,270 @@ A controller will typically expose some functionality to be used in the host's `
   }
 ```
 
-Since each controller has it's own API, refer to specific controller documentation on how to use them.
+Поскольку каждый контроллер имеет свой собственный API, обратитесь к документации по конкретным контроллерам, чтобы узнать, как их использовать.
 
-## Writing a controller
+## Написание контроллера
 
-A reactive controller is an object associated with a host component, which implements one or more host lifecycle callbacks or interacts with its host. It can be implemented in a number of ways, but we'll focus on using JavaScript classes, with constructors for initialization and methods for lifecycles.
+Реактивный контроллер - это объект, связанный с компонентом хоста, который реализует один или несколько обратных вызовов жизненного цикла хоста или взаимодействует с ним. Он может быть реализован различными способами, но мы сосредоточимся на использовании классов JavaScript, с конструкторами для инициализации и методами для жизненных циклов.
 
-### Controller initialization
+### Инициализация контроллера
 
-A controller registers itself with its host component by calling `host.addController(this)`. Usually a controller stores a reference to its host component so that it can interact with it later.
+Контроллер регистрируется в компоненте-хосте вызовом `host.addController(this)`. Обычно контроллер хранит ссылку на свой компонент-хост, чтобы иметь возможность взаимодействовать с ним в дальнейшем.
 
-{% switchable-sample %}
+=== "TS"
 
-```ts
-class ClockController implements ReactiveController {
-  private host: ReactiveControllerHost;
+    ```ts
+    class ClockController implements ReactiveController {
+    	private host: ReactiveControllerHost;
 
-  constructor(host: ReactiveControllerHost) {
-    // Store a reference to the host
-    this.host = host;
-    // Register for lifecycle updates
-    host.addController(this);
-  }
-}
-```
+    	constructor(host: ReactiveControllerHost) {
+    		// Store a reference to the host
+    		this.host = host;
+    		// Register for lifecycle updates
+    		host.addController(this);
+    	}
+    }
+    ```
 
-```js
-class ClockController {
-  constructor(host) {
-    // Store a reference to the host
-    this.host = host;
-    // Register for lifecycle updates
-    host.addController(this);
-  }
-}
-```
+=== "JS"
 
-{% endswitchable-sample %}
+    ```js
+    class ClockController {
+    	constructor(host) {
+    		// Store a reference to the host
+    		this.host = host;
+    		// Register for lifecycle updates
+    		host.addController(this);
+    	}
+    }
+    ```
 
-You can add other constructor parameters for one-time configuration.
+Вы можете добавить другие параметры конструктора для одноразовой настройки.
 
-{% switchable-sample %}
+=== "TS"
 
-```ts
-class ClockController implements ReactiveController {
-  private host: ReactiveControllerHost;
-  timeout: number
+    ```ts
+    class ClockController implements ReactiveController {
+    	private host: ReactiveControllerHost;
+    	timeout: number;
 
-  constructor(host: ReactiveControllerHost, timeout: number) {
-    this.host = host;
-    this.timeout = timeout;
-    host.addController(this);
-  }
-```
+    	constructor(
+    		host: ReactiveControllerHost,
+    		timeout: number,
+    	) {
+    		this.host = host;
+    		this.timeout = timeout;
+    		host.addController(this);
+    	}
+    }
+    ```
 
-```js
-class ClockController {
-  constructor(host, timeout) {
-    this.host = host;
-    this.timeout = timeout;
-    host.addController(this);
-  }
-```
+=== "JS"
 
-{% endswitchable-sample %}
+    ```js
+    class ClockController {
+    	constructor(host, timeout) {
+    		this.host = host;
+    		this.timeout = timeout;
+    		host.addController(this);
+    	}
+    }
+    ```
 
+Как только ваш контроллер зарегистрирован в главном компоненте, вы можете добавить в него обратные вызовы жизненного цикла и другие поля и методы класса, чтобы реализовать желаемое состояние и поведение.
 
-Once your controller is registered with the host component, you can add lifecycle callbacks and other class fields and methods to the controller to implement the desired state and behavior.
+### Жизненный цикл
 
-### Lifecycle
+Жизненный цикл реактивного контроллера, определенный в интерфейсе [`ReactiveController`](https://lit.dev/docs/api/controllers#ReactiveController), является подмножеством цикла реактивного обновления. LitElement обращается к любым установленным контроллерам во время обратных вызовов жизненного цикла. Эти обратные вызовы являются необязательными.
 
-The reactive controller lifecycle, defined in the {% api-v3 "ReactiveController" %} interface, is a subset of the reactive update cycle. LitElement calls into any installed controllers during its lifecycle callbacks. These callbacks are optional.
+-   `hostConnected()`:
+    -   Вызывается, когда хост подключен.
+    -   Вызывается после создания `renderRoot`, поэтому в этот момент будет существовать теневой корень.
+    -   Полезно для настройки слушателей событий, наблюдателей и т.д.
+-   `hostUpdate()`:
+    -   Вызывается перед методами хоста `update()` и `render()`.
+    -   Полезен для чтения DOM до его обновления (например, для анимации).
+-   `hostUpdated()`:
+    -   Вызывается после обновления, до метода хоста `updated()`.
+    -   Используется для чтения DOM после его изменения (например, для анимации).
+-   `hostDisconnected()`:
+    -   Вызывается при отключении хоста.
+    -   Полезен для очистки вещей, добавленных в `hostConnected()`, таких как слушатели событий и наблюдатели.
 
-* `hostConnected()`:
-  * Called when the host is connected.
-  * Called after creating the `renderRoot`, so a shadow root will exist at this point.
-  * Useful for setting up event listeners, observers, etc.
-* `hostUpdate()`:
-  * Called before the host's `update()` and `render()` methods.
-  * Useful for reading DOM before it's updated (for example, for animations).
-* `hostUpdated()`:
-  * Called after updates, before the host's `updated()` method.
-  * Useful for reading DOM after it's modified (for example, for animations).
-* `hostDisconnected()`:
-  * Called when the host is disconnected.
-  * Useful for cleaning up things added in `hostConnected()`, such as event listeners and observers.
+Для получения дополнительной информации смотрите [Реактивный цикл обновления](../components/lifecycle.md#reactive-update-cycle).
 
-For more information, see [Reactive update cycle](/docs/v3/components/lifecycle/#reactive-update-cycle).
-### Controller host API
+### API хоста контроллера
 
-A reactive controller host implements a small API for adding controllers and requesting updates, and is responsible for calling its controller's lifecycle methods.
+Реактивный хост контроллера реализует небольшой API для добавления контроллеров и запроса обновлений, а также отвечает за вызов методов жизненного цикла своего контроллера.
 
-This is the minimum API exposed on a controller host:
+Вот минимальный API, предоставляемый хостом контроллера:
 
-* `addController(controller: ReactiveController)`
-* `removeController(controller: ReactiveController)`
-* `requestUpdate()`
-* `updateComplete: Promise<boolean>`
+-   `addController(controller: ReactiveController)`.
+-   `removeController(controller: ReactiveController)`
+-   `requestUpdate()`
+-   `updateComplete: Promise<boolean>`.
 
-You can also create controllers that are specific to `HTMLElement`, `ReactiveElement`, `LitElement` and require more of those APIs; or even controllers that are tied to a specific element class or other interface.
+Вы также можете создавать контроллеры, которые специфичны для `HTMLElement`, `ReactiveElement`, `LitElement` и требуют большего количества этих API; или даже контроллеры, которые привязаны к определенному классу элемента или другому интерфейсу.
 
-`LitElement` and `ReactiveElement` are controller hosts, but hosts can also be other objects like base classes from other web components libraries, components from frameworks, or other controllers.
+`LitElement` и `ReactiveElement` являются хостами контроллеров, но хостами могут быть и другие объекты, например, базовые классы из других библиотек веб-компонентов, компоненты из фреймворков или другие контроллеры.
 
-### Building controllers from other controllers
+### Создание контроллеров из других контроллеров
 
-Controllers can be composed of other controllers as well. To do this create a child controller and forward the host to it.
+Контроллеры также могут состоять из других контроллеров. Для этого создайте дочерний контроллер и передайте ему хост.
 
-{% switchable-sample %}
+=== "TS"
 
-```ts
-class DualClockController implements ReactiveController {
-  private clock1: ClockController;
-  private clock2: ClockController;
+    ```ts
+    class DualClockController implements ReactiveController {
+    	private clock1: ClockController;
+    	private clock2: ClockController;
 
-  constructor(host: ReactiveControllerHost, delay1: number, delay2: number) {
-    this.clock1 = new ClockController(host, delay1);
-    this.clock2 = new ClockController(host, delay2);
-  }
+    	constructor(
+    		host: ReactiveControllerHost,
+    		delay1: number,
+    		delay2: number,
+    	) {
+    		this.clock1 = new ClockController(host, delay1);
+    		this.clock2 = new ClockController(host, delay2);
+    	}
 
-  get time1() { return this.clock1.value; }
-  get time2() { return this.clock2.value; }
-}
-```
+    	get time1() {
+    		return this.clock1.value;
+    	}
+    	get time2() {
+    		return this.clock2.value;
+    	}
+    }
+    ```
 
-```js
-class DualClockController {
-  constructor(host, delay1, delay2) {
-    this.clock1 = new ClockController(host, delay1);
-    this.clock2 = new ClockController(host, delay2);
-  }
+=== "JS"
 
-  get time1() { return this.clock1.value; }
-  get time2() { return this.clock2.value; }
-}
-```
+    ```js
+    class DualClockController {
+    	constructor(host, delay1, delay2) {
+    		this.clock1 = new ClockController(host, delay1);
+    		this.clock2 = new ClockController(host, delay2);
+    	}
 
-{% endswitchable-sample %}
+    	get time1() {
+    		return this.clock1.value;
+    	}
+    	get time2() {
+    		return this.clock2.value;
+    	}
+    }
+    ```
 
-### Controllers and directives
+### Контроллеры и директивы
 
-Combining controllers with directives can be a very powerful technique, especially for directives that need to do work before or after rendering, like animation directives; or controllers that need references to specific elements in a template.
+Сочетание контроллеров с директивами может быть очень мощной техникой, особенно для директив, которые должны выполнять работу до или после рендеринга, например директивы анимации; или контроллеров, которым нужны ссылки на определенные элементы в шаблоне.
 
-There are two main patterns of using controllers with directives:
-* Controller directives. These are directives that themselves are controllers in order to hook into the host lifecycle.
-* Controllers that own directives. These are controllers that create one or more directives for use in the host's template.
+Существует две основные схемы использования контроллеров с директивами:
 
-For more information about writing directives, see [Custom directives](/docs/v3/templates/custom-directives/).
+-   Директивы контроллера. Это директивы, которые сами являются контроллерами, чтобы подключиться к жизненному циклу хоста.
+-   Контроллеры, владеющие директивами. Это контроллеры, которые создают одну или несколько директив для использования в шаблоне хоста.
 
-#### Controller directives
+Дополнительные сведения о написании директив см. в [Custom directives](../templates/custom-directives.md).
 
-Reactive controllers do not need to be stored as instance fields on the host. Anything added to a host using `addController()` is a controller. In particular, a directive can also be a controller. This enables a directive to hook into the host lifecycle.
+#### Директивы контроллеров
 
-#### Controllers that own directives
+Реактивные контроллеры не нужно хранить на хосте в виде полей экземпляра. Все, что добавляется к хосту с помощью `addController()`, является контроллером. В частности, директива также может быть контроллером. Это позволяет директиве подключаться к жизненному циклу хоста.
 
-Directives do not need to be standalone functions, they can be methods on other objects as well, such as controllers. This can be useful in cases where a controller needs a specific reference to an element in a template.
+#### Контроллеры, владеющие директивами.
 
-For example, imagine a ResizeController that lets you observe an element's size with a ResizeObserver. To work we need both a ResizeController instance, and a directive that is placed on the element we want to observe:
+Директивы не обязательно должны быть отдельными функциями, они могут быть методами и других объектов, например контроллеров. Это может быть полезно в случаях, когда контроллеру нужна конкретная ссылка на элемент в шаблоне.
 
-{% switchable-sample %}
+Например, представьте себе контроллер `ResizeController`, который позволяет наблюдать за размером элемента с помощью ResizeObserver. Для работы нам понадобится экземпляр `ResizeController` и директива, размещенная на элементе, который мы хотим наблюдать:
 
-```ts
-class MyElement extends LitElement {
-  private _textSize = new ResizeController(this);
+=== "TS"
 
-  render() {
-    return html`
-      <textarea ${this._textSize.observe()}></textarea>
-      <p>The width is ${this._textSize.contentRect?.width}</p>
-    `;
-  }
-}
-```
+    ```ts
+    class MyElement extends LitElement {
+    	private _textSize = new ResizeController(this);
 
-```js
-class MyElement extends LitElement {
-  _textSize = new ResizeController(this);
+    	render() {
+    		return html`
+    			<textarea
+    				${this._textSize.observe()}
+    			></textarea>
+    			<p>
+    				The width is ${this._textSize.contentRect
+    					?.width}
+    			</p>
+    		`;
+    	}
+    }
+    ```
 
-  render() {
-    return html`
-      <textarea ${this._textSize.observe()}></textarea>
-      <p>The width is ${this._textSize.contentRect?.width}</p>
-    `;
-  }
-}
-```
+=== "JS"
 
-{% endswitchable-sample %}
+    ```js
+    class MyElement extends LitElement {
+    	_textSize = new ResizeController(this);
 
-To implement this, you create a directive and call it from a method:
+    	render() {
+    		return html`
+    			<textarea
+    				${this._textSize.observe()}
+    			></textarea>
+    			<p>
+    				The width is ${this._textSize.contentRect
+    					?.width}
+    			</p>
+    		`;
+    	}
+    }
+    ```
+
+Чтобы реализовать это, вы создаете директиву и вызываете ее из метода:
 
 ```ts
 class ResizeDirective {
-  /* ... */
+    /* ... */
 }
 const resizeDirective = directive(ResizeDirective);
 
 export class ResizeController {
-  /* ... */
-  observe() {
-    // Pass a reference to the controller so the directive can
-    // notify the controller on size changes.
-    return resizeDirective(this);
-  }
+    /* ... */
+    observe() {
+        // Pass a reference to the controller so the directive can
+        // notify the controller on size changes.
+        return resizeDirective(this);
+    }
 }
 ```
 
-{% todo %}
+## Примеры использования
 
-- Review and cleanup this example
+Реактивные контроллеры очень общие и имеют очень широкий набор возможных вариантов использования. Они особенно хороши для подключения компонента к внешним ресурсам, таким как пользовательский ввод, управление состоянием или удаленные API. Вот несколько распространенных вариантов использования.
 
-{% endtodo %}
+### Внешние входы
 
-## Use cases
+Реактивные контроллеры можно использовать для подключения к внешним входам. Например, события клавиатуры и мыши, наблюдатели изменения размера или наблюдатели мутации. Контроллер может предоставить текущее значение входа для использования в рендеринге и запросить обновление хоста при изменении значения.
 
-Reactive controllers are very general and have a very broad set of possible use cases. They are particularly good for connecting a component to an external resource, like user input, state management, or remote APIs. Here are a few common use cases.
+#### Пример: `MouseMoveController`
 
-### External inputs
+В этом примере показано, как контроллер может выполнять настройку и очистку при подключении и отключении хоста, а также запрашивать обновление при изменении входных данных:
 
-Reactive controllers can be used to connect to external inputs. For example, keyboard and mouse events, resize observers, or mutation observers. The controller can provide the current value of the input to use in rendering, and request a host update when the value changes.
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:19;
+             --litdev-example-editor-lines-js:18;
+             --litdev-example-preview-height:120px" project="v3-docs/controllers/mouse"></litdev-example>
 
-#### Example: MouseMoveController
+### Асинхронные задачи
 
-This example shows how a controller can perform setup and cleanup work when its host is connected and disconnected, and request an update when an input changes:
+Асинхронные задачи, такие как длительные вычисления или сетевой ввод-вывод, обычно имеют состояние, которое меняется со временем, и им необходимо уведомлять хост об изменении состояния задачи (завершение, ошибки и т. д.).
 
-{% playground-ide "v3-docs/controllers/mouse" "my-element.ts" %}
+Контроллеры - это отличный способ объединить выполнение и состояние задачи, чтобы упростить ее использование внутри компонента. Задача, написанная как контроллер, обычно имеет входы, которые может задавать хост, и выходы, которые может отображать хост.
 
-### Asynchronous tasks
+`@lit/task` содержит общий контроллер `Task`, который может получать входные данные от хоста, выполнять функцию задачи и выводить различные шаблоны в зависимости от состояния задачи.
 
-Asynchronous tasks, such as long running computations or network I/O, typically have state that changes over time, and will need to notify the host when the task state changes (completes, errors, etc.).
+Вы можете использовать `Task` для создания пользовательского контроллера с API, предназначенного для вашей конкретной задачи. Здесь мы обернули `Task` в `NamesController`, который может получить одно из заданного списка имен из демонстрационного REST API. `NameController` предоставляет свойство `kind` в качестве входных данных, а также метод `render()`, который может отображать один из четырех шаблонов в зависимости от состояния задачи. Логика задачи и то, как она обновляет хост, абстрагированы от компонента хоста.
 
-Controllers are a great way to bundle task execution and state to make it easy to use inside a component. A task written as a controller usually has inputs that a host can set, and outputs that a host can render.
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:40;
+             --litdev-example-editor-lines-js:43;
+             --litdev-example-preview-height:150px" project="v3-docs/controllers/names"></litdev-example>
 
-`@lit/task` contains a generic `Task` controller that can pull inputs from the host, execute a task function, and render different templates depending on the task state.
+## См. также
 
-You can use `Task` to create a custom controller with an API tailored for your specific task. Here we wrap `Task` in a `NamesController` that can fetch one of a specified list of names from a demo REST API. `NameController` exposes a `kind` property as an input, and a `render()` method that can render one of four templates depending on the task state. The task logic, and how it updates the host, are abstracted from the host component.
-
-{% playground-ide "v3-docs/controllers/names" %}
-
-{% todo %}
-
-- Animations
-
-{% endtodo %}
-
-## See also
-
-* [Reactive update cycle](/docs/v3/components/lifecycle/#reactive-update-cycle)
-* [@lit/task](https://www.npmjs.com/package/@lit/task)
+-   [Реактивный цикл обновления](../components/lifecycle.md#reactive-update-cycle)
+-   [@lit/task](https://www.npmjs.com/package/@lit/task)
