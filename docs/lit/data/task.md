@@ -1,226 +1,238 @@
 ---
-title: Async Tasks
-eleventyNavigation:
-  key: Async Tasks
-  parent: Managing Data
-  order: 2
+description: Иногда компоненту требуется отобразить данные, которые доступны только асинхронно. Такие данные могут быть получены с сервера, из базы данных или вообще получены или вычислены из асинхронного API
 ---
 
-## Overview
+# Асинхронные задачи
 
-Sometimes a component needs to render data that is only available _asynchronously_. Such data might be fetched from a server, a database, or in general retrieved or computed from an async API.
+## Обзор
 
-While Lit's reactive update lifecycle is batched and asynchronous, Lit templates always render _synchronously_. The data used in a template must be readable at the time of rendering. To render async data in a Lit component, you must wait for the data to be ready, store it so that it's readable, then trigger a new render which can use the data synchronously. Considerations must often be made on what to render while the data is being fetched, or when the data fetch fails as well.
+Иногда компоненту требуется отобразить данные, которые доступны только _асинхронно_. Такие данные могут быть получены с сервера, из базы данных или вообще получены или вычислены из асинхронного API.
 
-The `@lit/task` package provides a `Task` reactive controller to help manage this async data workflow.
+В то время как жизненный цикл реактивных обновлений Lit является пакетным и асинхронным, шаблоны Lit всегда отображаются _синхронно_. Данные, используемые в шаблоне, должны быть доступны для чтения в момент рендеринга. Для асинхронного рендеринга данных в компоненте Lit необходимо дождаться готовности данных, сохранить их так, чтобы они были доступны для чтения, а затем запустить новый рендеринг, который может использовать данные синхронно. Часто приходится решать, что рендерить, пока данные находятся в процессе выборки, или когда выборка данных также не удалась.
 
-`Task` is a controller that takes an async task function and runs it either manually or automatically when its arguments change. Task stores the result of the task function and updates the host element when the task function completes so the result can be used in rendering.
+Пакет `@lit/task` предоставляет реактивный контроллер `Task`, который помогает управлять этим асинхронным рабочим процессом с данными.
 
-### Example
+`Task` - это контроллер, который принимает функцию асинхронной задачи и запускает ее либо вручную, либо автоматически при изменении ее аргументов. Task хранит результат выполнения функции задачи и обновляет элемент хоста, когда функция задачи завершается, чтобы результат можно было использовать при рендеринге.
 
-This is an example of using `Task` to call an HTTP API via [`fetch()`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). The API is called whenever the `productId` parameter changes, and the component renders a loading message when the data is being fetched.
+### Пример
 
-{% switchable-sample %}
+Это пример использования `Task` для вызова HTTP API через [`fetch()`](https://developer.mozilla.org/docs/Web/API/Fetch_API). API вызывается каждый раз, когда изменяется параметр `productId`, а компонент выводит сообщение о загрузке при получении данных.
 
-```ts
-import {Task} from '@lit/task';
+=== "TS"
 
-class MyElement extends LitElement {
-  @property() productId?: string;
+    ```ts
+    import { Task } from '@lit/task';
 
-  private _productTask = new Task(this, {
-    task: async ([productId], {signal}) => {
-      const response = await fetch(`http://example.com/product/${productId}`, {signal});
-      if (!response.ok) { throw new Error(response.status); }
-      return response.json() as Product;
-    },
-    args: () => [this.productId]
-  });
+    class MyElement extends LitElement {
+    	@property() productId?: string;
 
-  render() {
-    return this._productTask.render({
-      pending: () => html`<p>Loading product...</p>`,
-      complete: (product) => html`
-          <h1>${product.name}</h1>
-          <p>${product.price}</p>
-        `,
-      error: (e) => html`<p>Error: ${e}</p>`
-    });
-  }
-}
-```
+    	private _productTask = new Task(this, {
+    		task: async ([productId], { signal }) => {
+    			const response = await fetch(
+    				`http://example.com/product/${productId}`,
+    				{ signal },
+    			);
+    			if (!response.ok) {
+    				throw new Error(response.status);
+    			}
+    			return response.json() as Product;
+    		},
+    		args: () => [this.productId],
+    	});
 
-```js
-import {Task} from '@lit/task';
+    	render() {
+    		return this._productTask.render({
+    			pending: () => html`<p>Loading product...</p>`,
+    			complete: (product) => html`
+    				<h1>${product.name}</h1>
+    				<p>${product.price}</p>
+    			`,
+    			error: (e) => html`<p>Error: ${e}</p>`,
+    		});
+    	}
+    }
+    ```
 
-class MyElement extends LitElement {
-  static properties = {
-    productId: {},
-  };
+=== "JS"
 
-  _productTask = new Task(this, {
-    task: async ([productId], {signal}) => {
-      const response = await fetch(`http://example.com/product/${productId}`, {signal});
-      if (!response.ok) { throw new Error(response.status); }
-      return response.json();
-    },
-    args: () => [this.productId]
-  });
+    ```js
+    import { Task } from '@lit/task';
 
-  render() {
-    return this._productTask.render({
-      pending: () => html`<p>Loading product...</p>`,
-      complete: (product) => html`
-          <h1>${product.name}</h1>
-          <p>${product.price}</p>
-        `,
-      error: (e) => html`<p>Error: ${e}</p>`
-    });
-  }
-}
-```
+    class MyElement extends LitElement {
+    	static properties = {
+    		productId: {},
+    	};
 
-{% endswitchable-sample %}
+    	_productTask = new Task(this, {
+    		task: async ([productId], { signal }) => {
+    			const response = await fetch(
+    				`http://example.com/product/${productId}`,
+    				{ signal },
+    			);
+    			if (!response.ok) {
+    				throw new Error(response.status);
+    			}
+    			return response.json();
+    		},
+    		args: () => [this.productId],
+    	});
 
-### Features
+    	render() {
+    		return this._productTask.render({
+    			pending: () => html`<p>Loading product...</p>`,
+    			complete: (product) => html`
+    				<h1>${product.name}</h1>
+    				<p>${product.price}</p>
+    			`,
+    			error: (e) => html`<p>Error: ${e}</p>`,
+    		});
+    	}
+    }
+    ```
 
-Task takes care of a number of things needed to properly manage async work:
-- Gathers task arguments when the host updates
-- Runs task functions when arguments change
-- Tracks the task status (initial, pending, complete, or error)
-- Saves the last completion value or error of the task function
-- Triggers a host update when the task changes status
-- Handles race conditions, ensuring that only the latest task invocation completes the task
-- Renders the correct template for the current task status
-- Allows aborting tasks with an [`AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController)
+### Особенности
 
-This removes most of the boilerplate for correctly using async data from your code, and ensures robust handling of race conditions and other edge-cases.
+Task заботится о ряде вещей, необходимых для правильного управления асинхронной работой:
 
-## What is async data?
+-   Собирает аргументы задачи при обновлении хоста
+-   Запускает функции задачи при изменении аргументов
+-   Отслеживает статус задачи (начальный, ожидающий, завершенный или ошибка)
+-   Сохраняет последнее значение завершения или ошибки функции задачи
+-   Запускает обновление хоста при изменении статуса задачи
+-   Обрабатывает условия гонки, гарантируя, что только последний вызов задачи завершит ее выполнение
+-   Выдает правильный шаблон для текущего состояния задачи
+-   Позволяет прерывать задачи с помощью [`AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController).
 
-Async data is data that's not available immediately, but may be available at some time in the future. For example, instead of a value like a string or an object that's usable synchronously, a promise provides a value in the future.
+Это убирает большую часть шаблонов для правильного использования асинхронных данных из вашего кода и обеспечивает надежную обработку условий гонки и других нештатных ситуаций.
 
-Async data is usually returned from an async API, which can come in a few forms:
-- Promises or async functions, like `fetch()`
-- Functions that accept callbacks
-- Objects that emit events, such as DOM events
-- Libraries like observables and signals
+## Что такое асинхронные данные?
 
-The Task controller deals in promises, so no matter the shape of your async API you can adapt it to promises to use with Task.
+Асинхронные данные - это данные, которые не доступны сразу, но могут быть доступны в будущем. Например, вместо значения типа строки или объекта, которое можно использовать синхронно, обещание предоставляет значение в будущем.
 
-## What is a task?
+Асинхронные данные обычно возвращаются из асинхронного API, который может быть представлен в нескольких формах:
 
-At the core of the Task controller is the concept of a "task" itself.
+-   Обещания или асинхронные функции, например `fetch()`.
+-   Функции, принимающие обратные вызовы
+-   Объекты, которые испускают события, такие как события DOM
+-   Библиотеки, такие как observables и signals.
 
-A task is an async operation which does some work to produce data and return it in a Promise. A task can be in a few different states (initial, pending, complete, and error) and can take parameters.
+Контроллер Task работает с обещаниями, поэтому независимо от формы вашего async API вы можете адаптировать его к обещаниям для использования с Task.
 
-A task is a generic concept and could represent any async operation. They apply best when there is a request/response structure, such as a network fetch, database query, or waiting for a single event in response to some action. They're less applicable to spontaneous or streaming operations like an open-ended stream of events, a streaming database response, etc.
+## Что такое задача?
 
-## Installation
+В основе контроллера Task лежит само понятие "задача".
+
+Задача - это асинхронная операция, которая выполняет некоторую работу по созданию данных и возвращает их в виде Promise. Задача может находиться в нескольких различных состояниях (начальное, ожидание, завершение и ошибка) и может принимать параметры.
+
+Задача - это общая концепция, которая может представлять любую асинхронную операцию. Они лучше всего подходят, когда есть структура "запрос/ответ", например, получение данных из сети, запрос к базе данных или ожидание одного события в ответ на какое-то действие. Они менее применимы к спонтанным или потоковым операциям, таким как бесконечный поток событий, потоковый ответ базы данных и т. д.
+
+## Установка
 
 ```bash
 npm install @lit/task
 ```
 
-## Usage
+## Использование
 
-`Task` is a [reactive controller](/docs/v3/composition/controllers/), so it can respond to and trigger updates to Lit's reactive update lifecycle.
+`Task` - это [реактивный контроллер](../composition/controllers.md), поэтому он может реагировать на обновления и запускать их в рамках жизненного цикла реактивного обновления Lit.
 
-You'll generally have one Task object for each logical task that your component needs to perform. Install tasks as fields on your class:
+Как правило, у вас будет один объект Task для каждой логической задачи, которую должен выполнять ваш компонент. Установите задачи в качестве полей вашего класса:
 
-{% switchable-sample %}
+=== "TS"
 
-```ts
-class MyElement extends LitElement {
-  private _myTask = new Task(this, {/*...*/});
-}
-```
+    ```ts
+    class MyElement extends LitElement {
+    	private _myTask = new Task(this, {
+    		/*...*/
+    	});
+    }
+    ```
 
-```js
-class MyElement extends LitElement {
-  _myTask = new Task(this, {/*...*/});
-}
-```
+=== "JS"
 
-{% endswitchable-sample %}
+    ```js
+    class MyElement extends LitElement {
+    	_myTask = new Task(this, {
+    		/*...*/
+    	});
+    }
+    ```
 
-
-As a class field, the task status and value are easily available:
+Как поле класса, статус и значение задачи легко доступны:
 
 ```ts
 this._task.status;
 this._task.value;
 ```
 
-### The task function
+### Функция задачи
 
-The most critical part of a task declaration is the _task function_. This is the function that does the actual work.
+Наиболее важной частью объявления задачи является _функция задачи_. Это функция, которая выполняет фактическую работу.
 
-The task function is given in the `task` option. The Task controller will automatically call the task function with arguments, which are supplied with a separate `args` callback. Arguments are checked for changes and the task function is only called if the arguments have changed.
+Функция задачи задается в опции `task`. Контроллер задач будет автоматически вызывать функцию задачи с аргументами, которые передаются отдельным обратным вызовом `args`. Аргументы проверяются на изменения, и функция задачи вызывается только в том случае, если аргументы изменились.
 
-The task function takes the task arguments as an _array_ passed as the first parameter, and an options argument as the second parameter:
+Функция задачи принимает аргументы задачи в виде _массива_, передаваемого в качестве первого параметра, и аргумент options в качестве второго параметра:
 
 ```ts
 new Task(this, {
-  task: async ([arg1, arg2], {signal}) => {
-    // do async work here
-  },
-  args: () => [this.field1, this.field2]
-})
+    task: async ([arg1, arg2], { signal }) => {
+        // do async work here
+    },
+    args: () => [this.field1, this.field2],
+});
 ```
 
-The task function's args array and the args callback should be the same length.
+Массив `args` функции задачи и обратный вызов `args` должны быть одинаковой длины.
 
-{% aside "positive" "no-header" %}
+!!!info ""
 
-Write the `task` and `args` functions as arrow functions so that the `this` reference points to the host element.
+    Напишите функции `task` и `args` как стрелочные функции, чтобы ссылка `this` указывала на элемент-хост.
 
-{% endaside %}
+### Состояние задачи
 
-### Task status
+Задачи могут находиться в одном из четырех состояний:
 
-Tasks can be in one of four states:
-- `INITIAL`: The task has not been run
-- `PENDING`: The task is running and awaiting a new value
-- `COMPLETE`: The task completed successfully
-- `ERROR`: The task errored
+-   `INITIAL`: Задача не была запущена
+-   `PENDING`: Задача запущена и ожидает нового значения
+-   `COMPLETE`: Задача успешно завершена
+-   `ERROR`: Задача завершилась с ошибкой
 
-The Task status is available at the `status` field of the Task controller, and is represented by the `TaskStatus` enum-like object, which has properties `INITIAL`, `PENDING`, `COMPLETE`, and `ERROR`.
+Статус задачи доступен в поле `status` контроллера Task, и представлен перечислительным объектом `TaskStatus`, который имеет свойства `INITIAL`, `PENDING`, `COMPLETE` и `ERROR`.
 
 ```ts
-import {TaskStatus} from '@lit/task';
+import { TaskStatus } from '@lit/task';
 
 // ...
-  if (this.task.status === TaskStatus.ERROR) {
+if (this.task.status === TaskStatus.ERROR) {
     // ...
-  }
+}
 ```
 
-Usually a Task will proceed from `INITIAL` to `PENDING` to one of `COMPLETE` or `ERROR`, and then back to `PENDING` if the task is re-run. When a task changes status it triggers a host update so the host element can handle the new task status and render if needed.
+Обычно задача переходит от `INITIAL` к `PENDING`, затем к одному из `COMPLETE` или `ERROR`, а затем возвращается к `PENDING`, если задача выполняется повторно. Когда задача меняет статус, она запускает обновление хоста, чтобы хост-элемент мог обработать новый статус задачи и выполнить рендеринг, если это необходимо.
 
-{% aside "info" "no-header" %}
+!!!info ""
 
-It's important to understand the status a task can be in, but it's not usually necessary to access it directly.
+    Важно понимать, в каком статусе может находиться задача, но обычно нет необходимости обращаться к нему напрямую.
 
-{% endaside %}
+В контроллере Task есть несколько элементов, которые относятся к состоянию задачи:
 
-There are a few members on the Task controller that relate to the state of the task:
-- `status`: the status of the task.
-- `value`: the current value of the task, if it has completed.
-- `error`: the current error of the task, if it has errored.
-- `render()`: a method that chooses a callback to run based on the current status.
+-   `status`: статус задачи.
+-   `value`: текущее значение задачи, если она завершилась.
+-   `error`: текущая ошибка задачи, если она ошиблась.
+-   `render()`: метод, который выбирает обратный вызов для выполнения, основываясь на текущем статусе.
 
-### Rendering Tasks
+### Задачи рендеринга
 
-The simplest and most common API to use to render a task is `task.render()`, since it chooses the right code to run and provides it the relevant data.
+Самым простым и распространенным API для рендеринга задачи является `task.render()`, поскольку он сам выбирает нужный код для запуска и предоставляет ему соответствующие данные.
 
-`render()` takes a config object with an optional callback for each task status:
-- `initial()`
-- `pending()`
-- `complete(value)`
-- `error(err)`
+`render()` принимает объект config с необязательным обратным вызовом для каждого статуса задачи:
 
-You can use `task.render()` inside a Lit `render()` method to render templates based on the task status:
+-   `initial()`
+-   `pending()`
+-   `complete(value)`
+-   `error(err)`.
+
+Вы можете использовать `task.render()` внутри метода Lit `render()` для рендеринга шаблонов в зависимости от статуса задачи:
 
 ```ts
   render() {
@@ -235,210 +247,208 @@ You can use `task.render()` inside a Lit `render()` method to render templates b
   }
 ```
 
-### Running tasks
+### Запуск задач
 
-By default, Tasks will run any time the arguments change. This is controlled by the `autoRun` option, which defaults to `true`.
+По умолчанию задачи запускаются при любом изменении аргументов. Это контролируется опцией `autoRun`, которая по умолчанию имеет значение `true`.
 
-#### Auto-run
+#### Автозапуск
 
-In _auto-run_ mode, the task will call the `args` function when the host has updated, compare the args to the previous args, and invoke the task function if they have changed. A task without `args` defined is in manual mode.
+В режиме _автозапуска_ задача будет вызывать функцию `args` при обновлении хоста, сравнивать аргументы с предыдущими аргументами и вызывать функцию задачи, если они изменились. Задача, в которой не определена функция `args`, находится в ручном режиме.
 
-#### Manual mode
+#### Ручной режим
 
-If `autoRun` is set to false, the task will be in _manual_ mode. In manual mode you can run the task by calling the `.run()` method, possibly from an event handler:
+Если для `autoRun` установлено значение false, задача будет находиться в _ручном_ режиме. В ручном режиме вы можете запустить задачу, вызвав метод `.run()`, возможно, из обработчика событий:
 
-{% switchable-sample %}
+=== "TS"
 
-```ts
-class MyElement extends LitElement {
+    ```ts
+    class MyElement extends LitElement {
+    	private _getDataTask = new Task(this, {
+    		task: async () => {
+    			const response = await fetch(
+    				`example.com/data/`,
+    			);
+    			return response.json();
+    		},
+    		args: () => [],
+    	});
 
-  private _getDataTask = new Task(
-    this,
-    {
-      task: async () => {
-        const response = await fetch(`example.com/data/`);
-        return response.json();
-      },
-      args: () => []
+    	render() {
+    		return html`
+    			<button @click=${this._onClick}>
+    				Get Data
+    			</button>
+    		`;
+    	}
+
+    	private _onClick() {
+    		this._getDataTask.run();
+    	}
     }
-  );
+    ```
 
-  render() {
-    return html`
-      <button @click=${this._onClick}>Get Data</button>
-    `;
-  }
+=== "JS"
 
-  private _onClick() {
-    this._getDataTask.run();
-  }
-}
-```
+    ```js
+    class MyElement extends LitElement {
+    	_getDataTask = new Task(this, {
+    		task: async () => {
+    			const response = await fetch(
+    				`example.com/data/`,
+    			);
+    			return response.json();
+    		},
+    		args: () => [],
+    	});
 
-```js
-class MyElement extends LitElement {
+    	render() {
+    		return html`
+    			<button @click=${this._onClick}>
+    				Get Data
+    			</button>
+    		`;
+    	}
 
-  _getDataTask = new Task(
-    this,
-    {
-      task: async () => {
-        const response = await fetch(`example.com/data/`);
-        return response.json();
-      },
-      args: () => []
+    	_onClick() {
+    		this._getDataTask.run();
+    	}
     }
-  );
+    ```
 
-  render() {
-    return html`
-      <button @click=${this._onClick}>Get Data</button>
-    `;
-  }
-
-  _onClick() {
-    this._getDataTask.run();
-  }
-}
-```
-
-{% endswitchable-sample %}
-
-In manual mode you can provide new arguments directly to `run()`:
+В ручном режиме вы можете предоставлять новые аргументы непосредственно в `run()`:
 
 ```ts
 this._task.run('arg1', 'arg2');
 ```
 
-If arguments are not provided to `run()`, they are gathered from the `args` callback.
+Если аргументы не переданы в `run()`, они собираются из обратного вызова `args`.
 
-### Aborting tasks
+### Прерывание задач
 
-A task function can be called while previous task runs are still pending. In these cases the result of the pending task runs will be ignored, and you should try to cancel any outstanding work or network I/O in order to save resources.
+Функция задачи может быть вызвана в то время, когда предыдущие задачи еще не выполнены. В этом случае результаты выполнения задач будут проигнорированы, и вам следует попытаться отменить все невыполненные работы или сетевые операции ввода-вывода, чтобы сэкономить ресурсы.
 
-You can do with with the [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) that is passed in the `signal` property of the second argument to the task function. When a pending task run is superseded by a new run, the `AbortSignal` that was passed to the pending run is aborted to signal the task run to cancel any pending work.
+Это можно сделать с помощью сигнала [`AbortSignal`](https://developer.mozilla.org/docs/Web/API/AbortSignal), который передается в свойстве `signal` второго аргумента функции task. Когда ожидающий запуск задачи заменяется новым запуском, сигнал `AbortSignal`, переданный ожидающему запуску, прерывается, чтобы дать сигнал запуску задачи отменить все ожидающие работы.
 
-`AbortSignal` doesn't cancel any work automatically - it is just a signal. To cancel some work you must either do it yourself by checking the signal, or forward the signal to another API that accepts `AbortSignal`s like [`fetch()`](https://developer.mozilla.org/en-US/docs/Web/API/fetch) or [`addEventListener()`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
+`AbortSignal` не отменяет никакой работы автоматически - это просто сигнал. Чтобы отменить какую-то работу, вы должны либо сделать это самостоятельно, проверив сигнал, либо передать сигнал другому API, принимающему `AbortSignal`, например [`fetch()`](https://developer.mozilla.org/docs/Web/API/fetch) или [`addEventListener()`](https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener).
 
-The easiest way to use the `AbortSignal` is to forward it to an API that accepts it, like `fetch()`.
+Самый простой способ использовать `AbortSignal` - переслать его в API, который его принимает, например `fetch()`.
 
-{% switchable-sample %}
+=== "TS"
 
-```ts
-  private _task = new Task(this, {
-    task: async (args, {signal}) => {
-      const response = await fetch(someUrl, {signal});
-      // ...
-    },
-  });
-```
+    ```ts
+    private _task = new Task(this, {
+    	task: async (args, {signal}) => {
+    	const response = await fetch(someUrl, {signal});
+    	// ...
+    	},
+    });
+    ```
 
-```js
-  _task = new Task(this, {
-    task: async (args, {signal}) => {
-      const response = await fetch(someUrl, {signal});
-      // ...
-    },
-  });
-```
+=== "JS"
 
-{% endswitchable-sample %}
+    ```js
+    _task = new Task(this, {
+    	task: async (args, { signal }) => {
+    		const response = await fetch(someUrl, { signal });
+    		// ...
+    	},
+    });
+    ```
 
-Forwarding the signal to `fetch()` will cause the browser to cancel the network request if the signal is aborted.
+Передача сигнала в `fetch()` приведет к тому, что браузер отменит запрос к сети, если сигнал будет прерван.
 
-You can also check if a signal has been aborted in your task function. You should check the signal after returning to a task function from an async call. `throwIfAborted()` is a convenient way to do this:
+Вы также можете проверить, был ли сигнал прерван, в вашей функции задачи. Проверять сигнал следует после возврата в функцию задачи из асинхронного вызова. Удобным способом для этого является `throwIfAborted()`:
 
-{% switchable-sample %}
+=== "TS"
 
-```ts
-  private _task = new Task(this, {
-    task: async ([arg1], {signal}) => {
-      const firstResult = await doSomeWork(arg1);
-      signal.throwIfAborted();
-      const secondResult = await doMoreWork(firstResult);
-      signal.throwIfAborted();
-      return secondResult;
-    },
-  });
-```
+    ```ts
+    private _task = new Task(this, {
+    	task: async ([arg1], {signal}) => {
+    	const firstResult = await doSomeWork(arg1);
+    	signal.throwIfAborted();
+    	const secondResult = await doMoreWork(firstResult);
+    	signal.throwIfAborted();
+    	return secondResult;
+    	},
+    });
+    ```
 
-```js
-  _task = new Task(this, {
-    task: async ([arg1], {signal}) => {
-      const firstResult = await doSomeWork(arg1);
-      signal.throwIfAborted();
-      const secondResult = await doMoreWork(firstResult);
-      signal.throwIfAborted();
-      return secondResult;
-    },
-  });
-```
+=== "JS"
 
-{% endswitchable-sample %}
+    ```js
+    _task = new Task(this, {
+    	task: async ([arg1], { signal }) => {
+    		const firstResult = await doSomeWork(arg1);
+    		signal.throwIfAborted();
+    		const secondResult = await doMoreWork(firstResult);
+    		signal.throwIfAborted();
+    		return secondResult;
+    	},
+    });
+    ```
 
-### Task chaining
+### Цепочка задач
 
-Sometimes you want to run one task when another task completes.
-This can be useful if the tasks have different arguments so that the chained task may run without the first task running again.
-In this case it'll use the first task like a cache. To do this you can use the value of a task as an argument to another task:
+Иногда требуется запустить одну задачу после завершения другой. Это может быть полезно, если задачи имеют разные аргументы, чтобы связанная задача могла выполняться без повторного запуска первой задачи. В этом случае первая задача будет использоваться как кэш. Для этого вы можете использовать значение задачи в качестве аргумента другой задачи:
 
-{% switchable-sample %}
+=== "TS"
 
-```ts
-class MyElement extends LitElement {
-  private _getDataTask = new Task(this, {
-    task: ([dataId]) => getData(dataId),
-    args: () => [this.dataId],
-  });
+    ```ts
+    class MyElement extends LitElement {
+    	private _getDataTask = new Task(this, {
+    		task: ([dataId]) => getData(dataId),
+    		args: () => [this.dataId],
+    	});
 
-  private _processDataTask = new Task(this, {
-    task: ([data, param]) => processData(data, param),
-    args: () => [this._getDataTask.value, this.param],
-  });
-}
-```
+    	private _processDataTask = new Task(this, {
+    		task: ([data, param]) => processData(data, param),
+    		args: () => [this._getDataTask.value, this.param],
+    	});
+    }
+    ```
 
-```js
-class MyElement extends LitElement {
-  _getDataTask = new Task(this, {
-    task: ([dataId]) => getData(dataId),
-    args: () => [this.dataId],
-  });
+=== "JS"
 
-  _processDataTask = new Task(this, {
-    task: ([data, param]) => processData(data, param),
-    args: () => [this._getDataTask.value, this.param],
-  });
-}
-```
+    ```js
+    class MyElement extends LitElement {
+    	_getDataTask = new Task(this, {
+    		task: ([dataId]) => getData(dataId),
+    		args: () => [this.dataId],
+    	});
 
-{% endswitchable-sample %}
+    	_processDataTask = new Task(this, {
+    		task: ([data, param]) => processData(data, param),
+    		args: () => [this._getDataTask.value, this.param],
+    	});
+    }
+    ```
 
-You can also often use one task function and await intermediate results:
+Вы также можете часто использовать одну функцию задачи и ожидать промежуточных результатов:
 
-{% switchable-sample %}
+=== "TS"
 
-```ts
-class MyElement extends LitElement {
-  private _getDataTask = new Task(this, {
-    task: ([dataId, param]) => {
-      const data = await getData(dataId);
-      return processData(data, param);
-    },
-    args: () => [this.dataId, this.param],
-  });
-}
-```
+    ```ts
+    class MyElement extends LitElement {
+    	private _getDataTask = new Task(this, {
+    		task: ([dataId, param]) => {
+    			const data = await getData(dataId);
+    			return processData(data, param);
+    		},
+    		args: () => [this.dataId, this.param],
+    	});
+    }
+    ```
 
-```js
-class MyElement extends LitElement {
-  _getDataTask = new Task(this, {
-    task: ([dataId, param]) => {
-      const data = await getData(dataId);
-      return processData(data, param);
-    },
-    args: () => [this.dataId, this.param],
-  });
-}
-```
+=== "JS"
 
-{% endswitchable-sample %}
+    ```js
+    class MyElement extends LitElement {
+    _getDataTask = new Task(this, {
+    	task: ([dataId, param]) => {
+    	const data = await getData(dataId);
+    	return processData(data, param);
+    	},
+    	args: () => [this.dataId, this.param],
+    });
+    }
+    ```

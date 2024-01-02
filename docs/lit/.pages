@@ -5,7 +5,7 @@ nav:
     - components
     - templates
     - composition
-    #- data
+    - data
     #- tools
     #- ssr
     #- frameworks

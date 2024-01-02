@@ -1,179 +1,181 @@
 ---
-title: Context
-eleventyNavigation:
-  key: Context
-  parent: Managing Data
-  order: 1
-versionLinks:
-  v2: data/context/
+description: Контекст - это способ сделать данные доступными для целых поддеревьев компонентов без необходимости вручную привязывать свойства к каждому компоненту
 ---
 
-Context is a way of making data available to entire component subtrees without having to manually bind properties to every component. The data is "contextually" available, such that ancestor elements in between a provider of data and consumer of data aren't even aware of it.
+# Контекст
 
-Lit's context implementation is available in the `@lit/context` package:
+Контекст - это способ сделать данные доступными для целых поддеревьев компонентов без необходимости вручную привязывать свойства к каждому компоненту. Данные доступны "контекстно", так что элементы-предки, находящиеся между поставщиком и потребителем данных, даже не знают о них.
+
+Реализация контекста Lit доступна в пакете `@lit/context`:
 
 ```bash
 npm i @lit/context
 ```
 
-Context is useful for data that needs to be consumed by a wide variety and large number of components - things like an app's data store, the current user, a UI theme - or when data-binding isn't an option, such as when an element needs to provide data to its light DOM children.
+Context полезен для данных, которые должны потребляться большим количеством компонентов - например, хранилищем данных приложения, текущим пользователем, темой пользовательского интерфейса - или когда привязка данных невозможна, например, когда элемент должен предоставлять данные своим легким дочерним элементам DOM.
 
-Context is very similar to React's Context, or to dependency injection systems like Angular's, with some important differences that make Context work with the dynamic nature of the DOM, and enable interoperability across different web components libraries, frameworks and plain JavaScript.
+Context очень похож на React's Context или на системы инъекции зависимостей, такие как Angular's, с некоторыми важными отличиями, которые позволяют Context работать с динамической природой DOM и обеспечивают совместимость между различными библиотеками веб-компонентов, фреймворками и обычным JavaScript.
 
-## Example
+## Пример
 
-Using context involves a _context object_ (sometimes called a key), a _provider_ and a _consumer_, which communicate using the context object.
+Использование контекста подразумевает наличие _контекстного объекта_ (иногда называемого ключом), _провайдера_ и _потребителя_, которые взаимодействуют с помощью контекстного объекта.
 
-Context definition (`logger-context.ts`):
+Определение контекста (`logger-context.ts`):
+
 ```ts
-import {createContext} from '@lit/context';
-import type {Logger} from 'my-logging-library';
-export type {Logger} from 'my-logging-library';
-export const loggerContext = createContext<Logger>('logger');
+import { createContext } from '@lit/context';
+import type { Logger } from 'my-logging-library';
+export type { Logger } from 'my-logging-library';
+export const loggerContext =
+    createContext<Logger>('logger');
 ```
 
-Provider:
-```ts
-import {LitElement, property, html} from 'lit';
-import {provide} from '@lit/context';
+Провайдер:
 
-import {Logger} from 'my-logging-library';
-import {loggerContext} from './logger-context.js';
+```ts
+import { LitElement, property, html } from 'lit';
+import { provide } from '@lit/context';
+
+import { Logger } from 'my-logging-library';
+import { loggerContext } from './logger-context.js';
 
 @customElement('my-app')
 class MyApp extends LitElement {
+    @provide({ context: loggerContext })
+    logger = new Logger();
 
-  @provide({context: loggerContext})
-  logger = new Logger();
-
-  render() {
-    return html`...`;
-  }
+    render() {
+        return html`...`;
+    }
 }
 ```
 
-Consumer:
-```ts
-import {LitElement, property} from 'lit';
-import {consume} from '@lit/context';
+Потребитель:
 
-import {type Logger, loggerContext} from './logger-context.js';
+```ts
+import { LitElement, property } from 'lit';
+import { consume } from '@lit/context';
+
+import {
+    type Logger,
+    loggerContext,
+} from './logger-context.js';
 
 export class MyElement extends LitElement {
+    @consume({ context: loggerContext })
+    @property({ attribute: false })
+    public logger?: Logger;
 
-  @consume({context: loggerContext})
-  @property({attribute: false})
-  public logger?: Logger;
-
-  private doThing() {
-    this.logger?.log('A thing was done');
-  }
+    private doThing() {
+        this.logger?.log('A thing was done');
+    }
 }
 ```
 
-## Key Concepts
+## Ключевые понятия
 
-### Context Protocol
-Lit's context is based on the [Context Community Protocol](https://github.com/webcomponents-cg/community-protocols/blob/main/proposals/context.md) by the W3C's [Web Components Community Group](https://www.w3.org/community/webcomponents/).
+### Протокол контекста
 
-This protocol enables interoperability between elements (or even non-element code) regardless of how they were built. Via the context protocol, a Lit-based element can provide data to a consumer not built with Lit, or vice versa.
+Контекст Lit основан на протоколе [Context Community Protocol](https://github.com/webcomponents-cg/community-protocols/blob/main/proposals/context.md), разработанном группой W3C [Web Components Community Group](https://www.w3.org/community/webcomponents/).
 
-The Context Protocol is based on DOM events. A consumer fires a `context-request` event that carries the context key that it wants, and any element above it can listen for the `context-request` event and provide data for that context key.
+Этот протокол обеспечивает взаимодействие между элементами (или даже неэлементным кодом) независимо от того, как они были созданы. С помощью контекстного протокола элемент, основанный на Lit, может предоставлять данные потребителю, не построенному на Lit, или наоборот.
 
-`@lit/context` implements this event-based protocol and makes it available via a few reactive controllers and decorators.
+Контекстный протокол основан на событиях DOM. Потребитель запускает событие `context-request`, которое несет в себе нужный ему контекстный ключ, а любой элемент над ним может прослушать событие `context-request` и предоставить данные для этого контекстного ключа.
 
-### Context Objects
+`@lit/context` реализует этот основанный на событиях протокол и делает его доступным с помощью нескольких реактивных контроллеров и декораторов.
 
-Contexts are identified by _context objects_ or _context keys_. They are objects that represent some potential data to be shared by the context object identity. You can think of them as similar to Map keys.
+### Объекты контекста
 
-### Providers
+Контексты идентифицируются _контекстными объектами_ или _контекстными ключами_. Это объекты, которые представляют некоторые потенциальные данные, подлежащие совместному использованию идентичностью контекстного объекта. Вы можете думать о них как о ключах Map.
 
-Providers are usually elements (but can be any event handler code) that provide data for specific context keys.
+### Провайдеры
 
-### Consumers
+Провайдеры обычно являются элементами (но могут быть и любыми обработчиками событий), которые предоставляют данные для определенных ключей контекста.
 
-Consumers request data for specific context keys.
+### Потребители
 
-### Subscriptions
+Потребители запрашивают данные для определенных ключей контекста.
 
-When a consumer requests data for a context, it can tell the provider that it wants to _subscribe_ to changes in the context. If the provider has new data, the consumer will be notified and can automatically update.
+### Подписки
 
-## Usage
+Когда потребитель запрашивает данные для контекста, он может сообщить провайдеру, что хочет подписаться на изменения в контексте. Если у провайдера появятся новые данные, потребитель получит уведомление и сможет автоматически их обновить.
 
-### Defining a context
+## Использование
 
-Every usage of context must have a context object to coordinate the data request. This context object represents the identity and type of data that is provided.
+### Определение контекста
 
-Context objects are created with the `createContext()` function:
+Каждое использование контекста должно иметь объект контекста для координации запроса данных. Этот объект контекста представляет личность и тип предоставляемых данных.
+
+Объекты контекста создаются с помощью функции `createContext()`:
 
 ```ts
-export const myContext = createContext(Symbol('my-context'));
+export const myContext = createContext(
+    Symbol('my-context'),
+);
 ```
 
-It is recommended to put context objects in their own module so that they're importable independent of specific providers and consumers.
+Рекомендуется помещать объекты контекста в отдельный модуль, чтобы их можно было импортировать независимо от конкретных поставщиков и потребителей.
 
-#### Context type-checking
+#### Проверка типа контекста
 
-`createContext()` takes any value and returns it directly. In TypeScript, the value is cast to a typed `Context` object, which carries the type of the context _value_ with it.
+Функция `createContext()` принимает любое значение и возвращает его напрямую. В TypeScript значение приводится к типизированному объекту `Context`, который несет в себе тип контекста _значение_.
 
-In case of a mistake like this:
+В случае ошибки, подобной этой:
+
 ```ts
 const myContext = createContext<Logger>(Symbol('logger'));
 
 class MyElement extends LitElement {
-  @provide({context: myContext})
-  name: string
+    @provide({ context: myContext })
+    name: string;
 }
 ```
 
-TypeScript will warn that the type `string` is not assignable to the type `Logger`. Note that this check is currently only for public fields.
+TypeScript предупредит, что тип `string` не может быть присвоен типу `Logger`. Обратите внимание, что в настоящее время эта проверка выполняется только для публичных полей.
 
-<!-- 
-  TODO https://github.com/lit/lit/issues/3926 this will likely need to be updated once we move to standard decorators.
- -->
+#### Равенство контекста
 
-#### Context equality
+Объекты контекста используются провайдерами для сопоставления события контекстного запроса со значением. Контексты сравниваются на основе строгого равенства (`===`), поэтому провайдер будет обрабатывать контекстный запрос только в том случае, если его контекстный ключ равен контекстному ключу запроса.
 
-Context objects are used by providers to match a context request event to a value. Contexts are compared with strict equality (`===`), so a provider will only handle a context request if its context key equals the context key of the request.
+Это означает, что существует два основных способа создания объекта контекста:
 
-This means that there are two main ways to create a context object:
-1. With a value that is globally unique, like an object (`{}`)  or symbol (`Symbol()`)
-2. With a value that is not globally unique, so that it can be equal under strict equality, like a string (`'logger'`) or _global_ symbol (`Symbol.for('logger')`).
+1.  С помощью глобально уникального значения, например, объекта (`{}`) или символа (`Symbol()`)
+2.  Со значением, которое не является глобально уникальным, так что оно может быть равным при строгом равенстве, как строка (`'logger'`) или _глобальный_ символ (`Symbol.for('logger')`).
 
-If you want two _separate_ `createContext()` calls to refer to the same
-context, then use a key that will be equal under strict equality like a
-string:
+Если вы хотите, чтобы два _раздельных_ вызова `createContext()` ссылались на один и тот же контекст, то используйте ключ, который будет равен при строгом равенстве, например строку:
+
 ```ts
 // true
-createContext('my-context') === createContext('my-context')
+createContext('my-context') === createContext('my-context');
 ```
 
-Beware though that two modules in your app could use the same context key to refer to different objects. To avoid unintended collisions you may want to use a relatively unique string, e.g. like `'console-logger'` instead of `'logger'`.
+Однако помните, что два модуля в вашем приложении могут использовать один и тот же контекстный ключ для ссылки на разные объекты. Чтобы избежать непреднамеренных коллизий, вы можете использовать относительно уникальную строку, например, `'console-logger'` вместо `'logger'`.
 
-Usually it's best to use a globally unique context object. Symbols are one of the easiest ways to do this.
+Обычно лучше всего использовать глобально уникальный контекстный объект. Символы - один из самых простых способов сделать это.
 
-### Providing a context
+### Предоставление контекста
 
-There are two ways in `@lit/context` to provide a context value: the ContextProvider controller and the `@provide()` decorator.
+В `@lit/context` есть два способа предоставить значение контекста: контроллер `ContextProvider` и декоратор `@provide()`.
 
 #### `@provide()`
 
-The `@provide()` decorator is the easiest way to provide a value if you're using decorators. It creates a ContextProvider controller for you.
+Декоратор `@provide()` - это самый простой способ предоставить значение, если вы используете декораторы. Он создает для вас контроллер ContextProvider.
 
-Decorate a property with `@provide()` and give it the context key:
+Украсьте свойство с помощью `@provide()` и передайте ему ключ контекста:
+
 ```ts
-import {LitElement, html} from 'lit';
-import {property} from 'lit/decorators.js';
-import {provide} from '@lit/context';
-import {myContext, MyData} from './my-context.js';
+import { LitElement, html } from 'lit';
+import { property } from 'lit/decorators.js';
+import { provide } from '@lit/context';
+import { myContext, MyData } from './my-context.js';
 
 class MyApp extends LitElement {
-  @provide({context: myContext})
-  myData: MyData;
+    @provide({ context: myContext })
+    myData: MyData;
 }
 ```
 
-You can make the property also a reactive property with `@property()` or `@state()` so that setting it will update the provider element as well as context consumers.
+Вы можете сделать свойство также реактивным с помощью `@property()` или `@state()`, чтобы его установка обновляла элемент провайдера, а также потребителей контекста.
 
 ```ts
   @provide({context: myContext})
@@ -181,7 +183,7 @@ You can make the property also a reactive property with `@property()` or `@state
   myData: MyData;
 ```
 
-Context properties are often intended to be private. You can make private properties reactive with `@state()`:
+Свойства контекста часто должны быть приватными. Вы можете сделать приватные свойства реактивными с помощью `@state()`:
 
 ```ts
   @provide({context: myContext})
@@ -189,88 +191,96 @@ Context properties are often intended to be private. You can make private proper
   private _myData: MyData;
 ```
 
-Making a context property public lets an element provide a public field to its child tree:
+Если сделать свойство контекста публичным, элемент может предоставить публичное поле своему дочернему дереву:
 
 ```ts
-  html`<my-provider-element .myData=${someData}>`
+html`<my-provider-element
+    .myData=${someData}
+></my-provider-element>`;
 ```
 
 #### ContextProvider
 
-`ContextProvider` is a reactive controller that manages `context-request` event handlers for you.
+`ContextProvider` - это реактивный контроллер, который управляет обработчиками событий `context-request` за вас.
 
 ```ts
-import {LitElement, html} from 'lit';
-import {ContextProvider} from '@lit/context';
-import {myContext} from './my-context.js';
+import { LitElement, html } from 'lit';
+import { ContextProvider } from '@lit/context';
+import { myContext } from './my-context.js';
 
 export class MyApp extends LitElement {
-  private _provider = new ContextProvider(this, {context: myContext});
+    private _provider = new ContextProvider(this, {
+        context: myContext,
+    });
 }
 ```
 
-ContextProvider can take an initial value as an option in the constructor:
+`ContextProvider` может принимать начальное значение в качестве опции в конструкторе:
 
 ```ts
-  private _provider = new ContextProvider(this, {context: myContext, initialValue: myData});
+private _provider = new ContextProvider(this, {context: myContext, initialValue: myData});
 ```
 
-Or you can call `setValue()`:
+Или вы можете вызвать `setValue()`:
+
 ```ts
-  this._provider.setValue(myData);
+this._provider.setValue(myData);
 ```
 
-### Consuming a context
+### Потребление контекста
 
-#### `@consume()` decorator
+#### Декоратор `@consume()`
 
-The `@consume()` decorator is the easiest way to consume a value if you're using decorators. It creates a ContextConsumer controller for you.
+Декоратор `@consume()` - это самый простой способ потребления значения, если вы используете декораторы. Он создает для вас контроллер ContextConsumer.
 
-Decorate a property with `@consume()` and give it the context key:
+Украсьте свойство с помощью `@consume()` и передайте ему ключ контекста:
+
 ```ts
-import {LitElement, html} from 'lit';
-import {consume} from '@lit/context';
-import {myContext, MyData} from './my-context.js';
+import { LitElement, html } from 'lit';
+import { consume } from '@lit/context';
+import { myContext, MyData } from './my-context.js';
 
 class MyElement extends LitElement {
-  @consume({context: myContext})
-  myData: MyData;
+    @consume({ context: myContext })
+    myData: MyData;
 }
 ```
 
-When this element is connected to the document, it will automatically fire a `context-request` event, get a provided value, assign it to the property, and trigger an update of the element.
+Когда этот элемент подключается к документу, он автоматически запускает событие `context-request`, получает предоставленное значение, присваивает его свойству и запускает обновление элемента.
 
 #### ContextConsumer
 
-ContextConsumer is a reactive controller that manages dispatching the `context-request` event for you. The controller will cause the host element to update when new values are provided. The provided value is then available at the `.value` property of the controller.
+ContextConsumer - это реактивный контроллер, который управляет диспетчеризацией события `context-request` за вас. Контроллер будет заставлять элемент-хост обновляться при получении новых значений. Предоставленное значение будет доступно в свойстве `.value` контроллера.
 
 ```ts
-import {LitElement, property} from 'lit';
-import {ContextConsumer} from '@lit/context';
-import {myContext} from './my-context.js';
+import { LitElement, property } from 'lit';
+import { ContextConsumer } from '@lit/context';
+import { myContext } from './my-context.js';
 
 export class MyElement extends LitElement {
-  private _myData = new ContextConsumer(this, {context: myContext});
+    private _myData = new ContextConsumer(this, {
+        context: myContext,
+    });
 
-  render() {
-    const myData = this._myData.value;
-    return html`...`;
-  }
+    render() {
+        const myData = this._myData.value;
+        return html`...`;
+    }
 }
 ```
 
-#### Subscribing to contexts
+#### Подписка на контексты
 
-Consumers can subscribe to context values so that if a provider has a new value, it can give it to all subscribed consumers, causing them to update.
+Потребители могут подписываться на значения контекста, так что если у провайдера появляется новое значение, он может передать его всем подписанным потребителям, заставив их обновиться.
 
-You can subscribe with the `@consume()` decorator:
+Подписаться можно с помощью декоратора `@consume()`:
 
 ```ts
   @consume({context: myContext, subscribe: true})
   myData: MyData;
 ```
 
-and the ContextConsumer controller:
+и контроллера ContextConsumer:
 
 ```ts
   private _myData = new ContextConsumer(this,
@@ -281,101 +291,102 @@ and the ContextConsumer controller:
   );
 ```
 
-## Example Use Cases
+## Примеры использования
 
-### Current user, locale, etc.
+### Текущий пользователь, локаль и т. д.
 
-The most common context use cases involve data that is global to a page and possibly only sparsely needed in components throughout the page. Without context it's possible that most or all components would need to accept and propagate reactive properties for the data.
+Наиболее распространенные случаи использования контекста связаны с данными, которые являются глобальными для страницы и, возможно, нужны лишь немногим компонентам на странице. Без контекста возможно, что большинство или все компоненты должны принимать и распространять реактивные свойства для данных.
 
-### Services
+### Сервисы
 
-App-global services, like loggers, analytics, data stores, can be provided by context. An advantage of context over importing from a common module are the late coupling and tree-scoping that context provides. Tests can easily provide mock services, or different parts of the page can be given different service instances.
+Глобальные сервисы приложения, такие как логгеры, аналитика, хранилища данных, могут быть предоставлены контекстом. Преимущество контекста перед импортом из общего модуля - в позднем связывании и древовидном копировании, которые обеспечивает контекст. Тесты могут легко предоставлять имитируемые сервисы, или разные части страницы могут быть предоставлены различным экземплярам сервисов.
 
-### Themes
+### Темы
 
-Themes are sets of styles that apply to the entire page or entire subtrees within the page - exactly the kind of scope of data that context provides.
+Темы - это наборы стилей, которые применяются ко всей странице или целым поддеревьям внутри страницы - именно такой охват данных, который обеспечивает контекст.
 
-One way of building a theme system would be to define a `Theme` type that containers can provide that holds named styles. Elements that want to apply a theme can consume the theme object and look up styles by name. Custom theme reactive controllers can wrap ContextProvider and ContextConsumer to reduce boilerplate.
+Одним из способов построения системы тем было бы определение типа `Theme`, который могут предоставлять контейнеры и который содержит именованные стили. Элементы, которые хотят применить тему, могут использовать объект темы и искать стили по имени. Пользовательские реактивные контроллеры тем могут обернуть ContextProvider и ContextConsumer, чтобы уменьшить количество шаблонов.
 
-### HTML-based plugins
+### Плагины на основе HTML
 
-Context can be used to pass data from a parent to its light DOM children. Since the parent does usually not create the light DOM children, it cannot leverage template-based data-binding to pass data to them, but it can listen to and respond to `context-request` events.
+Контекст можно использовать для передачи данных от родителя к его легким DOM-детям. Поскольку родитель обычно не создает легкие DOM-дочерние элементы, он не может использовать привязку данных на основе шаблона для передачи им данных, но он может слушать и отвечать на события `context-request`.
 
-For example, consider a code editor element with plugins for different language modes. You can make a plain HTML system for adding features using context:
+Например, рассмотрим элемент редактора кода с плагинами для разных языковых режимов. Вы можете сделать простую HTML-систему для добавления функций с помощью контекста:
 
 ```html
 <code-editor>
-  <code-editor-javascript-mode></code-editor-javascript-mode>
-  <code-editor-python-mode></code-editor-python-mode>
+    <code-editor-javascript-mode></code-editor-javascript-mode>
+    <code-editor-python-mode></code-editor-python-mode>
 </code-editor>
 ```
 
-In this case `<code-editor>` would provide an API for adding language modes via context, and plugin elements would consume that API and add themselves to the editor.
+В этом случае `<code-editor>` будет предоставлять API для добавления языковых режимов через контекст, а подключаемые элементы будут использовать этот API и добавлять себя в редактор.
 
-### Data formatters, link generators, etc.
+### Форматировщики данных, генераторы ссылок и т. д.
 
-Sometimes reusable components will need to format data or URLs in an application-specific way. For example, a documentation viewer that renders a link to another item. The component will not know the URL space of the application.
+Иногда многократно используемые компоненты должны форматировать данные или URL-адреса специфическим для приложения способом. Например, просмотрщик документации, который отображает ссылку на другой элемент. Компонент не будет знать URL-пространство приложения.
 
-In these cases the component can depend on a context-provided function that will apply the application-specific formatting to the data or link.
+В таких случаях компонент может зависеть от функции, предоставляемой контекстом, которая применит специфическое для приложения форматирование к данным или ссылке.
 
 ## API
 
-<div class="alert alert-info">
+!!!info ""
 
-These API docs are a summary until generated API docs are available
-
-</div>
+    Эта документация по API является кратким обзором до тех пор, пока не появятся готовые документы по API
 
 ### `createContext()`
 
-Creates a typed Context object
+Создает типизированный объект Context
 
-**Import**:
-
-```ts
-import {property} from '@lit/context';
-```
-
-**Signature**:
+**Импорт**:
 
 ```ts
-function createContext<ValueType, K = unknown>(key: K): Context<K, ValueType>;
+import { property } from '@lit/context';
 ```
 
+**Синтаксис**:
 
-Contexts are compared with with strict equality.
+```ts
+function createContext<ValueType, K = unknown>(
+    key: K,
+): Context<K, ValueType>;
+```
 
-If you want two separate `createContext()` calls to referrer to the same context, then use a key that will by equal under strict equality like a string for `Symbol.for()`:
+Контексты сравниваются с помощью строгого равенства.
+
+Если вы хотите, чтобы два отдельных вызова `createContext()` ссылались на один и тот же контекст, то используйте ключ, который будет равен при строгом равенстве, как строка для `Symbol.for()`:
 
 ```ts
 // true
-createContext('my-context') === createContext('my-context')
+createContext('my-context') === createContext('my-context');
 // true
-createContext(Symbol.for('my-context')) === createContext(Symbol.for('my-context'))
+createContext(Symbol.for('my-context')) ===
+    createContext(Symbol.for('my-context'));
 ```
 
-If you want a context to be unique so that it's guaranteed to not collide with other contexts, use a key that's unique under strict equality, like a `Symbol()` or object.:
+Если вы хотите, чтобы контекст был уникальным и гарантированно не сталкивался с другими контекстами, используйте ключ, который уникален при строгом равенстве, например `Symbol()` или `object`:
 
 ```ts
 // false
-createContext(Symbol('my-context')) === createContext(Symbol('my-context'))
+createContext(Symbol('my-context')) ===
+    createContext(Symbol('my-context'));
 // false
-createContext({}) === createContext({})
+createContext({}) === createContext({});
 ```
 
-The `ValueType` type parameter is the type of value that can be provided by this context. It's uses to provide accurate types in the other context APIs.
+Параметр типа `ValueType` - это тип значения, которое может быть предоставлено данным контекстом. Он используется для предоставления точных типов в других API контекста.
 
 ### `@provide()`
 
-A property decorator that adds a ContextProvider controller to the component making it respond to any `context-request` events from its children consumer.
+Декоратор свойств, который добавляет контроллер ContextProvider в компонент, заставляя его реагировать на любые события `context-request` от дочерних потребителей.
 
-**Import**:
+**Импорт**:
 
 ```ts
-import {provide} from '@lit/context';
+import { provide } from '@lit/context';
 ```
 
-**Signature**:
+**Синтаксис**:
 
 ```ts
 @provide({context: Context})
@@ -383,33 +394,33 @@ import {provide} from '@lit/context';
 
 ### `@consume()`
 
-A property decorator that adds a ContextConsumer controller to the component which will retrieve a value for the property via the Context protocol.
+Декоратор свойств, добавляющий в компонент контроллер `ContextConsumer`, который будет получать значение свойства по протоколу `Context`.
 
-**Import**:
+**Импорт**:
 
 ```ts
-import {consume} from '@lit/context';
+import { consume } from '@lit/context';
 ```
 
-**Signature**:
+**Синтаксис**:
 
 ```ts
 @consume({context: Context, subscribe?: boolean})
 ```
 
-`subscribe` is `false` by default. Set it to `true` to subscribe to updates to the context provided value.
+По умолчанию значение `subscribe` равно `false`. Установите значение `true`, чтобы подписаться на обновления значения, предоставленного контекстом.
 
 ### `ContextProvider`
 
-A ReactiveController which adds context provider behavior to a custom element by listening to `context-request` events.
+`ReactiveController`, который добавляет поведение поставщика контекста в пользовательский элемент, слушая события `context-request`.
 
-**Import**:
+**Импорт**:
 
 ```ts
-import {ContextProvider} from '@lit/context';
+import { ContextProvider } from '@lit/context';
 ```
 
-**Constructor**:
+**Конструктор**:
 
 ```ts
 ContextProvider(
@@ -421,24 +432,24 @@ ContextProvider(
 )
 ```
 
-**Members**
+**Члены**:
 
-- `setValue(v: T, force = false): void`
+-   `setValue(v: T, force = false): void`
 
-    Sets the value provided, and notifies any subscribed consumers of the new value if the value changed. `force` causes a notification even if the value didn't change, which can be useful if an object had a deep property change.
-
+    Устанавливает указанное значение и уведомляет всех подписанных потребителей о новом значении, если оно изменилось. `force` вызывает уведомление, даже если значение не изменилось, что может быть полезно при глубоком изменении свойств объекта.
 
 ### `ContextConsumer`
 
-A ReactiveController which adds context consuming behavior to a custom element by dispatching `context-request` events.
+Реактивный контроллер, который добавляет поведение потребления контекста к пользовательскому элементу, отправляя события `context-request`.
 
-**Import**:
+**Импорт**:
 
 ```ts
-import {ContextConsumer} from '@lit/context';
+import { ContextConsumer } from '@lit/context';
 ```
 
-**Constructor**:
+**Конструктор**:
+
 ```ts
 ContextConsumer(
   host: HostElement,
@@ -450,84 +461,85 @@ ContextConsumer(
 )
 ```
 
-**Members**
+**Члены**:
 
-- `value: ContextType<C>`
+-   `value: ContextType<C>`
 
-   The current value for the context.
+    Текущее значение контекста.
 
-When the host element is connected to the document it will emit a `context-request` event with its context key. When the context request is satisfied the controller will invoke the callback, if present, and trigger a host update so it can respond to the new value.
+Когда хост-элемент подключается к документу, он испускает событие `context-request` с ключом контекста. Когда запрос контекста будет удовлетворен, контроллер вызовет обратный вызов, если он присутствует, и запустит обновление хоста, чтобы он мог отреагировать на новое значение.
 
-It will also call the dispose method given by the provider when the host element is disconnected.
+Он также вызовет метод dispose, предоставленный провайдером, когда элемент хоста будет отключен.
 
 ### `ContextRoot`
 
-A ContextRoot can be used to gather unsatisfied context requests and re-dispatch them when new providers which satisfy matching context keys are available. This allows providers to be added to a DOM tree, or upgraded, after the consumers.
+ContextRoot может использоваться для сбора неудовлетворенных контекстных запросов и их повторной отправки при появлении новых провайдеров, удовлетворяющих соответствующим контекстным ключам. Это позволяет добавлять провайдеров в дерево DOM или обновлять его вслед за потребителями.
 
-**Import**:
+**Импорт**:
 
 ```ts
-import {ContextRoot} from '@lit/context';
+import { ContextRoot } from '@lit/context';
 ```
 
-**Constructor**:
+**Конструктор**:
+
 ```ts
-ContextRoot()
+ContextRoot();
 ```
 
-**Members**
+**Члены**:
 
-- `attach(element: HTMLElement): void`
+-   `attach(element: HTMLElement): void`
 
-    Attaches the ContextRoot to this element and starts listening to `context-request` events.
+    Прикрепляет `ContextRoot` к этому элементу и начинает прослушивать события `context-request`.
 
-- `detach(element: HTMLElement): void`
+-   `detach(element: HTMLElement): void`
 
-    Detaches the ContextRoot from this element, stops listening to `context-request` events.
+    Отсоединяет корень `ContextRoot` от этого элемента, перестает слушать события `context-request`.
 
 ### `ContextRequestEvent`
 
-The event fired by consumers to request a context value. The API and behavior of this event is specified by the [Context Protocol](https://github.com/webcomponents-cg/community-protocols/blob/main/proposals/context.md).
+Событие, запускаемое потребителями для запроса значения контекста. API и поведение этого события определены [Context Protocol](https://github.com/webcomponents-cg/community-protocols/blob/main/proposals/context.md).
 
-**Import**:
+**Импорт**:
 
 ```ts
-import {ContextRequestEvent} from '@lit/context';
+import { ContextRequestEvent } from '@lit/context';
 ```
 
-The `context-request` bubbles and is composed.
+`context-request` всплывает и композируется.
 
-**Members**
+**Члены**:
 
-- `readonly context: C`
+-   `readonly context: C`
 
-    The context object this event is requesting a value for
+    Объект контекста, для которого это событие запрашивает значение
 
-- `readonly callback: ContextCallback<ContextType<C>>`
+-   `readonly callback: ContextCallback<ContextType<C>>`
 
-    The function to call to provide a context value
+    Функция, которую нужно вызвать для получения значения контекста
 
-- `readonly subscribe?: boolean`
+-   `readonly subscribe?: boolean`
 
-    Whether the consumers wants to subscribe to new context values
+    Желает ли потребитель подписаться на новые значения контекста.
 
 ### `ContextCallback`
 
-A callback which is provided by a context requester and is called with the value satisfying the request.
+Обратный вызов, который предоставляется запросчиком контекста и вызывается со значением, удовлетворяющим запросу.
 
-This callback can be called multiple times by context providers as the requested value is changed.
+Этот обратный вызов может быть вызван несколько раз поставщиками контекста по мере изменения запрашиваемого значения.
 
-**Import**:
+**Импорт**:
 
 ```ts
-import {type ContextCallback} from '@lit/context';
+import { type ContextCallback } from '@lit/context';
 ```
 
-**Signature**:
+**Синтаксис**:
 
 ```ts
 type ContextCallback<ValueType> = (
-  value: ValueType,
-  unsubscribe?: () => void
+    value: ValueType,
+    unsubscribe?: () => void,
 ) => void;
 ```
