@@ -1,24 +1,19 @@
 ---
-title: Tools and workflows overview
-eleventyNavigation:
-  key: Overview
-  parent: Tools
-  order: 1
-versionLinks:
-  v1: lit-html/tools/
-  v2: tools/overview/
+description: Компоненты Lit написаны на обычном JavaScript или TypeScript и работают в современных браузерах с минимальным набором инструментов, поэтому вам не нужны никакие компиляторы, инструменты или рабочие процессы, специфичные для Lit
 ---
 
-Lit components are written using plain JavaScript or TypeScript and run out-of-the box on modern browsers with minimal tooling, so you don't _need_ any Lit-specific compilers, tools, or workflows.
+# Обзор инструментов и рабочих процессов
 
-However, Lit uses very _modern_ web platform features, so it does require some tooling and polyfills to run on older browsers. Some tools also require configuration options to handle modern JavaScript. And, while Lit is "just JavaScript" there are some tools that make working with web components  much nicer.
+Компоненты Lit написаны на обычном JavaScript или TypeScript и работают в современных браузерах с минимальным набором инструментов, поэтому вам не нужны никакие компиляторы, инструменты или рабочие процессы, специфичные для Lit.
 
-The tools and workflows docs cover the different phases of development:
+Однако Lit использует очень _современные_ возможности веб-платформы, поэтому для его работы на старых браузерах требуются некоторые инструменты и полифиллы. Некоторые инструменты также требуют настроек для работы с современным JavaScript. И хотя Lit - это "просто JavaScript", есть некоторые инструменты, которые делают работу с веб-компонентами намного приятнее.
 
-* [Requirements](/docs/v3/tools/requirements/): Common requirements for tools and browsers to work with Lit out of the box, as well as compiler options and polyfills required for legacy browsers.
-* [Development](/docs/v3/tools/development/): Setting up your local development environment, including dev server, linting, formatting, syntax highlighting and type-checking.
-* [Testing](/docs/v3/tools/testing/): Recommendations for testing Lit projects in modern and legacy browsers.
-* [Publishing](/docs/v3/tools/publishing/): Guidelines for publishing your component packages to npm.
-* [Building for production](/docs/v3/tools/production/): Building applications for production, including bundling, optimizations, and differential serving for modern and legacy browsers.
-* [Starter Kits](/docs/v3/tools/starter-kits): Instructions on using our Lit component starter kits for JavaScript and TypeScript.
-* [Adding Lit](/docs/v3/tools/adding-lit): Installing and adding Lit to an existing project.
+Документация по инструментам и рабочим процессам охватывает различные этапы разработки:
+
+-   [Требования](requirements.md): Общие требования к инструментам и браузерам для работы с Lit из коробки, а также параметры компилятора и полифиллы, необходимые для устаревших браузеров.
+-   [Разработка](development.md): Настройка локальной среды разработки, включая dev-сервер, линтинг, форматирование, подсветку синтаксиса и проверку типов.
+-   [Тестирование](testing.md): Рекомендации по тестированию проектов Lit в современных и устаревших браузерах.
+-   [Публикация](publishing.md): Рекомендации по публикации пакетов компонентов на npm.
+-   [Сборка для производства](production.md): Сборка приложений для производства, включая комплектацию, оптимизацию и дифференциальный сервис для современных и устаревших браузеров.
+-   [Стартовые наборы](starter-kits.md): Инструкции по использованию наших стартовых наборов компонентов Lit для JavaScript и TypeScript.
+-   [Добавление Lit](adding-lit.md): Установка и добавление Lit в существующий проект.

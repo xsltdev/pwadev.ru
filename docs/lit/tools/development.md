@@ -1,60 +1,59 @@
 ---
-title: Development
-eleventyNavigation:
-  key: Development
-  parent: Tools
-  order: 3
-versionLinks:
-  v1: lit-html/tools/#development
-  v2: tools/development/
+description: На этапе разработки проектов, когда вы пишете компоненты Lit, следующие инструменты помогут вам повысить производительность
 ---
 
-During the development phase of your projects, when you're writing Lit components, the following tools can help boost your productivity:
+# Разработка
 
-* A dev server, for previewing code without a build step.
-* TypeScript, for writing type-checked code.
-* A linter, for catching Javascript errors.
-* A code formatter, for consistently formatting code.
-* Lit-specific IDE plugins, for linting and syntax-highlighting Lit templates.
+На этапе разработки проектов, когда вы пишете компоненты Lit, следующие инструменты помогут вам повысить производительность:
 
-Check out the [Starter Kits](/docs/v3/tools/starter-kits/) documentation to easily setup a development environment with all of these features pre-configured.
+-   dev-сервер для предварительного просмотра кода без этапа сборки.
+-   TypeScript для написания кода с проверкой типов.
+-   Линтер для выявления ошибок Javascript.
+-   Форматировщик кода для последовательного форматирования кода.
+-   Lit-специфические плагины IDE для линтинга и синтаксической подсветки Lit-шаблонов.
 
-## Development and production builds
+Ознакомьтесь с документацией [Стартовых наборов](starter-kits.md), чтобы легко создать среду разработки с предварительно настроенными функциями.
 
-All the Lit packages are published with development and production builds, using Node's support for [export conditions](https://nodejs.org/api/packages.html#packages_conditional_exports).
+## Сборки для разработки и производства
 
-The production build is optimized with very aggressive minification settings. The development build is unminified for easier debugging and includes extra checks and warnings. The default build is the production build, so that projects don't accidentally deploy the larger development build.
+Все пакеты Lit публикуются в сборках для разработки и производства, используя поддержку Node для [export conditions](https://nodejs.org/api/packages.html#packages_conditional_exports).
 
-You must opt into the development build by specifying the `"development"` export condition in tools that support export conditions, such as Rollup, Webpack, and Web Dev Server. This is done differently for each tool.
+Производственная сборка оптимизирована с очень агрессивными настройками минификации. Сборка для разработки не минифицирована для облегчения отладки и включает дополнительные проверки и предупреждения. По умолчанию используется производственная сборка, чтобы проекты случайно не развернули большую сборку разработки.
 
-For example, in Rollup, using the `@rollup/node-resolve` plugin, you can select the development build with `exportConditions` option:
+Вы должны выбрать сборку для разработки, указав условие экспорта `"development"` в инструментах, поддерживающих условия экспорта, таких как Rollup, Webpack и Web Dev Server. Для каждого инструмента это делается по-разному.
+
+Например, в Rollup, используя плагин `@rollup/node-resolve`, вы можете выбрать сборку для разработки с помощью опции `exportConditions`:
 
 ```js
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 export default {
-  // ...
-  plugins: [nodeResolve({
-    exportConditions: ['development']
-  })]
+    // ...
+    plugins: [
+        nodeResolve({
+            exportConditions: ['development'],
+        }),
+    ],
 };
 ```
 
-### Development build runtime warnings
+### Предупреждения времени выполнения в сборках разработки
 
-The development builds of `ReactiveElement` and `LitElement` support extra runtime warnings that can help identify issues that would be costly to check for in production builds.
+Сборки разработки `ReactiveElement` и `LitElement` поддерживают дополнительные предупреждения во время выполнения, которые могут помочь выявить проблемы, которые было бы дорого проверять в производственных сборках.
 
-Some warnings are always displayed.  There are also two categories of _optional warnings_ that can be turned on or off:
-* `'migration'`. Warnings related to migration from LitElement 2.x. Off by default.
-* `'change-in-update'`. Warnings related to changing reactive state during an update. On by default.
+Некоторые предупреждения отображаются всегда. Также есть две категории _опциональных предупреждений_, которые можно включить или выключить:
 
-You can control the optional warnings using the `ReactiveElement.disableWarning()` and `ReactiveElement.enableWarning()` methods. You can call them on any subclass of `ReactiveElement`, including `LitElement` and your own classes. Calling the methods on a given class turns warnings on or off for and the warnings for that class and any subclasses. For instance, you can turn off a category of warnings on all `ReactiveElement` classes, on all `LitElement` classes, or on a specific `LitElement` subclass.
+-   `'migration'`. Предупреждения, связанные с переходом с LitElement 2.x. По умолчанию выключены.
+-   `'change-in-update'`. Предупреждения, связанные с изменением реактивного состояния во время обновления. По умолчанию включено.
 
-These methods are only available in development builds, so be sure to guard their access. We recommend using optional chaining.
+Управлять необязательными предупреждениями можно с помощью методов `ReactiveElement.disableWarning()` и `ReactiveElement.enableWarning()`. Вы можете вызывать их у любого подкласса `ReactiveElement`, включая `LitElement` и ваши собственные классы. Вызов методов на заданном классе включает или выключает предупреждения для этого класса и всех его подклассов. Например, вы можете отключить категорию предупреждений для всех классов `ReactiveElement`, для всех классов `LitElement` или для определенного подкласса `LitElement`.
 
-Examples:
+Эти методы доступны только в сборках разработки, поэтому не забудьте защитить доступ к ним. Мы рекомендуем использовать необязательное построение цепочек.
+
+Примеры:
+
 ```ts
-import {LitElement, ReactiveElement} from 'lit';
+import { LitElement, ReactiveElement } from 'lit';
 
 // Turn off migration warnings on all ReactiveElements,
 // including LitElements
@@ -65,76 +64,73 @@ LitElement.disableWarning?.('change-in-update');
 
 // Turn off update warnings on one element
 MyElement.disableWarning?.('change-in-update');
-
 ```
 
-You can also control warnings within a single class by defining a `static enabledWarnings` property:
+Вы также можете управлять предупреждениями в рамках одного класса, определив свойство `static enabledWarnings`:
 
 ```ts
 class MyElement extends LitElement {
-  static enabledWarnings = ['migration'];
+    static enabledWarnings = ['migration'];
 }
 ```
 
-It's best for code size if the code to control warnings is eliminated in your own production builds.
+Для размера кода будет лучше, если код для управления предупреждениями будет исключен из ваших собственных производственных сборок.
 
-#### Multiple versions of Lit warning {#multiple-lit-versions}
+#### Предупреждение о нескольких версиях Lit {#multiple-lit-versions}
 
-A dev mode only warning is triggered when multiple versions, or even multiple copies of the same version, of any of the Lit core packages – `lit-html`, `lit-element`, `@lit/reactive-element` – are detected.
+Предупреждение только для dev-режима, выдаваемое при обнаружении нескольких версий или даже нескольких копий одной и той же версии любого из пакетов ядра Lit - `lit-html`, `lit-element`, `@lit/reactive-element`.
 
-If Lit is being used as an internal dependency of elements, elements can use different versions of Lit and are completely interoperable.
-We also take care to ensure that Lit 2 and Lit 3 are mostly compatible with each other. For example, you can pass a Lit 2 template into a Lit 3 render function and vice-versa.
+Если Lit используется как внутренняя зависимость элементов, элементы могут использовать разные версии Lit и будут полностью совместимы. Мы также позаботились о том, чтобы Lit 2 и Lit 3 были в основном совместимы друг с другом. Например, вы можете передать шаблон Lit 2 в функцию рендеринга Lit 3 и наоборот.
 
-So, why the warning? Lit is sometimes compared to frameworks which often break if components using different framework versions are mixed together. Thus, it's easier to accidentally install multiple duplicated versions of Lit without realizing.
+Так почему же это предупреждение? Lit иногда сравнивают с фреймворками, которые часто ломаются, если смешивать компоненты, использующие разные версии фреймворков. Таким образом, можно случайно установить несколько дублирующихся версий Lit, не заметив этого.
 
-Loading multiple compatible versions of Lit is non-optimal because extra duplicated bytes must be sent to the user.
+Загрузка нескольких совместимых версий Lit неоптимальна, поскольку пользователю приходится отправлять лишние дублирующиеся байты.
 
-If you’re publishing a library that uses Lit, follow our [publishing best practices](https://lit.dev/docs/tools/publishing/#don't-bundle-minify-or-optimize-modules) so consumers of your library are able to de-duplicate Lit in their projects.
+Если вы публикуете библиотеку, использующую Lit, следуйте нашим [лучшим практикам публикации](publishing.md#don't-bundle-minify-or-optimize-modules), чтобы потребители вашей библиотеки могли избавиться от дублирования Lit в своих проектах.
 
-##### Resolving multiple versions of Lit
+##### Устранение множественных версий Lit
 
-It is possible to follow the steps below, and not be able to de-duplicate Lit, e.g., a library you depend on is bundling a specific version of Lit. In these cases the warning can be ignored.
+Можно следовать приведенным ниже шагам, но не иметь возможности дедублировать Lit, например, библиотека, от которой вы зависите, поставляет определенную версию Lit. В таких случаях предупреждение можно проигнорировать.
 
-If you’re seeing a `Multiple versions of Lit loaded` development mode warning, there are a couple things you can try:
+Если вы видите предупреждение `Multiple versions of Lit loaded` в режиме разработки, вы можете попробовать сделать несколько вещей:
 
-1. Find out which Lit libraries have multiple versions loaded by checking the following variables in your browser console: `window.litElementVersions`, `window.reactiveElementVersions`, and `window.litHtmlVersions`.
+1.  Выяснить, какие библиотеки Lit имеют несколько загруженных версий, проверив следующие переменные в консоли браузера: `window.litElementVersions`, `window.reactiveElementVersions` и `window.litHtmlVersions`.
 
-2. Use `npm ls` (note, you can specify exact libraries to look for, e.g. `npm ls @lit/reactive-element`) to narrow down which dependencies are loading multiple different versions of Lit.
+2.  Используйте `npm ls` (обратите внимание, вы можете указать конкретные библиотеки для поиска, например, `npm ls @lit/reactive-element`), чтобы определить, какие зависимости загружают несколько разных версий Lit.
 
-3. Try to use `npm dedupe` to de-duplicate Lit. Use `npm ls` to verify if the duplicated Lit package was successfully de-duped.
+3.  Попробуйте использовать `npm dedupe` для удаления дубликатов Lit. Используйте `npm ls`, чтобы проверить, был ли дублированный пакет Lit успешно удален.
 
-4. It is possible to nudge `npm` to hoist particular versions of the core Lit packages by installing them as direct dependencies of your project with `npm i @lit/reactive-element@latest lit-element@latest lit-html@latest`. Replace `latest` with the version you want to de-dupe to.
+4.  Можно подтолкнуть `npm` к установке определенных версий основных пакетов Lit, установив их в качестве прямых зависимостей вашего проекта с помощью `npm i @lit/reactive-element@latest lit-element@latest lit-html@latest`. Замените `latest` на версию, до которой вы хотите произвести дедуплицирование.
 
-5. If there is still duplication, you may need to delete your package lock and `node_modules`. Then install the version of `lit` you want explicitly, followed by your dependencies.
+5.  Если дублирование все еще присутствует, возможно, вам придется удалить блокировку пакетов и `node_modules`. Затем установите нужную вам версию `lit`, за которой следуют ваши зависимости.
 
+## Локальные dev-серверы {#devserver}
 
-## Local dev servers { #devserver }
-
-Lit is packaged as JavaScript modules, and it uses bare module specifiers that are not yet natively supported in most browsers. Bare specifiers are commonly used, and you may want to use them in your own code as well. For example:
+Lit упакован в виде JavaScript-модулей и использует спецификаторы модулей, которые пока не поддерживаются в большинстве браузеров. Голые спецификаторы широко используются, и вы можете захотеть использовать их и в своем коде. Например:
 
 ```js
-import {LitElement, html, css} from 'lit';
+import { LitElement, html, css } from 'lit';
 ```
 
-To run this code in the browser, the bare specifier (`'lit'`) needs to be transformed to a URL that the browser can load (such as `'/node_modules/lit/lit.js'`).
+Чтобы запустить этот код в браузере, голый спецификатор (`'lit'`) нужно преобразовать в URL, который может загрузить браузер (например, `'/node_modules/lit/lit.js'`).
 
-There are many development servers that can deal with module specifiers. If you already have a dev server that does this and integrates with your build process, that should be sufficient.
+Существует множество серверов разработки, которые могут работать со спецификаторами модулей. Если у вас уже есть сервер разработки, который делает это и интегрируется с вашим процессом сборки, этого должно быть достаточно.
 
-If you need a dev server, we recommend [Web Dev Server](https://modern-web.dev/docs/dev-server/overview/).
+Если вам нужен сервер разработки, мы рекомендуем [Web Dev Server](https://modern-web.dev/docs/dev-server/overview/).
 
-### Web Dev Server { #web-dev-server }
+### Web Dev Server {#web-dev-server}
 
-[Web Dev Server](https://modern-web.dev/docs/dev-server/overview/) is an open-source dev server that enables a build-free development process.
+[Web Dev Server](https://modern-web.dev/docs/dev-server/overview/) - это сервер разработки с открытым исходным кодом, который обеспечивает процесс разработки без сборки.
 
-It handles rewriting bare module specifiers to valid URLs, as required by browsers.
+Он занимается переписыванием пустых спецификаторов модулей в корректные URL, как того требуют браузеры.
 
-Install Web Dev Server:
+Установите Web Dev Server:
 
 ```bash
 npm i @web/dev-server --save-dev
 ```
 
-Add a command to your `package.json` file:
+Добавьте команду в файл `package.json`:
 
 ```json
 "scripts": {
@@ -142,148 +138,148 @@ Add a command to your `package.json` file:
 }
 ```
 
-And a `web-dev-server.config.js` file:
+И файл `web-dev-server.config.js`:
+
 ```js
 export default {
-  open: true,
-  watch: true,
-  appIndex: 'index.html',
-  nodeResolve: {
-    exportConditions: ['development'],
-  },
+    open: true,
+    watch: true,
+    appIndex: 'index.html',
+    nodeResolve: {
+        exportConditions: ['development'],
+    },
 };
 ```
 
-Run the dev server:
+Запустите сервер разработки:
 
 ```bash
 npm run start
 ```
 
-#### Legacy browser support
+#### Поддержка устаревших браузеров
 
-For older browsers like IE11, Web Dev Server can transform JavaScript modules to use the backwards-compatible SystemJS module loader, and automatically serve the web components polyfills. You'll need to configure the `@web/dev-server-legacy` package to support older browsers.
+Для старых браузеров, таких как IE11, Web Dev Server может преобразовывать модули JavaScript, чтобы использовать обратно совместимый загрузчик модулей SystemJS, и автоматически обслуживать полифиллы веб-компонентов. Для поддержки старых браузеров вам потребуется настроить пакет `@web/dev-server-legacy`.
 
-Install the Web Dev Server legacy package:
+Установите пакет Web Dev Server legacy:
 
 ```bash
 npm i @web/dev-server-legacy --save-dev
 ```
 
-Configure `web-dev-server.config.js`:
+Настройте `web-dev-server.config.js`:
 
 ```js
 import { legacyPlugin } from '@web/dev-server-legacy';
 
 export default {
-  // ...
-  plugins: [
-    // Make sure this plugin is always last
-    legacyPlugin({
-      polyfills: {
-        webcomponents: true,
-        // Inject lit's polyfill-support module into test files, which is required
-        // for interfacing with the webcomponents polyfills
-        custom: [
-          {
-            name: 'lit-polyfill-support',
-            path: 'node_modules/lit/polyfill-support.js',
-            test: "!('attachShadow' in Element.prototype)",
-            module: false,
-          },
-        ],
-      },
-    }),
-  ],
+    // ...
+    plugins: [
+        // Make sure this plugin is always last
+        legacyPlugin({
+            polyfills: {
+                webcomponents: true,
+                // Inject lit's polyfill-support module into test files, which is required
+                // for interfacing with the webcomponents polyfills
+                custom: [
+                    {
+                        name: 'lit-polyfill-support',
+                        path: 'node_modules/lit/polyfill-support.js',
+                        test: "!('attachShadow' in Element.prototype)",
+                        module: false,
+                    },
+                ],
+            },
+        }),
+    ],
 };
 ```
 
-For full installation and usage instructions, see the [Web Dev Server documentation](https://modern-web.dev/docs/dev-server/overview/).
+Полные инструкции по установке и использованию см. в [документации Web Dev Server](https://modern-web.dev/docs/dev-server/overview/).
 
-## TypeScript { #typescript }
+## TypeScript {#typescript}
 
-TypeScript extends the Javascript language by adding support for types. Types are useful for catching errors early and making code more readable and understandable.
+TypeScript расширяет язык Javascript, добавляя поддержку типов. Типы полезны для раннего обнаружения ошибок и повышения читабельности и понятности кода.
 
-To install TypeScript in your project:
+Чтобы установить TypeScript в свой проект, выполните следующие действия:
 
 ```bash
 npm install typescript --save-dev
 ```
 
-To build the code:
+Чтобы собрать код:
 
 ```bash
 npx tsc --watch
 ```
 
-For full installation and usage instructions, see the [TypeScript site](https://www.typescriptlang.org/). To get started, the sections on [installing TypeScript](https://www.typescriptlang.org/docs/handbook/typescript-tooling-in-5-minutes.html) and [using its features](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html) are particularly helpful.
+Полные инструкции по установке и использованию см. на сайте [TypeScript](https://www.typescriptlang.org/). Для начала работы особенно полезны разделы [установка TypeScript](https://www.typescriptlang.org/docs/handbook/typescript-tooling-in-5-minutes.html) и [использование его возможностей](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html).
 
-## JavaScript and TypeScript linting { #linting }
+## Линтинг JavaScript и TypeScript {#linting}
 
-Linting can help catch errors in your code. We recommend using [ESLint](https://eslint.org) for linting Lit code.
+Линтинг поможет выявить ошибки в вашем коде. Мы рекомендуем использовать [ESLint](https://eslint.org) для линтинга Lit-кода.
 
-To install ESLint in your project:
+Чтобы установить ESLint в свой проект:
 
 ```bash
 npm install eslint --save-dev
 npx eslint --init
 ```
 
-To run it:
+Чтобы запустить его:
 
 ```bash
 npx eslint yourfile.js
 ```
 
-Or add it to your npm scripts:
+Или добавьте его в свои скрипты npm:
 
 ```json
 {
-  "scripts": {
-    "lint": "eslint \"**/*.{js,ts}\"",
-  }
+    "scripts": {
+        "lint": "eslint \"**/*.{js,ts}\""
+    }
 }
 ```
 
-For full installation and usage instructions, see the [ESLint documentation](https://eslint.org/docs/user-guide/getting-started).
+Полные инструкции по установке и использованию см. в [документации ESLint](https://eslint.org/docs/user-guide/getting-started).
 
-We also recommend the [`eslint-plugin-lit` for ESLint](https://www.npmjs.com/package/eslint-plugin-lit) which provides linting for Lit's HTML templates, inlcluding common HTML linting checks plus Lit-specific rules.
+Мы также рекомендуем [`eslint-plugin-lit` для ESLint](https://www.npmjs.com/package/eslint-plugin-lit), который обеспечивает проверку HTML-шаблонов Lit, включая общие проверки HTML-шаблонов и специфические для Lit правила.
 
-Integrating linting into your IDE workflow can help catch errors as early as possible. See [Lit-specific IDE plugins](#ide-plugins) to configure your IDE for Lit.
+Интеграция линтинга в рабочий процесс IDE поможет выявлять ошибки как можно раньше. Смотрите [Lit-specific IDE plugins](#ide-plugins), чтобы настроить вашу IDE для работы с Lit.
 
-## Source formatting { #formatting }
+## Форматирование исходного кода {#formatting}
 
-Using a code formatter can help ensure code is consistent and readable. Integrating your formatter of choice with your IDE ensures your code is always clean and tidy.
+Использование форматировщика кода поможет обеспечить его единообразие и читабельность. Интеграция выбранного вами форматировщика с вашей IDE гарантирует, что ваш код всегда будет чистым и аккуратным.
 
-A few popular options include:
+Несколько популярных вариантов включают:
 
-* [Prettier](https://prettier.io/): [VS Code plugin](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-* [Beautifier](https://beautifier.io/): [VS Code plugin](https://marketplace.visualstudio.com/items?itemName=HookyQR.beautify)
-* [Clang](https://www.npmjs.com/package/clang-format): [VS Code plugin](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format)
+-   [Prettier](https://prettier.io/): [VS Code plugin](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+-   [Beautifier](https://beautifier.io/): [VS Code plugin](https://marketplace.visualstudio.com/items?itemName=HookyQR.beautify)
+-   [Clang](https://www.npmjs.com/package/clang-format): [VS Code plugin](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format)
 
+## Lit-специфические плагины IDE {#ide-plugins}
 
-## Lit-specific IDE plugins { #ide-plugins }
-
-There are a number of IDE plugins that may be useful when developing with Lit. In particular, we recommend using a syntax highlighter that works with Lit templates.
+Существует ряд плагинов для IDE, которые могут быть полезны при разработке на Lit. В частности, мы рекомендуем использовать подсветку синтаксиса, которая работает с шаблонами Lit.
 
 ### lit-plugin
 
-`lit-plugin` provides syntax highlighting, type checking, and more for Lit templates. It's [available for VS Code](https://marketplace.visualstudio.com/items?itemName=runem.lit-plugin), or you can use the [`ts-lit-plugin` TypeScript compiler plugin](https://github.com/runem/lit-analyzer/tree/master/packages/ts-lit-plugin) which works with Sublime Text and Atom.
+`lit-plugin` обеспечивает подсветку синтаксиса, проверку типов и многое другое для шаблонов Lit. Он [доступен для VS Code](https://marketplace.visualstudio.com/items?itemName=runem.lit-plugin), или вы можете использовать [`ts-lit-plugin` плагин компилятора TypeScript](https://github.com/runem/lit-analyzer/tree/master/packages/ts-lit-plugin), который работает с Sublime Text и Atom.
 
-`lit-plugin` and `ts-lit-plugin` provide:
+`lit-plugin` и `ts-lit-plugin` обеспечивают:
 
-- Syntax highlighting
-- Type-checking
-- Code completion
-- Hover-over docs
-- Jump to definition
-- Linting
-- Quick Fixes
+-   подсветку синтаксиса
+-   проверка типов
+-   завершение кода
+-   Наведение курсора на документацию
+-   Переход к определению
+-   Линтинг
+-   Быстрые исправления
 
 ### ESLint
 
-ESLint has [integrations](https://eslint.org/docs/user-guide/integrations#editors) for a number of code editors. If you have [`eslint-plugin-lit` for ESLint](https://www.npmjs.com/package/eslint-plugin-lit) installed in your ESLint configuration, your IDE will show the Lit specific errors and warnings.
+ESLint имеет [интеграции](https://eslint.org/docs/user-guide/integrations#editors) для ряда редакторов кода. Если в конфигурации ESLint установлен [`eslint-plugin-lit` для ESLint](https://www.npmjs.com/package/eslint-plugin-lit), ваша IDE будет показывать специфические ошибки и предупреждения Lit.
 
-### Other plugins
+### Другие плагины
 
-See the [awesome-lit-html](https://github.com/web-padawan/awesome-lit-html#ide-plugins) repo for other IDE plugins, as well as additional tools and information.
+Другие плагины для IDE, а также дополнительные инструменты и информацию смотрите в репозитории [awesome-lit-html](https://github.com/web-padawan/awesome-lit-html#ide-plugins).

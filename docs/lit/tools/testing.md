@@ -1,77 +1,71 @@
 ---
-title: Testing
-eleventyNavigation:
-  key: Testing
-  parent: Tools
-  order: 4
-versionLinks:
-  v1: lit-html/tools/#testing
-  v2: tools/testing/
+description: Тестирование гарантирует, что ваш код работает так, как вы задумали, и избавляет вас от утомительной отладки
 ---
 
-Testing ensures your code functions as you intend and saves you from tedious debugging.
+# Тестирование
 
-See the [Starter Kits](/docs/v3/tools/starter-kits/) documentation for an easy to use setup with a fully pre-configured testing environment that works great for testing Lit components.
+Тестирование гарантирует, что ваш код работает так, как вы задумали, и избавляет вас от утомительной отладки.
 
-## Selecting a test framework
+Смотрите документацию по [Стартовым наборам](starter-kits.md), где представлена простая в использовании установка с полностью готовой тестовой средой, которая отлично подходит для тестирования компонентов Lit.
 
-Lit is a standard modern Javascript library, and you can use virtually any Javascript testing framework to test your Lit code. There are many popular options, including [Jest](https://jestjs.io/), [Karma](https://karma-runner.github.io/), [Mocha](https://mochajs.org/), [Jasmine](https://jasmine.github.io/), and [Web Test Runner](https://modern-web.dev/docs/test-runner/overview/).
+## Выбор среды тестирования
 
-There are a few things you'll want to make sure your testing environment supports to effectively test your Lit code.
+Lit - это стандартная современная библиотека Javascript, и вы можете использовать практически любой фреймворк для тестирования Javascript для проверки вашего Lit-кода. Существует множество популярных вариантов, включая [Jest](https://jestjs.io/), [Karma](https://karma-runner.github.io/), [Mocha](https://mochajs.org/), [Jasmine](https://jasmine.github.io/) и [Web Test Runner](https://modern-web.dev/docs/test-runner/overview/).
 
-### Testing in the browser
+Чтобы эффективно тестировать Lit-код, необходимо убедиться в том, что среда тестирования поддерживает несколько вещей.
 
-Lit components are designed to run in the browser so testing should be conducted in a browser environment. Tools specifically focusing on testing [node](https://nodejs.org/) code may not be a good fit.
+### Тестирование в браузере
 
-<div class="alert alert-info">
-While it's possible to test without a browser by shimming DOM calls, we don't recommend this approach since it won't test the code in the way your users experience it.
-</div>
+Компоненты Lit предназначены для работы в браузере, поэтому тестирование должно проводиться в браузерной среде. Инструменты, ориентированные на тестирование кода [node](https://nodejs.org/), могут не подойти.
 
-### Supporting modern Javascript
+!!!info ""
 
-The test environment you use must have support for using modern Javascript, including using modules with bare module specifiers, or else down-leveling modern Javascript appropriately. See the [Requirements for legacy browsers](/docs/v2/tools/requirements/#building-for-legacy-browsers) documentation for more details.
+    Хотя можно тестировать без браузера, подменяя вызовы DOM, мы не рекомендуем такой подход, поскольку он не позволит протестировать код так, как его воспринимают пользователи.
 
-### Using polyfills
+### Поддержка современного Javascript
 
-To test on older browsers, your test environment will need to load some polyfills, including the [web components polyfills](https://github.com/webcomponents/polyfills/tree/master/packages/webcomponentsjs) and Lit's `polyfill-support` module. See the [Polyfills](/docs/v2/tools/requirements/#polyfills) documentation for more details.
+Тестовая среда, которую вы используете, должна поддерживать современный Javascript, включая использование модулей с голыми спецификаторами модулей, или понижение уровня современного Javascript соответствующим образом. Подробнее см. в документации [Требования для устаревших браузеров](requirements.md#building-for-legacy-browsers).
 
-## Using Web Test Runner { #web-test-runner }
+### Использование полифиллов
 
-We recommend using [Web Test Runner](https://modern-web.dev/docs/test-runner/overview/) since it is specifically designed to test modern web libraries like Lit using modern web features like custom elements and shadow DOM. See the [Getting Started](https://modern-web.dev/guides/test-runner/getting-started) documentation for Web Test Runner.
+Для тестирования на старых браузерах в тестовое окружение необходимо загрузить некоторые полифиллы, включая [web components polyfills](https://github.com/webcomponents/polyfills/tree/master/packages/webcomponentsjs) и модуль Lit's `polyfill-support`. Подробнее см. документацию [Polyfills](requirements.md#polyfills).
 
-In order to support older browsers, you need to configure Web Test Runner as follows:
+## Использование Web Test Runner {#web-test-runner}
 
-Install `@web/dev-server-legacy`:
+Мы рекомендуем использовать [Web Test Runner](https://modern-web.dev/docs/test-runner/overview/), поскольку он специально разработан для тестирования современных веб-библиотек, таких как Lit, с использованием современных веб-функций, таких как пользовательские элементы и теневой DOM. См. документацию [Getting Started](https://modern-web.dev/guides/test-runner/getting-started) по Web Test Runner.
+
+Для поддержки старых браузеров необходимо настроить Web Test Runner следующим образом:
+
+Установите `@web/dev-server-legacy`:
 
 ```bash
 npm i @web/dev-server-legacy --save-dev
 ```
 
-Setup  `web-test-runner.config.js`:
+Установите `web-test-runner.config.js`:
 
 ```js
 import { legacyPlugin } from '@web/dev-server-legacy';
 
 export default {
-  /* ... */
-  plugins: [
-    // make sure this plugin is always last
-    legacyPlugin({
-      polyfills: {
-        webcomponents: true,
-        // Inject lit's polyfill-support module into test files, which is required
-        // for interfacing with the webcomponents polyfills
-        custom: [
-          {
-            name: 'lit-polyfill-support',
-            path: 'node_modules/lit/polyfill-support.js',
-            test: "!('attachShadow' in Element.prototype)",
-            module: false,
-          },
-        ],
-      },
-    }),
-  ],
+    /* ... */
+    plugins: [
+        // make sure this plugin is always last
+        legacyPlugin({
+            polyfills: {
+                webcomponents: true,
+                // Inject lit's polyfill-support module into test files, which is required
+                // for interfacing with the webcomponents polyfills
+                custom: [
+                    {
+                        name: 'lit-polyfill-support',
+                        path: 'node_modules/lit/polyfill-support.js',
+                        test: "!('attachShadow' in Element.prototype)",
+                        module: false,
+                    },
+                ],
+            },
+        }),
+    ],
 };
 ```
-

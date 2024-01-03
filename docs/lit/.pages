@@ -6,7 +6,7 @@ nav:
     - templates
     - composition
     - data
-    #- tools
+    - tools
     #- ssr
     #- frameworks
     #- localization

@@ -1,52 +1,46 @@
 ---
-title: Requirements
-eleventyNavigation:
-  key: Requirements
-  parent: Tools
-  order: 2
-versionLinks:
-  v1: tools/build/#build-requirements
-  v2: tools/requirements/
+description: Lit опубликован как ES2021, Lit использует голые спецификаторы модулей для импорта модулей, Lit использует современные веб-интерфейсы
 ---
 
-The most important things to know about Lit in order to work with various browsers and tools are that:
+# Требования
 
- * Lit is published as ES2021.
- * Lit uses "bare module specifiers" to import modules.
- * Lit uses modern web APIs such as `<template>`, custom elements, shadow DOM, and `ParentNode`.
+Самое важное, что нужно знать о Lit для работы с различными браузерами и инструментами, это:
 
-These features are supported by the latest versions of major browsers (including Chrome, Edge, Safari, and Firefox) and most popular tools (such as Rollup, Webpack, Babel, and Terser)—with the exception of bare module specifier support in browsers.
+-   Lit опубликован как ES2021.
+-   Lit использует "голые спецификаторы модулей" для импорта модулей.
+-   Lit использует современные веб-интерфейсы, такие как `<template>`, пользовательские элементы, теневой DOM и `ParentNode`.
 
-When developing an app using Lit, either your target browsers need to support those features natively, or your tools will need to handle them. While there are a large number of browsers with various support for modern web features, for simplicity we recommend grouping browsers into one of two categories:
+Эти возможности поддерживаются последними версиями основных браузеров (включая Chrome, Edge, Safari и Firefox) и большинством популярных инструментов (таких как Rollup, Webpack, Babel и Terser) - за исключением поддержки голых спецификаторов модулей в браузерах.
 
-*   **Modern browsers** support ES2021 and web components. Tools must resolve bare module specifiers.
-*   **Legacy browsers** support ES5 and don't support web components or newer DOM APIs. Tools must compile JavaScript and load polyfills.
+При разработке приложения с использованием Lit либо ваши целевые браузеры должны поддерживать эти функции нативно, либо ваши инструменты должны их обрабатывать. Хотя существует большое количество браузеров с различной поддержкой современных веб-функций, для простоты мы рекомендуем сгруппировать браузеры в одну из двух категорий:
 
-This page gives a general overview for how to meet these requirements in your development and productions environments.
+-   **Современные браузеры** поддерживают ES2021 и веб-компоненты. Инструменты должны разрешать спецификаторы голых модулей.
+-   **Легальные браузеры** поддерживают ES5 и не поддерживают веб-компоненты или более новые API DOM. Инструменты должны компилировать JavaScript и загружать полифиллы.
 
-See [Development](/docs/v3/tools/development/), [Testing](/docs/v3/tools/testing/), and [Building for Production](/docs/v3/tools/production/) for recommendations on tools and configurations that meet these requirements.
+На этой странице приведен общий обзор того, как выполнить эти требования в средах разработки и производства.
 
-## Requirements for modern browsers {#building-for-modern-browsers}
+Рекомендации по инструментам и конфигурациям, отвечающим этим требованиям, см. в разделах [Разработка](development.md), [Тестирование](testing.md) и [Сборка для производства](production.md).
 
-The only transformation required to use Lit on modern browsers is to convert bare module specifiers to browser-compatible URLs.
+## Требования для современных браузеров {#building-for-modern-browsers}
 
-Lit uses bare module specifiers to import modules between its sub-packages, like this:
+Единственное преобразование, необходимое для использования Lit в современных браузерах, - это преобразование пустых спецификаторов модулей в URL, совместимые с браузерами.
+
+Lit использует голые спецификаторы модулей для импорта модулей между своими подпакетами, например, так:
 
 ```js
-import {html} from 'lit-html';
+import { html } from 'lit-html';
 ```
 
-Modern browsers currently only support loading modules from URLs or relative paths, not bare names that refer to an npm package, so the build system needs to handle them. This should be done either by transforming the specifier to one that works for ES modules in the browser, or by producing a different type of module as output.
+Современные браузеры в настоящее время поддерживают загрузку модулей только из URL или относительных путей, а не из голых имен, ссылающихся на пакет npm, поэтому система сборки должна их обрабатывать. Для этого нужно либо преобразовать спецификатор в тот, который работает для ES-модулей в браузере, либо выдать на выходе модуль другого типа.
 
-Webpack automatically handles bare module specifiers; for Rollup, you'll need a plugin ([@rollup/plugin-node-resolve](https://github.com/rollup/plugins/tree/master/packages/node-resolve)).
+Webpack автоматически обрабатывает голые спецификаторы модулей; для Rollup вам понадобится плагин ([@rollup/plugin-node-resolve](https://github.com/rollup/plugins/tree/master/packages/node-resolve)).
 
-**Why bare module specifiers?** Bare module specifiers let you import modules without knowing exactly where the package manager has installed them. A standards proposal called [Import maps](https://github.com/WICG/import-maps) is [starting to ship](https://chromestatus.com/feature/5315286962012160), which will let browsers support bare module specifiers. In the meantime, bare import specifiers can easily be transformed as a build step. There are also some polyfills and module loaders that support import maps.
+**Почему нужны спецификаторы голых модулей?** Спецификаторы голых модулей позволяют импортировать модули, не зная, куда именно менеджер пакетов их установил. Предложение по стандартам под названием [Import maps](https://github.com/WICG/import-maps) уже [начинает поставляться](https://chromestatus.com/feature/5315286962012160), которое позволит браузерам поддерживать голые спецификаторы модулей. Пока же голые спецификаторы импорта могут быть легко преобразованы на этапе сборки. Существуют также некоторые полифиллы и загрузчики модулей, которые поддерживают карты импорта.
 
-### Modern browser breakdown
+### Разбор современных браузеров
 
-All modern browsers update automatically and users are highly likely to have a recent version. Lit and related libraries are tested on the current versions of Chromium, Safari, and Firefox as well as two major versions prior for Chromium and Safari, and the Extended Support Release (ESR) for Firefox. Older versions may still work but will be at best efforts without guarantee.
+Все современные браузеры обновляются автоматически, и пользователи с большой вероятностью будут иметь последнюю версию. Lit и связанные с ним библиотеки протестированы на текущих версиях Chromium, Safari и Firefox, а также на двух основных версиях до Chromium и Safari и на Extended Support Release (ESR) для Firefox. Более старые версии могут продолжать работать, но это будет сделано в лучшем виде и без гарантии.
 
-## Note on legacy browsers {#note-on-legacy-browsers}
+## Примечание по устаревшим браузерам {#note-on-legacy-browsers}
 
-Lit 3 is not tested on legacy browsers, specifically Internet Explorer 11 and Classic Edge are not supported due to non-standard DOM behavior. If you must support legacy browsers, consider using Lit 2 with additional compilation and/or polyfills as described in [Building for legacy browsers](/docs/v2/tools/requirements#building-for-legacy-browsers).
-
+Lit 3 не тестируется на устаревших браузерах, в частности, Internet Explorer 11 и Classic Edge не поддерживаются из-за нестандартного поведения DOM. Если вам необходимо поддерживать устаревшие браузеры, используйте Lit 2 с дополнительной компиляцией и/или полифиллами, как описано в [Сборка для устаревших браузеров](https://lit.dev/docs/v2/tools/requirements#building-for-legacy-browsers).
