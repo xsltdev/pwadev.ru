@@ -122,7 +122,7 @@ icon: material/feature-search-outline
 -   _Выявление неактивных пользователей_ с помощью [Idle Detection API](https://developer.chrome.com/articles/idle-detection/).
 -   _Блокировка ориентации_ фиксирует книжную или альбомную ориентацию, пока PWA находится на экране, благодаря [Screen Orientation API](https://developer.mozilla.org/docs/Web/API/Screen_Orientation_API) или свойству `orientation` в [Web App Manifest](web-app-manifest.md) для установленных приложений.
 -   _Представление содержимого_ на проекторах и дополнительных дисплеях благодаря [Presentation API](https://developer.mozilla.org/docs/Web/API/Presentation_API).
--   _Блокировать указатель_ для получения дельта-информации о перемещении от указателей (мыши, трекпада и указателей) вместо значений позиции - полезно для некоторых игр - благодаря [Pointer Lock API](https://developer.mozilla.org/docs/Web/API/Pointer_Lock_API).
+-   _Блокировать указатель_ для получения дельта-информации о перемещении от указателей (мыши, трекпада и указателей) вместо значений позиции — полезно для некоторых игр — благодаря [Pointer Lock API](https://developer.mozilla.org/docs/Web/API/Pointer_Lock_API).
 
 **Интеграция операционной системы**
 

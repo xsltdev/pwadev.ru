@@ -10,7 +10,7 @@ description: Тестирование гарантирует, что ваш ко
 
 ## Выбор среды тестирования
 
-Lit - это стандартная современная библиотека Javascript, и вы можете использовать практически любой фреймворк для тестирования Javascript для проверки вашего Lit-кода. Существует множество популярных вариантов, включая [Jest](https://jestjs.io/), [Karma](https://karma-runner.github.io/), [Mocha](https://mochajs.org/), [Jasmine](https://jasmine.github.io/) и [Web Test Runner](https://modern-web.dev/docs/test-runner/overview/).
+Lit — это стандартная современная библиотека Javascript, и вы можете использовать практически любой фреймворк для тестирования Javascript для проверки вашего Lit-кода. Существует множество популярных вариантов, включая [Jest](https://jestjs.io/), [Karma](https://karma-runner.github.io/), [Mocha](https://mochajs.org/), [Jasmine](https://jasmine.github.io/) и [Web Test Runner](https://modern-web.dev/docs/test-runner/overview/).
 
 Чтобы эффективно тестировать Lit-код, необходимо убедиться в том, что среда тестирования поддерживает несколько вещей.
 

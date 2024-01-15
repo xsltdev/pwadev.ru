@@ -109,7 +109,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 <p class="ciu_embed" data-feature="mdn-html__manifest__related_applications" data-periods="future_1,current,past_1,past_2" data-accessible-colours="false"></p>
 
-Сайт указывает на связь с приложением через манифест. Для этого используется член [`related_applications`](https://developer.mozilla.org/docs/Web/Manifest/related_applications) спецификации Web App Manifest. Ключ `related_applications` - это массив объектов, представляющих каждое связанное приложение. Каждая запись содержит `платформу`, `url` и необязательный `id`.
+Сайт указывает на связь с приложением через манифест. Для этого используется член [`related_applications`](https://developer.mozilla.org/docs/Web/Manifest/related_applications) спецификации Web App Manifest. Ключ `related_applications` — это массив объектов, представляющих каждое связанное приложение. Каждая запись содержит `платформу`, `url` и необязательный `id`.
 
 Вот возможные [значения платформы](https://github.com/w3c/manifest/wiki/Platforms):
 
@@ -165,7 +165,8 @@ Safari не поддерживает член `related_applications`, но пр�
 `getInstalledRelatedApps()` возвращает массив объектов приложений. Если массив пуст, то связанное приложение не установлено.
 
 ```js
-const relatedApps = await navigator.getInstalledRelatedApps();
+const relatedApps =
+    await navigator.getInstalledRelatedApps();
 const PWAisInstalled = relatedApps.length > 0;
 ```
 

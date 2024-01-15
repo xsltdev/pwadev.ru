@@ -29,8 +29,9 @@ icon: material/dock-window
 ```js
 document.addEventListener('DOMContentLoaded', (event) => {
     // we can move only if we are not in a browser's tab
-    isBrowser = matchMedia('(display-mode: browser)')
-        .matches;
+    isBrowser = matchMedia(
+        '(display-mode: browser)',
+    ).matches;
     if (!isBrowser) {
         window.moveTo(16, 16);
         window.resizeTo(800, 600);
@@ -119,7 +120,7 @@ function openNewWindow() {
 
 !!!tip ""
 
-    Функции `open()`, `moveTo()` и `resizeTo()` не нуждаются в префиксе `window.` при написании JavaScript, поскольку `window` - это глобальный объект. Можно просто вызвать `moveTo(0, 0)`. Однако вызов `window.moveTo(0, 0)` делает код более понятным.
+    Функции `open()`, `moveTo()` и `resizeTo()` не нуждаются в префиксе `window.` при написании JavaScript, поскольку `window` — это глобальный объект. Можно просто вызвать `moveTo(0, 0)`. Однако вызов `window.moveTo(0, 0)` делает код более понятным.
 
 ### Заголовок окна
 
@@ -152,7 +153,7 @@ function openNewWindow() {
 
 ### Наложение элементов управления окном
 
-Мы уже упоминали, что заголовок окна можно изменить, определив значение элемента `<title>` или свойства `document.title`. Но это всегда строковое значение. А что, если бы мы могли оформлять строку заголовка по своему усмотрению, с помощью HTML, CSS и изображений? Вот тут-то и приходит на помощь Window Controls Overlay - новая экспериментальная возможность в Microsoft Edge и Google Chrome для настольных PWA.
+Мы уже упоминали, что заголовок окна можно изменить, определив значение элемента `<title>` или свойства `document.title`. Но это всегда строковое значение. А что, если бы мы могли оформлять строку заголовка по своему усмотрению, с помощью HTML, CSS и изображений? Вот тут-то и приходит на помощь Window Controls Overlay — новая экспериментальная возможность в Microsoft Edge и Google Chrome для настольных PWA.
 
 !!!note ""
 
@@ -221,7 +222,7 @@ const wakeLock = await navigator.wakeLock.request();
 // Listen for wake lock release
 wakeLock.addEventListener('release', () => {
     console.log(
-        `Screen Wake Lock released: ${wakeLock.released}`
+        `Screen Wake Lock released: ${wakeLock.released}`,
     );
 });
 // Manually release the wake lock

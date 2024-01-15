@@ -33,7 +33,7 @@ icon: material/arrow-up-bold-hexagon-outline
 
 !!!note ""
 
-    Web Push API - это единственный API, который уведомляет пользователя из фонового режима, и его сообщение `push` может содержать небольшой объем данных: оно может нести полезную нагрузку размером около 2 КБ.
+    Web Push API — это единственный API, который уведомляет пользователя из фонового режима, и его сообщение `push` может содержать небольшой объем данных: оно может нести полезную нагрузку размером около 2 КБ.
 
 ## Обновление ресурсов
 
@@ -63,7 +63,7 @@ icon: material/arrow-up-bold-hexagon-outline
 
 Вы также можете выбрать способ применения обновлений: когда приложение открыто (в реальном времени) или закрыто. При закрытом приложении, даже если приложение загрузило новые ресурсы, оно не внесет никаких изменений и будет использовать новые версии при следующей загрузке.
 
-Живое обновление означает, что как только ресурс обновляется в кэше, ваш PWA заменяет его в текущей загрузке. Это сложная задача, которая не рассматривается в данном курсе. Некоторые инструменты, помогающие реализовать такое обновление, - это [livereload-js](https://www.npmjs.com/package/livereload-js) и обновление ресурсов CSS [CSSStyleSheet.replace() API](https://developer.mozilla.org/docs/Web/API/CSSStyleSheet/replace).
+Живое обновление означает, что как только ресурс обновляется в кэше, ваш PWA заменяет его в текущей загрузке. Это сложная задача, которая не рассматривается в данном курсе. Некоторые инструменты, помогающие реализовать такое обновление, — это [livereload-js](https://www.npmjs.com/package/livereload-js) и обновление ресурсов CSS [CSSStyleSheet.replace() API](https://developer.mozilla.org/docs/Web/API/CSSStyleSheet/replace).
 
 ## Обновление сервиса-воркера
 
@@ -85,8 +85,8 @@ icon: material/arrow-up-bold-hexagon-outline
 
 ```js
 async function detectSWUpdate() {
-    const registration = await navigator.serviceWorker
-        .ready;
+    const registration =
+        await navigator.serviceWorker.ready;
 
     registration.addEventListener(
         'updatefound',
@@ -98,9 +98,9 @@ async function detectSWUpdate() {
                     if (newSW.state == 'installed') {
                         // New service worker is installed, but waiting activation
                     }
-                }
+                },
             );
-        }
+        },
     );
 }
 ```
@@ -135,7 +135,7 @@ navigator.serviceWorker.addEventListener(
     'controllerchange',
     (event) => {
         // The service worker controller has changed
-    }
+    },
 );
 ```
 
@@ -151,7 +151,7 @@ navigator.serviceWorker.addEventListener(
 
 ### Safari в браузерах для iOS, iPadOS и Android.
 
-На этих платформах единственный способ получить новые метаданные манифеста - переустановить приложение из браузера.
+На этих платформах единственный способ получить новые метаданные манифеста — переустановить приложение из браузера.
 
 !!!note ""
 
@@ -191,7 +191,7 @@ navigator.serviceWorker.addEventListener(
 
 ### Подробнее о Badging API
 
-API [Badging API](https://developer.chrome.com/articles/badging-api/) позволяет помечать иконку вашего PWA номером бейджа или точкой бейджа в совместимых браузерах. Точка бейджа - это крошечная метка внутри установленного значка, которая говорит о том, что внутри приложения что-то ждет.
+API [Badging API](https://developer.chrome.com/articles/badging-api/) позволяет помечать иконку вашего PWA номером бейджа или точкой бейджа в совместимых браузерах. Точка бейджа — это крошечная метка внутри установленного значка, которая говорит о том, что внутри приложения что-то ждет.
 
 ![Пример Twitter с восемью уведомлениями и другого приложения, показывающего значок типа флага.](update-2.webp)
 
