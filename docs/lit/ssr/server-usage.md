@@ -1,45 +1,43 @@
 ---
-title: Lit SSR server usage
-eleventyNavigation:
-  key: Server usage
-  parent: Server rendering
-  order: 2
-versionLinks:
-  v2: ssr/server-usage/
+description: Серверный рендеринг начинается с рендеринга шаблона Lit template с помощью специфической для сервера функции render(), предоставляемой в пакете @lit-labs/ssr
 ---
 
-{% labs-disclaimer %}
+# Использование сервера Lit SSR
 
-## Rendering templates
+!!!warning ""
 
-Server rendering begins with rendering a Lit _template_ with a server-specific `render()` function provided in the `@lit-labs/ssr` package.
+    Этот пакет входит в семейство экспериментальных пакетов Lit Labs. Руководство по использованию программ Labs в производстве см. на [странице Lit Labs](../libraries/labs.md).
 
-The signature of the render function is:
+## Рендеринг шаблонов {#rendering-templates}
+
+Серверный рендеринг начинается с рендеринга шаблона Lit _template_ с помощью специфической для сервера функции `render()`, предоставляемой в пакете `@lit-labs/ssr`.
+
+Функция рендеринга имеет следующую сигнатуру:
 
 ```ts
 render(value: unknown, renderInfo?: Partial<RenderInfo>): RenderResult
 ```
 
-Typically `value` is a `TemplateResult` produced by a Lit template expression, like:
+Обычно `value` - это `TemplateResult`, созданный выражением шаблона Lit, например:
 
 ```ts
-html`<h1>Hello</h1>`
+html`<h1>Hello</h1>`;
 ```
 
-The template can contain custom elements. If the custom elements are defined on the server, they'll be rendered in turn, along with their templates.
+Шаблон может содержать пользовательские элементы. Если пользовательские элементы определены на сервере, они будут отображаться по очереди, вместе с их шаблонами.
 
 ```ts
-import {render} from '@lit-labs/ssr';
+import { render } from '@lit-labs/ssr';
 // Import `my-element` on the server to server render it.
 import './my-element.js';
 
 const result = render(html`
-  <h1>Hello SSR!</h1>
-  <my-element></my-element>
+    <h1>Hello SSR!</h1>
+    <my-element></my-element>
 `);
 ```
 
-To render a single element, you render a template that only contains that element:
+Чтобы отобразить отдельный элемент, вы создаете шаблон, содержащий только этот элемент:
 
 ```ts
 import './my-element.js';
@@ -47,37 +45,37 @@ import './my-element.js';
 const result = render(html`<my-element></my-element>`);
 ```
 
-### Handling RenderResults
+### Работа с результатами рендеринга {#handling-renderresults}
 
-`render()` returns a `RenderResult`: an iterable of values that can be streamed or concatenated into a string.
+`render()` возвращает `RenderResult`: итератор значений, которые могут быть переданы потоком или сведены в строку.
 
-A `RenderResult` can contain strings, nested render results, or Promises of strings or render results. Not all render results contain Promises—those can occur when custom elements perform async tasks, like fetching data—but because a `RenderResult` can contain Promises, processing it into a string or an HTTP response is _potentially_ an async operation.
+`RenderResult` может содержать строки, вложенные результаты рендеринга или обещания строк или результатов рендеринга. Не все результаты рендеринга содержат Promises - они могут возникать, когда пользовательские элементы выполняют асинхронные задачи, например, получение данных. Но поскольку `RenderResult` может содержать Promises, его обработка в строку или HTTP-ответ является _потенциально_ асинхронной операцией.
 
-Even though a `RenderResult` can contain Promises, it is still a sync iterable, not an async iterable. This is because sync iterables are faster than async iterables and many server renders will not require async rendering, and so shouldn't pay the overhead of an async iterable.
+Даже если `RenderResult` может содержать Promises, он все равно является синхронизируемым итерируемым, а не асинхронизируемым итерируемым. Это связано с тем, что синхронизируемые итерабели быстрее, чем асинхронизируемые итерабели, и многие серверные рендеры не требуют асинхронного рендеринга и поэтому не должны нести накладные расходы на асинхронизируемый итерабель.
 
-Allowing Promises in a sync iterable creates a kind of hybrid sync / async iteration protocol. When consuming a `RenderResult`, you must check each value to see if it is a Promise or iterable and wait or recurse as needed.
+Разрешение Promises в синхронном итерабеле создает своего рода гибридный протокол синхронной/асинхронной итерации. При потреблении `RenderResult` вы должны проверять каждое значение на предмет того, является ли оно Promise или итерируемым, и ждать или рекурсировать в зависимости от необходимости.
 
-`@lit-labs/ssr` contains three utilities to do this for you:
+`@lit-labs/ssr` содержит три утилиты, которые делают это за вас:
 
-- `RenderResultReadable`
-- `collectResult()`
-- `collectResultSync()`
+-   `RenderResultReadable`
+-   `collectResult()`
+-   `collectResultSync()`
 
 #### `RenderResultReadable`
 
-`RenderResultReadable` is a Node `Readable` stream implementation that provides values from a `RenderResult`. This can be piped into a `Writable` stream, or passed to web server frameworks like Koa.
+`RenderResultReadable` - это реализация потока Node `Readable`, который предоставляет значения из `RenderResult`. Его можно направить в поток `Writable` или передать фреймворкам веб-серверов, таким как Koa.
 
-This is the preferred way to handle SSR results when integrating with a streaming HTTP server or other stream-supporting API.
+Это предпочтительный способ обработки результатов SSR при интеграции с потоковым HTTP-сервером или другим API, поддерживающим потоки.
 
 ```ts
-import {render} from '@lit-labs/ssr';
-import {RenderResultReadable} from '@lit-labs/ssr/lib/render-result-readable.js';
+import { render } from '@lit-labs/ssr';
+import { RenderResultReadable } from '@lit-labs/ssr/lib/render-result-readable.js';
 
 // Using Koa to stream
 app.use(async (ctx) => {
-  const result = render(html`<my-element></my-element>`);
-  ctx.type = 'text/html';
-  ctx.body = new RenderResultReadable(result);
+    const result = render(html`<my-element></my-element>`);
+    ctx.type = 'text/html';
+    ctx.body = new RenderResultReadable(result);
 });
 ```
 
@@ -85,12 +83,13 @@ app.use(async (ctx) => {
 
 `collectResult(result: RenderResult): Promise<string>`
 
-`collectResult()` is an async function that takes a `RenderResult` and joins it into a string. It waits for Promises and recurses into nested iterables.
+`collectResult()` - это async-функция, которая принимает `RenderResult` и объединяет его в строку. Она ожидает Promises и выполняет рекурсию во вложенные итерационные таблицы.
 
-##### Example
+**Пример:**
+
 ```ts
-import {render} from '@lit-labs/ssr';
-import {collectResult} from '@lit-labs/ssr/lib/render-result.js';
+import { render } from '@lit-labs/ssr';
+import { collectResult } from '@lit-labs/ssr/lib/render-result.js';
 
 const result = render(html`<my-element></my-element>`);
 const html = await collectResult(result);
@@ -100,120 +99,127 @@ const html = await collectResult(result);
 
 `collectResultSync(result: RenderResult): Promise<string>`
 
-`collectResultSync()` is a sync function that takes a `RenderResult` and joins it into a string. It recurses into nested iterables, but _throws_ when it encounters a Promise.
+`collectResultSync()` - это функция синхронизации, которая принимает `RenderResult` и объединяет его в строку. Она выполняет рекурсию во вложенных итерациях, но _бросает_ исключение, когда встречает Promise.
 
-Because this function doesn't support async rendering, it's recommended to only use it when you can't await async functions.
+Поскольку эта функция не поддерживает асинхронный рендеринг, рекомендуется использовать ее только в тех случаях, когда вы не можете ожидать асинхронных функций.
 
 ```ts
-import {render} from '@lit-labs/ssr';
-import {collectResultSync} from '@lit-labs/ssr/lib/render-result.js';
+import { render } from '@lit-labs/ssr';
+import { collectResultSync } from '@lit-labs/ssr/lib/render-result.js';
 
 const result = render(html`<my-element></my-element>`);
 // Throws if `result` contains a Promise!
 const html = collectResultSync(result);
 ```
 
-### Render options
+### Опции рендера {#render-options}
 
-The second argument to `render()` is a `RenderInfo` object that is used to pass options and current render state to components and sub-templates.
+Вторым аргументом `render()` является объект `RenderInfo`, который используется для передачи опций и текущего состояния рендеринга компонентам и подшаблонам.
 
-The main options that can be set by callers are:
+Основными опциями, которые могут быть установлены вызывающим пользователем, являются:
 
-* `deferHydration`: controls whether the top-level custom elements have a `defer-hydration` attribute added to signal that the elements should not automatically hydrate. This defaults to `false` so that top-level elements _do_ automatically hydrate.
-* `elementRenderers`: An array of `ElementRenderer` classes to use for rendering custom elements. By default this contains `LitElementRenderer` to render Lit elements. It can be set to include custom `ElementRenderer` instances (documentation forthcoming), or set to an empty array to disable custom element rendering altogether.
+-   `deferHydration`: определяет, добавлять ли к пользовательским элементам верхнего уровня атрибут `defer-hydration`, сигнализирующий о том, что элементы не должны автоматически увлажняться. По умолчанию это значение равно `false`, так что элементы верхнего уровня будут автоматически гидратироваться.
+-   `ElementRenderers`: Массив классов `ElementRenderer`, используемых для рендеринга пользовательских элементов. По умолчанию он содержит `LitElementRenderer` для рендеринга Lit-элементов. Его можно настроить на включение пользовательских экземпляров `ElementRenderer` (документация готовится), или установить пустой массив для полного отключения рендеринга пользовательских элементов.
 
-## Running SSR in a VM module or the global scope
+## Запуск SSR в модуле VM или в глобальной области видимости {#running-ssr-in-a-vm-module-or-the-global-scope}
 
-In order to render custom elements in Node, they must first be defined and registered with the global `customElements` API, which is a browser-only feature. As such, when Lit runs in Node, it automatically uses a set of minimal DOM APIs necessary to render Lit on the server, and defines the `customElements` global. (For a list of emulated APIs, see [DOM emulation](/docs/v3/ssr/dom-emulation).)
+Чтобы отрисовывать пользовательские элементы в Node, они должны быть сначала определены и зарегистрированы в глобальном API `customElements`, что является функцией только для браузера. Поэтому, когда Lit запускается в Node, он автоматически использует набор минимальных DOM API, необходимых для рендеринга Lit на сервере, и определяет глобальный `customElements`. (Список эмулируемых API см. в [Эмуляция DOM](./dom-emulation.md)).
 
-Lit SSR provides two different ways of rendering custom elements server-side: rendering in the [global scope](#global-scope) or via [VM modules](#vm-module). VM modules utilizes Node's [`vm.Module`](https://nodejs.org/api/vm.html#class-vmmodule) API, which enables running code within V8 Virtual Machine contexts. The two methods differ primarily in how global state, such as the custom elements registry, are shared.
+Lit SSR предоставляет два различных способа рендеринга пользовательских элементов на стороне сервера: рендеринг в [глобальной области](#global-scope) или через [VM-модули](#vm-module). VM-модули используют API Node [`vm.Module`](https://nodejs.org/api/vm.html#class-vmmodule), который позволяет выполнять код в контексте виртуальной машины V8. Эти два метода отличаются в первую очередь тем, как разделяется глобальное состояние, например, реестр пользовательских элементов.
 
-When rendering in the global scope, a single shared `customElements` registry will be defined and shared across all render requests, along with any other global state that your component code might set.
+При рендеринге в глобальной области видимости будет определен один общий реестр `customElements`, который будет использоваться во всех запросах рендеринга, а также любое другое глобальное состояние, которое может быть установлено кодом вашего компонента.
 
-Rendering with VM modules allows each render request to have its own context with a separate global from the main Node process. The `customElements` registry will only be installed within that context, and other global state will also be isolated to that context. VM modules are an experimental Node feature.
+Рендеринг с помощью модулей VM позволяет каждому запросу рендеринга иметь свой собственный контекст с отдельным глобалом от основного процесса Node. Реестр `customElements` будет установлен только в этом контексте, и другие глобальные состояния также будут изолированы от этого контекста. Модули VM - это экспериментальная функция Node.
 
-| Global                                                                                                                                                                                                                    | VM Module                                                                                                                                                                                                                                                           |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Pros:<ul><li>Easy to use. Can import component modules directly and call `render()` with templates.</li></ul>Cons:<ul><li>Custom elements are registered in a shared registry across different render requests.</li></ul> | Pros:<ul><li>Isolates contexts across different render requests.</li></ul>Cons:<ul><li>Less intuitive usage. Need to write and specify a module file with a function to call.</li><li>Slower due the module graph needing to be re-evaluated per request.</li></ul> |
+| Global | VM Module |
+| --- | --- |
+| **Плюсы:** Прост в использовании. Можно напрямую импортировать модули компонентов и вызывать `render()` с помощью шаблонов<br />**Минусы:** Пользовательские элементы регистрируются в общем реестре для разных запросов рендеринга. | **Плюсы:** Изолирует контексты от различных запросов рендеринга.<br />**Минусы:** Менее интуитивное использование. Необходимо написать и указать файл модуля с функцией для вызова.<br />Медленнее из-за необходимости повторной оценки графа модуля при каждом запросе. |
 
-### Global Scope
+### Глобальная область видимости {#global-scope}
 
-When using the global scope, you can just call `render()` with a template to get a `RenderResult` and pass that to your server:
+При использовании глобальной области видимости вы можете просто вызвать `render()` с шаблоном, чтобы получить `RenderResult` и передать его на сервер:
 
 ```js
-import {render} from '@lit-labs/ssr';
-import {RenderResultReadable} from '@lit-labs/ssr/lib/render-result-readable.js';
-import {myTemplate} from './my-template.js';
+import { render } from '@lit-labs/ssr';
+import { RenderResultReadable } from '@lit-labs/ssr/lib/render-result-readable.js';
+import { myTemplate } from './my-template.js';
 
 // ...
 
 // within a Koa middleware, for example
 app.use(async (ctx) => {
-  const ssrResult = render(myTemplate(data));
-  ctx.type = 'text/html';
-  ctx.body = new RenderResultReadable(ssrResult);
+    const ssrResult = render(myTemplate(data));
+    ctx.type = 'text/html';
+    ctx.body = new RenderResultReadable(ssrResult);
 });
 ```
 
-### VM Module
+### Модуль VM {#vm-module}
 
-Lit also provide a way to load application code into, and render from, a separate VM context with its own global object.
+Lit также предоставляет возможность загружать код приложения в отдельный VM-контекст с собственным глобальным объектом и осуществлять рендеринг из него.
 
 ```js
 // render-template.js
-import {render} from '@lit-labs/ssr';
-import {myTemplate} from './my-template.js';
+import { render } from '@lit-labs/ssr';
+import { myTemplate } from './my-template.js';
 
 export const renderTemplate = (someData) => {
-  return render(myTemplate(someData));
+    return render(myTemplate(someData));
 };
 ```
 
-{% switchable-sample %}
+=== "TS"
 
-```ts
-// server.js
-import {ModuleLoader} from '@lit-labs/ssr/lib/module-loader.js';
-import {RenderResultReadable} from '@lit-labs/ssr/lib/render-result-readable.js';
+    ```ts
+    // server.js
+    import { ModuleLoader } from '@lit-labs/ssr/lib/module-loader.js';
+    import { RenderResultReadable } from '@lit-labs/ssr/lib/render-result-readable.js';
 
-// ...
+    // ...
 
-// within a Koa middleware, for example
-app.use(async (ctx) => {
-  const moduleLoader = new ModuleLoader();
-  const importResult = await moduleLoader.importModule(
-    './render-template.js',  // Module to load in VM context
-    import.meta.url          // Referrer URL for module
-  );
-  const {renderTemplate} = importResult.module.namespace
-    as typeof import('./render-template.js')
-  const ssrResult = await renderTemplate({some: "data"});
-  ctx.type = 'text/html';
-  ctx.body = new RenderResultReadable(ssrResult);
-});
-```
+    // within a Koa middleware, for example
+    app.use(async (ctx) => {
+    	const moduleLoader = new ModuleLoader();
+    	const importResult = await moduleLoader.importModule(
+    		'./render-template.js', // Module to load in VM context
+    		import.meta.url, // Referrer URL for module
+    	);
+    	const { renderTemplate } = importResult.module
+    		.namespace as typeof import('./render-template.js');
+    	const ssrResult = await renderTemplate({
+    		some: 'data',
+    	});
+    	ctx.type = 'text/html';
+    	ctx.body = new RenderResultReadable(ssrResult);
+    });
+    ```
 
-```js
-// server.js
-import {ModuleLoader} from '@lit-labs/ssr/lib/module-loader.js';
-import {RenderResultReadable} from '@lit-labs/ssr/lib/render-result-readable.js';
+=== "JS"
 
-// ...
+    ```js
+    // server.js
+    import { ModuleLoader } from '@lit-labs/ssr/lib/module-loader.js';
+    import { RenderResultReadable } from '@lit-labs/ssr/lib/render-result-readable.js';
 
-// within a Koa middleware, for example
-app.use(async (ctx) => {
-  const moduleLoader = new ModuleLoader();
-  const importResult = await moduleLoader.importModule(
-    './render-template.js',  // Module to load in VM context
-    import.meta.url          // Referrer URL for module
-  );
-  const {renderTemplate} = importResult.module.namespace;
-  const ssrResult = await renderTemplate({some: "data"});
-  ctx.type = 'text/html';
-  ctx.body = new RenderResultReadable(ssrResult);
-});
-```
+    // ...
 
-{% endswitchable-sample %}
+    // within a Koa middleware, for example
+    app.use(async (ctx) => {
+    	const moduleLoader = new ModuleLoader();
+    	const importResult = await moduleLoader.importModule(
+    		'./render-template.js', // Module to load in VM context
+    		import.meta.url, // Referrer URL for module
+    	);
+    	const { renderTemplate } =
+    		importResult.module.namespace;
+    	const ssrResult = await renderTemplate({
+    		some: 'data',
+    	});
+    	ctx.type = 'text/html';
+    	ctx.body = new RenderResultReadable(ssrResult);
+    });
+    ```
 
-Note: Using this feature requires Node 14+ and passing the `--experimental-vm-modules` flag to Node because of its use of experimental VM modules for creating a module-compatible VM context.
+!!!note ""
+
+    Для использования этой возможности требуется Node 14+ и передача флага `--experimental-vm-modules` Node из-за использования экспериментальных модулей VM для создания совместимого с модулями контекста VM.

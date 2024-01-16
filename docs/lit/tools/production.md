@@ -1,60 +1,51 @@
 ---
 title: Building for production
 eleventyNavigation:
-  key: Production
-  parent: Tools
-  order: 6
+    key: Production
+    parent: Tools
+    order: 6
 versionLinks:
-  v1: tools/build/
-  v2: tools/production/
+    v1: tools/build/
+    v2: tools/production/
 ---
 
-This page focuses on recommendations for building an _application_ that uses Lit components for production.  For recommendations on build steps to perform on source code prior to publishing a reusable Lit _component_ to npm, see [Publishing](/docs/v3/tools/publishing/).
+# Сворка для продакшена
 
-When building an application that includes Lit components, you can use common JavaScript build tools like [Rollup](https://rollupjs.org/) or [webpack](https://webpack.js.org/) to prepare your source code and dependencies for serving in a production environment.
+Эта страница посвящена рекомендациям по созданию _приложения_, использующего компоненты Lit для производства. Рекомендации по сборке исходного кода перед публикацией многократно используемого Lit-компонента в npm см. в разделе [Publishing](./publishing.md).
 
-See [Requirements](/docs/v3/tools/requirements/) for a full list of requirements for building Lit code, which apply to both development and production.
+При создании приложения, включающего компоненты Lit, вы можете использовать такие распространенные инструменты сборки JavaScript, как [Rollup](https://rollupjs.org/) или [webpack](https://webpack.js.org/), чтобы подготовить исходный код и зависимости к работе в производственной среде.
 
-In addition to those minimum requirements, this page describes optimizations you should consider when preparing code for production, as well as a concrete Rollup configuration that implements them.
+Полный список требований к сборке Lit-кода, применимых как к разработке, так и к производству, см. в [Requirements](./requirements.md).
 
-## Preparing code for production {#preparing-code-for-production}
+В дополнение к этим минимальным требованиям на этой странице описаны оптимизации, которые следует учитывать при подготовке кода к производству, а также конкретная конфигурация Rollup, которая их реализует.
 
-Lit projects benefit from the same build-time optimizations as other web projects. The following optimizations are recommended when serving Lit applications in production:
+## Подготовка кода к производству {#preparing-code-for-production}
 
-*   Bundling Javascript modules to reduce network requests (for example, using [Rollup](https://rollupjs.org/) or [webpack](https://webpack.js.org/)).
-*   Minifying Javascript code for smaller payload sizes ([Terser](https://www.npmjs.com/package/terser) works well for Lit, because it supports modern JavaScript).
-*   [Serving modern code to modern browsers](https://web.dev/serve-modern-code-to-modern-browsers/) as it is generally smaller and faster, and falling back to compiled code on older browsers.
-*   [Hashing static assets including bundled JavaScript](https://web.dev/love-your-cache/#fingerprinted-urls) for easier cache invalidation.
-*   [Enabling serve-time compression](https://web.dev/reduce-network-payloads-using-text-compression/#data-compression) (such as gzip or brotli) for fewer bytes over the wire.
+Проекты Lit пользуются теми же оптимизациями времени сборки, что и другие веб-проекты. При обслуживании Lit-приложений в производстве рекомендуется использовать следующие оптимизации:
 
-In addition, note that because Lit templates are defined inside JavaScript template string literals, they don't get processed by standard HTML minifiers. Adding a plugin that minifies the HTML in template string literals can result in a modest decrease in code size. Several packages are available to perform this optimization:
+-   Пакетирование модулей Javascript для уменьшения количества сетевых запросов (например, с помощью [Rollup](https://rollupjs.org/) или [webpack](https://webpack.js.org/)).
+-   Минификация Javascript-кода для уменьшения размера полезной нагрузки ([Terser](https://www.npmjs.com/package/terser) хорошо подходит для Lit, поскольку поддерживает современный JavaScript).
+-   [Передача современного кода современным браузерам](https://web.dev/serve-modern-code-to-modern-browsers/), так как он обычно меньше и быстрее, и возврат к скомпилированному коду в старых браузерах.
+-   [Хеширование статических активов, включая встроенный JavaScript](https://web.dev/love-your-cache/#fingerprinted-urls) для более легкого аннулирования кэша.
+-   [Включение сжатия при обслуживании](https://web.dev/reduce-network-payloads-using-text-compression/#data-compression) (например, gzip или brotli) для уменьшения количества байт, передаваемых по проводам.
 
-*   Rollup: [rollup-plugin-minify-html-literals](https://www.npmjs.com/package/rollup-plugin-minify-html-literals?activeTab=readme)
-*   Webpack: [minify-html-literals-loader](https://www.npmjs.com/package/minify-html-literals-loader)
+Кроме того, обратите внимание, что поскольку шаблоны Lit определяются внутри строковых литералов шаблонов JavaScript, они не обрабатываются стандартными минификаторами HTML. Добавление плагина, который минифицирует HTML в строковых литералах шаблонов, может привести к скромному уменьшению размера кода. Существует несколько пакетов для такой оптимизации:
 
+-   Rollup: [rollup-plugin-minify-html-literals](https://www.npmjs.com/package/rollup-plugin-minify-html-literals?activeTab=readme)
+-   Webpack: [minify-html-literals-loader](https://www.npmjs.com/package/minify-html-literals-loader)
 
-## Building with Rollup {#building-with-rollup}
+## Создание с помощью Rollup {#building-with-rollup}
 
-There are many tools you can use to perform the required and optional build
-steps necessary to serve Lit code, and Lit does not require any one specific
-tool. However, we recommend Rollup because it's designed to work with the standard ES module
-format and output optimal code that leverages native modules on the client.
+Существует множество инструментов, которые можно использовать для выполнения необходимых и дополнительных шагов сборки, необходимых для обслуживания кода Lit, и Lit не требует какого-то одного конкретного инструмента. Однако мы рекомендуем Rollup, поскольку он предназначен для работы со стандартным форматом модулей ES и вывода оптимального кода, использующего нативные модули на клиенте.
 
-There are many ways to set up Rollup to bundle your project. The [Modern
-Web](https://modern-web.dev/) project maintains an excellent Rollup plugin
-[`@web/rollup-plugin-html`](https://modern-web.dev/docs/building/rollup-plugin-html/)
-that helps tie a number of best-practices for building applications together
-into an easy-to-use package. Example configurations using this plugin are described below.
+Существует множество способов настроить Rollup для пакетирования вашего проекта. Проект [Modern Web](https://modern-web.dev/) поддерживает отличный плагин Rollup [`@web/rollup-plugin-html`](https://modern-web.dev/docs/building/rollup-plugin-html/), который помогает связать ряд лучших практик по созданию приложений в простой в использовании пакет. Примеры конфигураций, использующих этот плагин, описаны ниже.
 
-### Modern-only build
+### Сборка только для современных приложений
 
-The annotated `rollup.config.js` file below will build an application that meets
-the [modern browser build requirements](/docs/v3/tools/requirements/#building-for-modern-browsers) and
-[production optimizations](#preparing-code-for-production) described on this page. This configuration is
-suitable for serving to modern browsers that can run ES2021 JS without
-polyfills.
+Аннотированный файл `rollup.config.js`, представленный ниже, создаст приложение, отвечающее [требованиям к сборке для современных браузеров](./requirements.md#building-for-modern-browsers) и [оптимизациям для производства](#preparing-code-for-production), описанным на этой странице. Эта конфигурация подходит для обслуживания современных браузеров, которые могут работать с ES2021 JS без полифиллов.
 
-Required node modules:
+Требуемые модули узла:
+
 ```sh
 npm i --save-dev rollup \
   @web/rollup-plugin-html \
@@ -66,47 +57,49 @@ npm i --save-dev rollup \
 ```
 
 `rollup.config.js:`
+
 ```js
 // Import rollup plugins
 import html from '@web/rollup-plugin-html';
-import {copy} from '@web/rollup-plugin-copy';
+import { copy } from '@web/rollup-plugin-copy';
 import resolve from '@rollup/plugin-node-resolve';
-import {terser} from '@rollup/plugin-terser';
+import { terser } from '@rollup/plugin-terser';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
 import summary from 'rollup-plugin-summary';
 
 export default {
-  plugins: [
-    // Entry point for application build; can specify a glob to build multiple
-    // HTML files for non-SPA app
-    html({
-      input: 'index.html',
-    }),
-    // Resolve bare module specifiers to relative paths
-    resolve(),
-    // Minify HTML template literals
-    minifyHTML(),
-    // Minify JS
-    terser({
-      ecma: 2021,
-      module: true,
-      warnings: true,
-    }),
-    // Print bundle summary
-    summary(),
-    // Optional: copy any static assets to build directory
-    copy({
-      patterns: ['images/**/*'],
-    }),
-  ],
-  output: {
-    dir: 'build',
-  },
-  preserveEntrySignatures: 'strict',
+    plugins: [
+        // Entry point for application build; can specify a glob to build multiple
+        // HTML files for non-SPA app
+        html({
+            input: 'index.html',
+        }),
+        // Resolve bare module specifiers to relative paths
+        resolve(),
+        // Minify HTML template literals
+        minifyHTML(),
+        // Minify JS
+        terser({
+            ecma: 2021,
+            module: true,
+            warnings: true,
+        }),
+        // Print bundle summary
+        summary(),
+        // Optional: copy any static assets to build directory
+        copy({
+            patterns: ['images/**/*'],
+        }),
+    ],
+    output: {
+        dir: 'build',
+    },
+    preserveEntrySignatures: 'strict',
 };
 ```
 
-Running the rollup build:
+Запуск сборки rollup:
+
 ```sh
 rollup -c
 ```

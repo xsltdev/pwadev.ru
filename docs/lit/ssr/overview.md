@@ -1,41 +1,41 @@
 ---
-title: Server-side rendering (SSR)
-eleventyNavigation:
-  key: Overview
-  parent: Server rendering
-  order: 1
-versionLinks:
-  v2: ssr/overview/
+description: Рендеринг на стороне сервера (SSR) - это техника генерации и обслуживания HTML ваших компонентов, включая теневой DOM и стили, до загрузки и выполнения их реализаций JavaScript
 ---
 
-{% labs-disclaimer %}
+# Рендеринг на стороне сервера (SSR)
 
-Server-side rendering (SSR) is a technique for generating and serving the HTML of your components, including shadow DOM and styles, before their JavaScript implementations have loaded and executed.
+!!!warning ""
 
-You can use SSR for a variety of reasons:
-- Performance. Some sites can render faster if they render static HTML first without waiting for JavaScript to load, then (optionally) load the page's JavaScript and hydrate the components.
-- SEO and web crawlers. While the major search-engine web crawlers render pages with full JavaScript-enabled browsers, not all web crawlers support JavaScript.
-- Robustness. Static HTML renders even if the JavaScript fails to load or the user has JavaScript disabled.
+    Этот пакет входит в семейство экспериментальных пакетов Lit Labs. Руководство по использованию программ Labs в производстве см. на [странице Lit Labs](../libraries/labs.md).
 
-For a deeper dive into server-side rendering concepts and techniques generally, see [Rendering on the Web](https://web.dev/rendering-on-the-web/) on web.dev.
+**Рендеринг на стороне сервера (SSR)** - это техника генерации и обслуживания HTML ваших компонентов, включая теневой DOM и стили, до загрузки и выполнения их реализаций JavaScript.
 
-Lit supports server-side rendering through the [Lit SSR](https://github.com/lit/lit/tree/main/packages/labs/ssr#readme) package. Lit SSR renders Lit components and templates to static HTML markup in non-browser JavaScript environments like Node. It works without fully emulating the browser's DOM, and takes advantage of Lit's declarative template format to enable fast performance, achieve low time-to-first-byte, and support streaming.
+Вы можете использовать SSR по целому ряду причин:
 
-Lit SSR is a low-level library that you can use directly in your Node-based server or site generator. Check out [an example of Lit SSR used in a Koa server](https://stackblitz.com/edit/lit-ssr-global?file=src/server.js).
+-   Производительность. Некоторые сайты могут работать быстрее, если они сначала отображают статический HTML, не дожидаясь загрузки JavaScript, а затем (по желанию) загружают JavaScript страницы и гидрируют компоненты.
+-   SEO и веб-краулеры. В то время как основные поисковые системы отображают страницы в браузерах с полной поддержкой JavaScript, не все веб-краулеры поддерживают JavaScript.
+-   Надежность. Статический HTML отображается, даже если JavaScript не загружается или у пользователя отключен JavaScript.
 
-A number of integrations have also been published which make Lit SSR work out-of-the-box:
-- [Lit Eleventy Plugin](https://github.com/lit/lit/tree/main/packages/labs/eleventy-plugin-lit#lit-labseleventy-plugin-lit)
-- [Astro integration for Lit](https://docs.astro.build/en/guides/integrations-guide/lit/)
-- [Rocket](https://rocket.modern-web.dev/)
-- Next.js pages router with [@lit-labs/nextjs](https://www.npmjs.com/package/@lit-labs/nextjs)
-- Nuxt 3 with [nuxt-ssr-lit](https://www.npmjs.com/package/nuxt-ssr-lit)
-- ...and more under development!
+Для более глубокого погружения в концепции и техники серверного рендеринга в целом, смотрите [Rendering on the Web](https://web.dev/rendering-on-the-web/) на web.dev.
 
-## Library status
+Lit поддерживает рендеринг на стороне сервера с помощью пакета [Lit SSR](https://github.com/lit/lit/tree/main/packages/labs/ssr#readme). Lit SSR преобразует компоненты и шаблоны Lit в статическую HTML-разметку в небраузерных JavaScript-окружениях, таких как Node. Она работает без полной эмуляции DOM браузера и использует преимущества декларативного формата шаблонов Lit для обеспечения высокой производительности, низкого времени до первого байта и поддержки потоковой передачи.
 
-This library is under active development with some notable limitations we hope to resolve:
+Lit SSR - это низкоуровневая библиотека, которую вы можете использовать непосредственно в своем сервере или генераторе сайтов на базе Node. Посмотрите [пример использования Lit SSR в сервере Koa](https://stackblitz.com/edit/lit-ssr-global?file=src/server.js).
 
-- Async component work is not supported. See issue [#2469](https://github.com/lit/lit/issues/2469).
-- Only Lit components using shadow DOM is supported. See issue [#3080](https://github.com/lit/lit/issues/3080).
-- Declarative shadow DOM is not implemented in all major browsers yet, though a polyfill is available. Read more about it in [client usage](/docs/v3/ssr/client-usage#lit-components).
-- There are also open discussions that need to happen regarding `ElementRendererRegistry` for interop with other custom elements.
+Также было опубликовано несколько интеграций, которые позволяют Lit SSR работать "из коробки":
+
+-   [Lit Eleventy Plugin](https://github.com/lit/lit/tree/main/packages/labs/eleventy-plugin-lit#lit-labseleventy-plugin-lit)
+-   [Интеграция Astro для Lit](https://docs.astro.build/en/guides/integrations-guide/lit/)
+-   [Rocket](https://rocket.modern-web.dev/)
+-   Маршрутизатор страниц Next.js с [@lit-labs/nextjs](https://www.npmjs.com/package/@lit-labs/nextjs)
+-   Nuxt 3 с [nuxt-ssr-lit](https://www.npmjs.com/package/nuxt-ssr-lit)
+-   ...и многое другое в разработке!
+
+## Статус библиотеки
+
+Эта библиотека находится в стадии активной разработки с некоторыми заметными ограничениями, которые мы надеемся устранить:
+
+-   Не поддерживается работа с асинхронными компонентами. См. проблему [#2469](https://github.com/lit/lit/issues/2469).
+-   Поддерживаются только Lit-компоненты, использующие теневой DOM. См. выпуск [#3080](https://github.com/lit/lit/issues/3080).
+-   Декларативный теневой DOM пока не реализован во всех основных браузерах, хотя полифилл доступен. Подробнее об этом читайте в [client usage](./client-usage.md#lit-components).
+-   Также открыто обсуждение `ElementRendererRegistry` для взаимодействия с другими пользовательскими элементами.

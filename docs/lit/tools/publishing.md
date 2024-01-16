@@ -1,81 +1,75 @@
 ---
-title: Publishing
-eleventyNavigation:
-  key: Publishing
-  parent: Tools
-  order: 5
-versionLinks:
-  v1: tools/publish/
-  v2: tools/publishing/
+description: На этой странице представлены рекомендации по публикации компонента Lit на npm, менеджере пакетов, используемом подавляющим большинством библиотек JavaScript и разработчиков
 ---
 
-This page provides guidelines for publishing a Lit component to [npm](https://www.npmjs.com/), the package manager used by the vast majority of JavaScript libraries and developers. See [Starter Kits](/docs/v3/tools/starter-kits/) for reusable component templates set up for publishing to npm.
+# Публикация
 
-## Publishing to npm
+На этой странице представлены рекомендации по публикации компонента Lit на [npm](https://www.npmjs.com/), менеджере пакетов, используемом подавляющим большинством библиотек JavaScript и разработчиков. Многоразовые шаблоны компонентов, настроенные для публикации на npm, смотрите в [Starter Kits](starter-kits.md).
 
-To publish your component to npm, [see the instructions on contributing npm packages](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+## Публикация на npm
 
-Your package.json configuration should have the `type`, `main`, and `module` fields:
+Чтобы опубликовать свой компонент на npm, [см. инструкции по созданию пакетов npm](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+
+В конфигурации package.json должны быть поля `type`, `main` и `module`:
 
 **package.json**
 
 ```json
 {
-  "type": "module",
-  "main": "my-element.js",
-  "module": "my-element.js"
+    "type": "module",
+    "main": "my-element.js",
+    "module": "my-element.js"
 }
 ```
 
-You should also create a README describing how to consume your component.
+Вам также следует создать `README`, описывающий, как использовать ваш компонент.
 
-## Publishing modern JavaScript
+## Публикация современного JavaScript
 
-We recommend publishing JavaScript modules in standard [ES2021](https://compat-table.github.io/compat-table/es2016plus/) syntax, as this is supported on all evergreen browsers and results in the fastest and smallest JavaScript. Users of your package can always use a compiler to support older browsers, but they can't transform legacy JavaScript to modern syntax if you pre-compile your code before publishing.
+Мы рекомендуем публиковать модули JavaScript в стандартном синтаксисе [ES2021](https://compat-table.github.io/compat-table/es2016plus/), поскольку он поддерживается во всех вечнозеленых браузерах и позволяет получить самый быстрый и компактный JavaScript. Пользователи вашего пакета всегда могут использовать компилятор для поддержки старых браузеров, но они не смогут преобразовать устаревший JavaScript в современный синтаксис, если вы предварительно скомпилируете свой код перед публикацией.
 
-However, it is important that if you are using newly proposed or non-standard JavaScript features such as TypeScript, decorators, and class fields, you _should_ compile those features to standard ES2021 supported natively in browsers before publishing to npm.
+Тем не менее, если вы используете недавно предложенные или нестандартные функции JavaScript, такие как TypeScript, декораторы и поля классов, вам следует скомпилировать эти функции до стандарта ES2021, поддерживаемого браузерами нативно, перед публикацией в npm.
 
-### Compiling with TypeScript
+### Компиляция с TypeScript
 
-The following JSON sample is a partial `tsconfig.json` that uses recommended options for targeting ES2021, enables compilation of decorators, and outputs `.d.ts` types for users:
+Следующий JSON-пример представляет собой частичный `tsconfig.json`, который использует рекомендуемые опции для ориентации на ES2021, включает компиляцию декораторов и выводит типы `.d.ts` для пользователей:
 
 **tsconfig.json**
 
 ```json
-"compilerOptions": {
-  "target": "es2021",
-  "module": "es2015",
-  "moduleResolution": "node",
-  "lib": ["es2021", "dom"],
-  "declaration": true,
-  "declarationMap": true,
-  "experimentalDecorators": true,
-  "useDefineForClassFields": false
+{
+    "compilerOptions": {
+        "target": "es2021",
+        "module": "es2015",
+        "moduleResolution": "node",
+        "lib": ["es2021", "dom"],
+        "declaration": true,
+        "declarationMap": true,
+        "experimentalDecorators": true,
+        "useDefineForClassFields": false
+    }
 }
 ```
 
-Note, setting `useDefineForClassFields` to `false` should only be required when the `target` is set to `es2022` or greater including `esnext`, but it's recommended to explicitly ensure this setting is `false`.
+Обратите внимание, что установка `useDefineForClassFields` в `false` требуется только в том случае, если `target` установлен на `es2022` или выше, включая `esnext`, но рекомендуется явно убедиться, что эта настройка `false`.
 
-When compiling from TypeScript, you should include declaration files
-(generated based on `declaration: true` above) for your component's types in the
-`types` field of `package.json`, and ensure the `.d.ts` and `.d.ts.map` files
-are published as well:
+При компиляции из TypeScript необходимо включить файлы декларации (сгенерированные на основе `declaration: true` выше) для типов вашего компонента в поле `types` файла `package.json`, а также убедиться, что файлы `.d.ts` и `.d.ts.map` также опубликованы:
 
 **package.json**
+
 ```json
 {
-  ...
-  "types": "my-element.d.ts"
+    "types": "my-element.d.ts"
 }
 ```
 
-See the [tsconfig.json documentation](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) for more information.
+Дополнительную информацию см. в документации [tsconfig.json](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
 
-### Compiling with Babel
+### Компиляция с помощью Babel
 
-To compile a Lit component that uses proposed JavaScript features not yet included in ES2021, use Babel.
+Чтобы скомпилировать компонент Lit, который использует предложенные возможности JavaScript, еще не включенные в ES2021, используйте Babel.
 
-Install Babel and the Babel plugins you need. For example:
+Установите Babel и необходимые вам плагины Babel. Например:
 
 ```sh
 npm install --save-dev @babel/core
@@ -83,125 +77,97 @@ npm install --save-dev @babel/plugin-proposal-class-properties
 npm install --save-dev @babel/plugin-proposal-decorators
 ```
 
-Configure Babel. For example:
+Настройте Babel. Например:
 
 **babel.config.js**
 
 ```js
 const assumptions = {
-  "setPublicClassFields": true
+    setPublicClassFields: true,
 };
 
 const plugins = [
-  ['@babel/plugin-proposal-decorators', { decoratorsBeforeExport: true } ],
-  ["@babel/plugin-proposal-class-properties"],
-
+    [
+        '@babel/plugin-proposal-decorators',
+        { decoratorsBeforeExport: true },
+    ],
+    ['@babel/plugin-proposal-class-properties'],
 ];
 
 module.exports = { assumptions, plugins };
 ```
 
-You can run Babel via a bundler plugin such as [@rollup/plugin-babel](https://www.npmjs.com/package/@rollup/plugin-babel), or from the command line. See the [Babel documentation](https://babeljs.io/docs/en/) for more information.
+Вы можете запустить Babel через плагин bundler, например [@rollup/plugin-babel](https://www.npmjs.com/package/@rollup/plugin-babel), или из командной строки. Дополнительную информацию см. в документации [Babel](https://babeljs.io/docs/en/).
 
-## Publishing best practices
+## Лучшие практики публикации
 
-The following are other good practices to follow when publishing reusable Web Components.
+Ниже перечислены другие передовые методы, которым следует следовать при публикации многократно используемых веб-компонентов.
 
-### Don't import polyfills into modules
+### Не импортируйте полифиллы в модули
 
-Polyfills are an application concern, so the application should depend directly
-on them, not individual packages. The exact polyfills needed often depends on
-the browsers the application needs to support, and that choice is best left to
-the application developer using your component. Your component's documentation **should** clearly identify any APIs it uses that may require polyfills. 
+Полифиллы - это забота приложения, поэтому приложение должно зависеть непосредственно от них, а не от отдельных пакетов. Точный выбор необходимых полифиллов часто зависит от браузеров, которые должно поддерживать приложение, и этот выбор лучше оставить разработчику приложения, использующего ваш компонент. Документация вашего компонента **должна** четко определять все используемые им API, для которых могут потребоваться полифиллы.
 
-Packages may need to depend on polyfills for tests and demos, so if
-they're needed, they should only go in `devDependencies`.
+Пакеты могут зависеть от полифиллов для тестов и демонстраций, поэтому, если они необходимы, их следует помещать только в `devDependencies`.
 
-### Don't bundle, minify, or optimize modules
+### Не связывайте, не минифицируйте и не оптимизируйте модули
 
-Bundling and other optimizations are application concerns. Bundling a reusable component before publishing to npm can also introduce multiple versions of Lit (and other packages) into a user's application since npm can't deduplicate the packages. This causes bloat and may cause bugs.
+Пакетирование и другие оптимизации - это забота приложения. Пакетирование многократно используемого компонента перед публикацией в npm также может привести к появлению нескольких версий Lit (и других пакетов) в приложении пользователя, поскольку npm не может дедуплицировать пакеты. Это приводит к раздуванию и может вызвать ошибки.
 
-Optimizing modules before publication may also prevent application-level optimizations.
+Оптимизация модулей перед публикацией также может препятствовать оптимизации на уровне приложения.
 
-Bundling and other optimizations can be valuable when serving a module from a CDN, but since users may need to use multiple packages that depend on Lit, serving from a CDN can result in users loading more code than necessary. For these reasons we recommend performance-sensitive applications always build from npm where packages can be deduplicated, rather than loading bundled packages off of a CDN.
+Пакетирование и другие оптимизации могут быть полезны при обслуживании модуля из CDN, но поскольку пользователям может потребоваться использовать несколько пакетов, зависящих от Lit, обслуживание из CDN может привести к тому, что пользователи будут загружать больше кода, чем необходимо. По этим причинам мы рекомендуем приложениям, чувствительным к производительности, всегда собирать из npm, где пакеты могут быть дедуплицированы, а не загружать пакеты из CDN.
 
-If you want to support usage from a CDN, we recommend making a clear separation between the CDN modules and the modules intended for production use. For example, placing them in a separate folder, or only adding them as part of a GitHub release and not adding them to the published npm module. 
+Если вы хотите поддерживать использование из CDN, мы рекомендуем четко разделить модули для CDN и модули, предназначенные для использования в производстве. Например, поместить их в отдельную папку или добавлять только как часть релиза на GitHub, не добавляя их в опубликованный модуль npm.
 
-### Include file extensions in import specifiers
+### Включать расширения файлов в спецификаторы импорта
 
-Node module resolution doesn't require file extensions because it does a search
-of the file system looking for one of several file extensions if one isn't
-given. When you import `some-package/foo`, Node will import
-`some-package/foo.js` if it exists. Likewise, build tools that resolve package
-specifiers to URLs can also do this file system search at build time.
+Разрешение модулей Node не требует расширений файлов, потому что оно выполняет поиск по файловой системе в поисках одного из нескольких расширений файлов, если оно не задано. Когда вы импортируете `some-package/foo`, Node импортирует `some-package/foo.js`, если он существует. Аналогично, инструменты сборки, которые преобразуют спецификаторы пакетов в URL, также могут выполнять такой поиск в файловой системе во время сборки.
 
-However, the [import maps](https://github.com/WICG/import-maps) specification
-that is [starting to ship](https://chromestatus.com/feature/5315286962012160) in
-browsers will allow the browser to load modules with bare package specifiers
-from source _untransformed_, by providing a mapping of import specifiers to URLs
-in an import map manifest (that will likely be tool generated based on your e.g.
-npm installation).
+Однако спецификация [import maps](https://github.com/WICG/import-maps), которая [начинает поставляться](https://chromestatus.com/feature/5315286962012160) в браузерах, позволит браузеру загружать модули с пустыми спецификаторами пакетов из исходного кода _без преобразования_, предоставляя сопоставление спецификаторов импорта с URL в манифесте import map (который, вероятно, будет сгенерирован инструментом на основе вашей, например, установки npm).
 
-Import maps will allow mapping imports to URLs, but they only have two type of
-mappings: exact and prefix. That means it is easy to alias _all_ modules under a
-given package by mapping the package name to a single URL prefix. However, if
-you write imports without file extensions, it means that _each file_ in your
-package would need an entry in the import map.
-This
-could greatly bloat the import map.
+Карты импорта позволяют сопоставлять импорт с URL, но у них есть только два типа сопоставлений: точное и префиксное. Это означает, что можно легко псевдонимизировать _все_ модули из данного пакета, сопоставив имя пакета с одним префиксом URL. Однако если вы пишете импорты без расширений файлов, это означает, что _каждый файл_ в вашем пакете будет нуждаться в записи в карте импорта. Это может сильно раздуть карту импорта.
 
-Thus, to prepare your source now to be optimally compatible with import maps, we
-recommend authoring with file extensions on imports.
+Таким образом, чтобы подготовить ваши исходные тексты к оптимальной совместимости с картами импорта, мы рекомендуем писать импорты с расширениями файлов.
 
-### Publish TypeScript typings
+### Публикуйте типизации TypeScript
 
-To make your element easy to use from TypeScript, we recommend that you:
+Чтобы ваш элемент было легко использовать из TypeScript, мы рекомендуем вам:
 
-*   Add an `HTMLElementTagNameMap` entry for all elements authored
-in TypeScript.
+-   Добавить запись `HTMLElementTagNameMap` для всех элементов, созданных на TypeScript.
 
     ```ts
     @customElement('my-element')
-    export class MyElement extends LitElement { /* ... */ }
+    export class MyElement extends LitElement {
+        /* ... */
+    }
 
     declare global {
-      interface HTMLElementTagNameMap {
-        "my-element": MyElement;
-      }
+        interface HTMLElementTagNameMap {
+            'my-element': MyElement;
+        }
     }
     ```
-*   Publish your `.d.ts` typings in your npm package.
 
+-   Опубликуйте свои типизации `.d.ts` в пакете npm.
 
- For more information about `HTMLElementTagNameMap`, see [Providing good TypeScript typings](/docs/v3/components/defining/#typescript-typings).
+Подробнее о `HTMLElementTagNameMap` смотрите в [Обеспечение хороших TypeScript-типизаций](../components/defining.md#typescript-typings).
 
-### Self-define elements
+### Самоопределяющиеся элементы
 
-The module that declares the web component class should always include a call to
-`customElements.define()` (or the `@customElement` decorator) to define the element.
+Модуль, в котором объявляется класс веб-компонента, всегда должен содержать вызов `customElements.define()` (или декоратора `@customElement`) для определения элемента.
 
-Currently, web components are always defined in a global registry. Each custom element definition needs to use a unique tag name **and** a unique JavaScript class. Attempting to register the same tag name twice, or the same class twice will fail with an error. Simply exporting a class and expecting the user to call `define()` is brittle. If two different components both depend on a shared third component, and both try to define it, one will fail. This isn't a problem if an element is always defined in the same module where its class is declared.
+В настоящее время веб-компоненты всегда определяются в глобальном реестре. Каждое определение пользовательского элемента должно использовать уникальное имя тега **и** уникальный класс JavaScript. Попытка дважды зарегистрировать одно и то же имя тега или один и тот же класс приведет к ошибке. Простой экспорт класса и ожидание того, что пользователь вызовет `define()`, является хрупким. Если два разных компонента зависят от общего третьего компонента и оба пытаются определить его, то один из них потерпит неудачу. Это не проблема, если элемент всегда определяется в том же модуле, где объявлен его класс.
 
-One downside of this approach is that if two different elements use the same tag name, they can't both be imported to the same project.
+Недостатком такого подхода является то, что если два разных элемента используют одно и то же имя тега, они не могут быть импортированы в один и тот же проект.
 
-Work is progressing on adding [Scoped Custom Element
-Registries](https://github.com/WICG/webcomponents/blob/gh-pages/proposals/Scoped-Custom-Element-Registries.md)
-to the platform. Scoped registries allow a custom element's tag name to be chosen by the
-user of the component for a given shadow root scope. Once browsers start
-shipping this feature, it will become practical to publish two modules for each component: one that exports the custom element class with no side effects, and one that registers it globally with a tag name.
+В настоящее время ведется работа над добавлением в платформу [Scoped Custom Element Registries](https://github.com/WICG/webcomponents/blob/gh-pages/proposals/Scoped-Custom-Element-Registries.md). Скопированные реестры позволяют пользователю компонента выбирать имя тега пользовательского элемента для заданной корневой области тени. Как только браузеры начнут поставлять эту функцию, станет практичным публиковать два модуля для каждого компонента: один экспортирует класс пользовательского элемента без побочных эффектов, а другой регистрирует его глобально с именем тега.
 
-Until then, we recommend continuing to register elements in the global registry.
+До тех пор мы рекомендуем продолжать регистрировать элементы в глобальном реестре.
 
-### Export element classes
+### Экспорт классов элементов
 
-In order to support subclassing, export your element class from the module that
-defines it. This allows subclassing for extension purposes, as well as for
-registering in [Scoped Custom Element
-Registries](https://github.com/WICG/webcomponents/blob/gh-pages/proposals/Scoped-Custom-Element-Registries.md)
-in the future.
+Для поддержки подклассификации экспортируйте класс элемента из модуля, который его определяет. Это позволит создавать подклассы для целей расширения, а также для регистрации в [Scoped Custom Element Registries](https://github.com/WICG/webcomponents/blob/gh-pages/proposals/Scoped-Custom-Element-Registries.md) в будущем.
 
-## For more reading
+## Для дополнительного чтения
 
-For a more general guide for creating high-quality reusable web components, see
-the [Gold Standard Checklist for Web
-Components](https://github.com/webcomponents/gold-standard/wiki).
+Более общее руководство по созданию высококачественных многократно используемых веб-компонентов см. в [Gold Standard Checklist for Web Components](https://github.com/webcomponents/gold-standard/wiki).

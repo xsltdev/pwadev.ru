@@ -1,118 +1,113 @@
 ---
-title: Authoring components for Lit SSR
-eleventyNavigation:
-  key: Authoring components
-  parent: Server rendering
-  order: 4
-versionLinks:
-  v2: ssr/authoring/
+description: Подход Lit к рендерингу веб-компонентов в серверной среде накладывает некоторые ограничения на код компонентов для достижения эффективного серверного рендеринга
 ---
 
-{% labs-disclaimer %}
+# Собственные компоненты для Lit SSR
 
-Lit's approach to rendering web components in a server environment places some restrictions on component code to achieve efficient server rendering. When authoring components, keep in mind these considerations to ensure they are compatible with Lit SSR.
+!!!warning ""
 
-Note: The restrictions listed on this page are subject to change as we make improvements to Lit SSR. If you would like to see a certain use case supported, please [file an issue](https://github.com/lit/lit/issues/new/choose) or start a [discussion](https://github.com/lit/lit/discussions) thread.
+    Этот пакет входит в семейство экспериментальных пакетов Lit Labs. Руководство по использованию программ Labs в производстве см. на [странице Lit Labs](../libraries/labs.md).
 
-## Browser-only code
+Подход Lit к рендерингу веб-компонентов в серверной среде накладывает некоторые ограничения на код компонентов для достижения эффективного серверного рендеринга. При создании компонентов учитывайте эти соображения, чтобы обеспечить их совместимость с Lit SSR.
 
-Most browser DOM APIs are not available in the Node environment. Lit SSR utilizes a DOM shim that's the bare minimum required for rendering Lit templates and components. For a full list of what APIs are available, see the [DOM Emulation](/docs/v3/ssr/dom-emulation) page.
+Примечание: Ограничения, перечисленные на этой странице, могут быть изменены по мере совершенствования Lit SSR. Если вы хотите, чтобы определенный вариант использования был поддержан, пожалуйста, [подайте заявку](https://github.com/lit/lit/issues/new/choose) или начните [обсуждение](https://github.com/lit/lit/discussions).
 
-When authoring components, perform imperative DOM operations from lifecycle methods that are called **only on the client**, and not on the server. For example, use `updated()` if you need to measure the updated DOM. This callback is only run on the browser, so it is safe to access the DOM.
+## Код только для браузеров {#browser-only-code}
 
-See the [lifecycle](#lifecycle) section below for a list of which specific methods are called on the server and which are browser-only.
+Большинство браузерных DOM API недоступны в среде Node. Lit SSR использует DOM shim, который является минимально необходимым для рендеринга шаблонов и компонентов Lit. Полный список доступных API можно найти на странице [Эмуляция DOM](./dom-emulation.md).
 
-Some modules that define Lit components may also have side effects that use browser APIs—for example to detect certain browser features—such that the module breaks when imported in a non-browser environment. In this case, you can move the side effect code into a browser-only lifecycle callback, or conditionalize so that it only runs on the browser.
+При создании компонентов выполняйте императивные DOM-операции из методов жизненного цикла, которые вызываются **только на клиенте**, а не на сервере. Например, используйте `updated()`, если вам нужно измерить обновленный DOM. Этот обратный вызов выполняется только в браузере, поэтому доступ к DOM безопасен.
 
-For simple cases, adding conditionals or optional chaining to certain DOM accesses may be sufficient to guard against unavailable DOM APIs. For example:
+Список конкретных методов, которые вызываются на сервере, а какие - только в браузере, см. в разделе [lifecycle](#lifecycle) ниже.
+
+Некоторые модули, определяющие компоненты Lit, могут иметь побочные эффекты, использующие API браузера - например, для обнаружения определенных функций браузера, - так что при импорте модуля в небраузерную среду он может сломаться. В этом случае можно перенести код побочного эффекта в обратный вызов жизненного цикла, предназначенный только для браузера, или поставить условие, чтобы он выполнялся только в браузере.
+
+В простых случаях для защиты от недоступных API DOM может быть достаточно добавить условия или необязательную цепочку к определенным доступам к DOM. Например:
 
 ```js
-const hasConstructableStylesheets = typeof globalThis.CSSStyleSheet?.prototype.replaceSync === 'function';
+const hasConstructableStylesheets =
+    typeof globalThis.CSSStyleSheet?.prototype
+        .replaceSync === 'function';
 ```
 
-The `lit` package also provides an `isServer` environment checker that can be used to write conditional blocks of code targeting different environments:
+Пакет `lit` также предоставляет средство проверки окружения `isServer`, которое можно использовать для написания условных блоков кода, нацеленных на различные окружения:
 
 ```js
-import {isServer} from 'lit';
+import { isServer } from 'lit';
 
 if (isServer) {
-  // only runs in server environments like Node
+    // only runs in server environments like Node
 } else {
-  // runs in the browser
+    // runs in the browser
 }
 ```
 
-For more complex uses cases, consider utilizing [conditional exports](https://nodejs.org/api/packages.html#conditional-exports) in Node that specifically match for `"node"` environments so you could have different code depending on whether the module is being imported for use in Node or in the browser. Users would get the appropriate version of the package depending on whether it was imported from Node or the browser. Export conditions are also supported by popular bundling tools like [rollup](https://github.com/rollup/plugins/tree/master/packages/node-resolve#exportconditions) and [webpack](https://webpack.js.org/configuration/resolve/#resolveconditionnames) so users can bring in the appropriate code for your bundle.
+Для более сложных случаев использования рассмотрите возможность использования [условных экспортов](https://nodejs.org/api/packages.html#conditional-exports) в Node, которые специально соответствуют окружению `"node"`, чтобы вы могли иметь разный код в зависимости от того, импортируется ли модуль для использования в Node или в браузере. Пользователи будут получать соответствующую версию пакета в зависимости от того, импортируется ли он из Node или из браузера. Условия экспорта также поддерживаются популярными инструментами пакетирования, такими как [rollup](https://github.com/rollup/plugins/tree/master/packages/node-resolve#exportconditions) и [webpack](https://webpack.js.org/configuration/resolve/#resolveconditionnames), поэтому пользователи могут принести соответствующий код для вашего пакета.
 
-{% aside "warn" %}
+!!!warning "Не собирайте Lit в опубликованные компоненты"
 
-Don't bundle Lit into published components.
+    Поскольку пакеты Lit используют условный экспорт для предоставления разных модулей окружению Node и браузеру, мы настоятельно не рекомендуем включать `lit` в ваши пакеты, публикуемые в NPM. Если вы это сделаете, ваш пакет будет включать только модули `lit`, предназначенные для окружения, которое вы включили в пакет, и не будет автоматически переключаться в зависимости от окружения.
 
-Because Lit packages use conditional exports to provide different modules to Node and browser environments, we strongly discourage bundling `lit` into your packages being published to NPM. If you do, your bundle will only include `lit` modules meant for the environment you bundled, and won't automatically switch based on environment.
+## Жизненный цикл {#lifecycle}
 
-{% endaside %}
+Во время рендеринга на стороне сервера запускаются только определенные обратные вызовы жизненного цикла. Эти обратные вызовы генерируют начальный стиль и разметку для компонента. Дополнительные методы жизненного цикла вызываются на стороне клиента во время гидратации и во время выполнения после гидратации компонентов.
 
-## Lifecycle
+В таблицах ниже перечислены стандартные методы жизненного цикла пользовательских элементов и Lit, а также указано, вызываются ли они во время SSR. Весь жизненный цикл доступен в браузере после регистрации элемента и гидратации.
 
-Only certain lifecycle callbacks are run during server-side rendering. These callback generate the initial styling and markup for the component. Additional lifecycle methods are called client-side during hydration and during runtime after the components are hydrated.
+!!!warning ""
 
-The tables below lists the standard custom element and Lit lifecycle methods and whether they are called during SSR. All of the lifecycle is available on the browser after element registration and hydration.
+    Методы, вызываемые на сервере, не должны содержать ссылок на API браузера/DOM, которые не были шиммированы. Методы, которые не вызываются на стороне сервера, могут содержать такие ссылки, не вызывая сбоев.
 
-{% aside "warn" "no-header" %}
+!!!note ""
 
-Methods called on the server should not contain references to browser/DOM APIs that have not been shimmed. Methods that are not called server-side may contain those references without causing breakages.
+    Вызов метода на сервере может быть изменен, пока Lit SSR является частью Lit Labs.
 
-{% endaside %}
+### Стандартный пользовательский элемент и LitElement
 
-{% aside "labs" "no-header" %}
-
-Whether a method is called on the server is subject to change while Lit SSR is part of Lit Labs.
-
-{% endaside %}
-
-<!-- TODO(augustinekim) Replace emoji with appropriate icon -->
-### Standard custom element and LitElement
-| Method | Called on server | Notes |
-|-|-|-|
-| `constructor()` | Yes ⚠️ | |
-| `connectedCallback()` | No | |
-| `disconnectedCallback()` | No | |
-| `attributeChangedCallback()` | No | |
-| `adoptedCallback()` | No | |
-| `hasChanged()` | Yes ⚠️ | Called when property is set |
-| `shouldUpdate()` | No | |
-| `willUpdate()` | Yes ⚠️ | Called before `render()` |
-| `update()` | No | |
-| `render()` | Yes ⚠️ | |
-| `firstUpdate()` | No | |
-| `updated()` | No | |
+| Метод | Вызывается на сервере | Примечания |
+| --- | --- | --- |
+| `constructor()` | Да ⚠️ |  |
+| `connectedCallback()` | Нет |  |
+| `disconnectedCallback()` | Нет |  |
+| `attributeChangedCallback()` | Нет |  |
+| `adoptedCallback()` | Нет |  |
+| `hasChanged()` | Да ⚠️ | Вызывается, когда свойство установлено |
+| `shouldUpdate()` | No |  |
+| `willUpdate()` | Да ⚠️ | Вызывается перед `render()` |
+| `update()` | Нет |  |
+| `render()` | Да ⚠️ |  |
+| `firstUpdate()` | Нет |  |
+| `updated()` | Нет |  |
 
 ### ReactiveController
-| Method | Called on server | Notes |
-|-|-|-|
-| `constructor()` | Yes ⚠️ | |
-| `hostConnected()` | No | |
-| `hostDisconnected()` | No | |
-| `hostUpdate()` | No | |
-| `hostUpdated()` | No | |
 
-### Directive
-| Method | Called on server | Notes |
-|-|-|-|
-| `constructor()` | Yes ⚠️ | |
-| `update()` | No | |
-| `render()` | Yes ⚠️ | |
-| `disconnected()` | No | Async directives only |
-| `reconnected()` | No | Async directives only |
+| Метод | Вызывается на сервере | Примечания |
+| --- | --- | --- | --- |
+| `constructor()` | Да ⚠️ |  |
+| `hostConnected()` | Нет |  |
+| `hostDisconnected()` | Нет |  |
+| `hostUpdate()` | Нет |  |
+|  | `hostUpdated()` | Нет |  |
 
-## Asynchronicity
+### Директива
 
-There currently isn't a mechanism to wait for asynchronous results before continuing to render (such as results from async directives or controllers), though we are considering options to allow this in the future. The current workaround for this is to do any asynchronous work before rendering the top level template on the server and providing the data to the template as some attribute or property.
+| Метод | Вызывается на сервере | Примечания |
+| --- | --- | --- | --- |
+| `constructor()` | Да ⚠️ |  |
+| `update()` | Нет |  |
+| `render()` | Да ⚠️ |  |
+|  | `disconnected()` | Нет | Только директивы Async |
+| `reconnected()` | Нет | Только директивы Async |
 
-For example:
- - Async directives such as `asyncAppend()` or `asyncReplace()` will not produce any renderable results server-side.
- - `until()` directive will only ever result in the highest-priority non-promise placeholder value.
+## Асинхронность
 
-## Testing
+В настоящее время не существует механизма ожидания асинхронных результатов перед продолжением рендеринга (например, результатов от асинхронных директив или контроллеров), хотя мы рассматриваем варианты, которые позволят сделать это в будущем. Текущее решение этой проблемы заключается в том, чтобы выполнять асинхронную работу до рендеринга шаблона верхнего уровня на сервере и предоставлять данные шаблону в виде какого-либо атрибута или свойства.
 
-The `@lit-labs/testing` package contains utility functions that utilize a [Web Test Runner](https://modern-web.dev/docs/test-runner/overview/) plugin to create test fixtures that are rendered server-side using `@lit-labs/ssr`. It can help test whether your components are server-side renderable. See more in the [readme](https://github.com/lit/lit/tree/main/packages/labs/testing#readme).
+Например:
+
+-   Асинхронные директивы, такие как `asyncAppend()` или `asyncReplace()`, не дадут никаких рендерируемых результатов на стороне сервера.
+-   Директива `until()` приведет только к самому высокоприоритетному неперспективному значению placeholder.
+
+## Тестирование
+
+Пакет `@lit-labs/testing` содержит служебные функции, использующие плагин [Web Test Runner](https://modern-web.dev/docs/test-runner/overview/) для создания тестовых приспособлений, которые выводятся на сервер с помощью `@lit-labs/ssr`. С его помощью можно проверить, могут ли ваши компоненты рендериться на стороне сервера. Подробнее см. в [readme](https://github.com/lit/lit/tree/main/packages/labs/testing#readme).

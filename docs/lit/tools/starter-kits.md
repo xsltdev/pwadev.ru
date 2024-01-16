@@ -1,209 +1,202 @@
 ---
-title: Starter kits
-eleventyNavigation:
-  key: Starter kits
-  parent: Tools
-  order: 7
-versionLinks:
-  v1: getting-started/#component-project
-  v2: tools/starter-kits/
+description: Стартовые наборы Lit - это шаблоны проектов для многократно используемых компонентов Lit, которые можно опубликовать для использования другими пользователями
 ---
 
-The Lit Starter Kits are project templates for reusable Lit components that can be published for others to use.
+# Стартовые комплекты
 
-To get started working on a component locally, you can use one of these starter projects:
+Стартовые наборы Lit - это шаблоны проектов для многократно используемых компонентов Lit, которые можно опубликовать для использования другими пользователями.
 
-*   [Lit JavaScript starter project ](https://github.com/lit/lit-element-starter-js)
-*   [Lit TypeScript starter project](https://github.com/lit/lit-element-starter-ts)
+Чтобы начать работу над компонентом локально, вы можете использовать один из этих стартовых проектов:
 
-Both projects define a Lit component. They also add a set of optional tools for developing, linting, and testing the component:
+-   [Lit JavaScript starter project](https://github.com/lit/lit-element-starter-js)
+-   [Lit TypeScript starter project](https://github.com/lit/lit-element-starter-ts)
 
-*   Node.js and npm for managing dependencies. _Requires Node.js 10 or greater._
-*   A local dev server,  [Web Dev Server](https://modern-web.dev/docs/dev-server/overview/).
-*   Linting with [ESLint](https://eslint.org/) and [lit-analyzer](https://www.npmjs.com/package/lit-analyzer).
-*   Testing with [Web Test Runner](https://modern-web.dev/docs/test-runner/overview/).
-*   A static doc site built with [web-component-analyzer](https://www.npmjs.com/package/web-component-analyzer) and [eleventy](https://www.11ty.dev/).
+Оба проекта определяют компонент Lit. Они также добавляют набор дополнительных инструментов для разработки, линтинга и тестирования компонента:
 
-None of these tools is _required_ to work with Lit. They represent one possible set of tools for a good developer experience.
+-   Node.js и npm для управления зависимостями. Требуется Node.js 10 или выше.
+-   Локальный сервер разработки, [Web Dev Server](https://modern-web.dev/docs/dev-server/overview/).
+-   Линтинг с помощью [ESLint](https://eslint.org/) и [lit-analyzer](https://www.npmjs.com/package/lit-analyzer).
+-   Тестирование с помощью [Web Test Runner](https://modern-web.dev/docs/test-runner/overview/).
+-   Статический doc-сайт, созданный с помощью [web-component-analyzer](https://www.npmjs.com/package/web-component-analyzer) и [eleventy](https://www.11ty.dev/).
+
+Ни один из этих инструментов не является _обязательным_ для работы с Lit. Они представляют собой один из возможных наборов инструментов для хорошего опыта разработчика.
 
 <div class="alert alert-info">
 
-**Alternative starting point.** As an alternative to the official Lit starter projects, the Open WC project has a [project generator](https://open-wc.org/docs/development/generator/) for web components using Lit. The Open WC script asks a series of questions and scaffolds out a project for you.
+!!!alert "Альтернативная точка старта"
 
-</div>
+    В качестве альтернативы официальным стартовым проектам Lit в проекте Open WC есть [генератор проектов](https://open-wc.org/docs/development/generator/) для веб-компонентов, использующих Lit. Скрипт Open WC задает ряд вопросов и создает для вас проект.
 
-### Download the starter project
+## Скачайте стартовый проект
 
-The quickest way to try out a project locally is to download one of the starter projects as a zip file.
+Самый быстрый способ опробовать проект на месте - загрузить один из стартовых проектов в виде zip-файла.
 
-1.  Download the starter project from GitHub as a zip file:
+1.  Загрузите стартовый проект с GitHub в виде zip-файла:
 
-    *   [JavaScript starter project](https://github.com/lit/lit-element-starter-js/archive/main.zip)
-    *   [TypeScript starter project](https://github.com/lit/lit-element-starter-ts/archive/main.zip)
+    -   [JavaScript starter project](https://github.com/lit/lit-element-starter-js/archive/main.zip)
+    -   [TypeScript starter project](https://github.com/lit/lit-element-starter-ts/archive/main.zip)
 
-1.  Uncompress the zip file.
+2.  Распакуйте zip-файл.
 
-1.  Install dependencies.
+3.  Установите зависимости.
 
     ```bash
     cd <project folder>
     npm i
     ```
 
-<div class="alert alert-info">
+!!!alert "Хотите, чтобы он был на GitHub?"
 
-**Want it on GitHub?** If you're familiar with git you may want to create a GitHub repository for your starter project,
-instead of just downloading the zip file. You can use the [GitHub template repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) feature to create your own repository from the [JavaScript starter project ](https://github.com/PolymerLabs/lit-element-starter-js) or the [TypeScript starter project](https://github.com/PolymerLabs/lit-element-starter-ts). Then clone your new repository and install dependencies, as above.
+    Если вы знакомы с git, вы можете захотеть создать репозиторий GitHub для вашего стартового проекта, вместо того чтобы просто загрузить zip-файл. Вы можете воспользоваться функцией [GitHub template repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template), чтобы создать свой собственный репозиторий из [JavaScript starter project](https://github.com/PolymerLabs/lit-element-starter-js) или [TypeScript starter project](https://github.com/PolymerLabs/lit-element-starter-ts). Затем клонируйте новый репозиторий и установите зависимости, как описано выше.
 
-</div>
+## Попробуйте свой проект
 
-### Try out your project
-
-1.  **If you're using the TypeScript version of the starter**, build the JavaScript version of your project:
+1.  **Если вы используете TypeScript-версию стартера**, создайте JavaScript-версию вашего проекта:
 
     ```bash
     npm run build
     ```
 
-    To watch files and rebuild when the files are modified, run the following command in a separate shell:
+    Чтобы следить за файлами и перестраивать их при изменении, выполните следующую команду в отдельной оболочке:
 
     ```bash
     npm run build:watch
     ```
 
-    **No build step is required if you're using the JavaScript version of the starter project.**
+    **Если вы используете JavaScript-версию стартового проекта, сборка не требуется.**
 
-1.  Run the dev server:
+2.  Запустите сервер разработки:
 
     ```bash
     npm run serve
     ```
 
-1.  Open the project demo page in a browser tab. For example:
+3.  Откройте демонстрационную страницу проекта на вкладке браузера. Например:
 
     [http://localhost:8000/dev/](http://localhost:8000/dev/)
 
-    Your server may use a different port number. Check the URL in the terminal output for the correct port number.
+    Ваш сервер может использовать другой номер порта. Проверьте URL-адрес в выводе терминала на предмет правильного номера порта.
 
+## Отредактируйте свой компонент
 
-### Edit your component
+Отредактируйте определение вашего компонента. Файл, который вы редактируете, зависит от того, какой язык вы используете:
 
-Edit your component definition. The file you edit depends on which language you're using:
+-   JavaScript. Отредактируйте файл `my-element.js` в корне проекта.
+-   TypeScript. Отредактируйте файл `my-element.ts` в директории `src`.
 
-*   JavaScript. Edit the `my-element.js` file in the project root.
-*   TypeScript. Edit the `my-element.ts` file in the `src` directory.
+Несколько моментов, на которые следует обратить внимание в коде:
 
-A couple of things to look for in the code:
+-   Код определяет класс для компонента (`MyElement`) и регистрирует его в браузере как пользовательский элемент с именем `<my-element>`.
 
-*   The code defines a class for the component (`MyElement`) and registers it with the browser as a custom element named `<my-element>`.
+    === "TS"
 
-    {% switchable-sample %}
+        ```ts
+        @customElement('my-element')
+        export class MyElement extends LitElement {
+        	/* ... */
+        }
+        ```
 
-    ```ts
-    @customElement('my-element')
-    export class MyElement extends LitElement { /* ... */ }
-    ```
+    === "JS"
 
-    ```js
-    export class MyElement extends LitElement { /* ... */ }
+        ```js
+        export class MyElement extends LitElement {
+        	/* ... */
+        }
 
-    customElements.define('my-element', MyElement);
-    ```
+        customElements.define('my-element', MyElement);
+        ```
 
-    {% endswitchable-sample %}
-
-
-*   The component's `render` method defines a [template](/docs/v3/templates/overview/) that will be rendered as a part of the component. In this case, it includes some text, some data bindings, and a button. For more information, see [Templates](/docs/v3/templates/overview/).
-
-    ```js
-    export class MyElement extends LitElement {
-      // ...
-      render() {
-        return html`
-          <h1>Hello, ${this.name}!</h1>
-          <button @click=${this._onClick}>
-            Click Count: ${this.count}
-          </button>
-          <slot></slot>
-        `;
-      }
-    }
-    ```
-
-*   The component defines some properties. The component responds to changes in these properties (for example, by re-rendering the template when necessary). For more information, see [Properties](/docs/v3/components/properties/).
-
-    {% switchable-sample %}
-
-    ```ts
-    export class MyElement extends LitElement {
-      // ...
-      @property({type: String})
-      name = 'World';
-      //...
-    }
-    ```
+-   Метод `render` компонента определяет [шаблон](../templates/overview.md), который будет отображаться как часть компонента. В данном случае он включает в себя текст, некоторые привязки данных и кнопку. Для получения дополнительной информации см. раздел [Шаблоны](../templates/overview.md).
 
     ```js
     export class MyElement extends LitElement {
-      // ...
-      static properties = {
-        name: {type: String}
-      };
-
-      constructor() {
-        super();
-        this.name = 'World';
-      }
-      // ...
+        // ...
+        render() {
+            return html`
+                <h1>Hello, ${this.name}!</h1>
+                <button @click=${this._onClick}>
+                    Click Count: ${this.count}
+                </button>
+                <slot></slot>
+            `;
+        }
     }
     ```
 
-    {% endswitchable-sample %}
+-   Компонент определяет некоторые свойства. Компонент реагирует на изменения этих свойств (например, при необходимости перерисовывает шаблон). Для получения дополнительной информации см. раздел [Свойства](../components/properties.md).
 
+    === "TS"
 
-### Rename your component
+        ```ts
+        export class MyElement extends LitElement {
+        	// ...
+        	@property({ type: String })
+        	name = 'World';
+        	//...
+        }
+        ```
 
-You'll probably want to change the component name from "my-element" to something more appropriate. This is easiest to do using an IDE or other text editor that lets you do a global search and replace through an entire project.
+    === "JS"
 
-1.  **If you're using the TypeScript version**, remove generated files:
+        ```js
+        export class MyElement extends LitElement {
+        	// ...
+        	static properties = {
+        		name: { type: String },
+        	};
+
+        	constructor() {
+        		super();
+        		this.name = 'World';
+        	}
+        	// ...
+        }
+        ```
+
+## Переименуйте свой компонент
+
+Вероятно, вам захочется изменить имя компонента с "my-element" на более подходящее. Это проще всего сделать с помощью IDE или другого текстового редактора, который позволяет выполнять глобальный поиск и замену по всему проекту.
+
+1.  **Если вы используете версию TypeScript**, удалите сгенерированные файлы:
 
     ```bash
     npm run clean
     ```
 
-1.  Search and replace "my-element" with your new component name in all files in your project (except in the `node_modules` folder).
-1.  Search and replace "MyElement" with your new class name in all files in your project (except in the `node_modules` folder).
-1.  Rename the source and test files to match the new component name:
+2.  Найдите и замените "my-element" на имя вашего нового компонента во всех файлах проекта (кроме папки `node_modules`).
+3.  Найдите и замените "MyElement" на имя вашего нового класса во всех файлах проекта (кроме папки `node_modules`).
+4.  Переименуйте исходные и тестовые файлы в соответствии с новым именем компонента:
 
     JavaScript:
 
-    * `src/my-element.js`
-    * `src/test/my-element_test.js`
+    -   `src/my-element.js`
+    -   `src/test/my-element_test.js`
 
     TypeScript:
 
-    * `src/my-element.ts`
-    * `src/test/my-element_test.ts`
+    -   `src/my-element.ts`
+    -   `src/test/my-element_test.ts`
 
-1.  **If you're using the TypeScript version**, rebuild the project:
+5.  **Если вы используете версию TypeScript**, пересоберите проект:
 
     ```bash
     npm run build
     ```
 
-1.  Test and make sure your component is still working:
+6.  Проверьте и убедитесь, что ваш компонент по-прежнему работает:
 
     ```bash
     npm run serve
     ```
 
-### Next steps
+## Следующие шаги
 
-Ready to add features to your component? Head over to [Components](/docs/v3/components/overview/) to learn about building your first Lit component, or [Templates](/docs/v3/templates/overview/) for details on writing templates.
+Готовы добавить функции в свой компонент? Загляните в раздел [Components](../components/overview.md), чтобы узнать о создании вашего первого компонента Lit, или в раздел [Templates](../templates/overview.md), чтобы узнать о написании шаблонов.
 
-For details on running tests and using other tools, see the starter project README:
+Подробную информацию о выполнении тестов и использовании других инструментов можно найти в README стартового проекта:
 
-*   [TypeScript project README](https://github.com/PolymerLabs/lit-element-starter-ts/blob/master/README.md)
-*   [JavaScript project README](https://github.com/PolymerLabs/lit-element-starter-js/blob/master/README.md)
+-   [TypeScript project README](https://github.com/PolymerLabs/lit-element-starter-ts/blob/master/README.md)
+-   [JavaScript project README](https://github.com/PolymerLabs/lit-element-starter-js/blob/master/README.md)
 
-For a guide on publishing your component to `npm`, see [Publishing](/docs/v3/tools/publishing/).
+Руководство по публикации компонента в `npm` см. в разделе [Publishing](./publishing.md).

@@ -1,68 +1,58 @@
 ---
-title: Adding Lit to an existing project
-eleventyNavigation:
-  key: Adding Lit
-  parent: Tools
-  order: 8
-versionLinks:
-  v1: tools/use/
-  v2: tools/adding-lit/
+description: Lit не требует специализированных инструментов, а компоненты Lit работают в любом JavaScript-фреймворке или с любой серверной шаблонной системой или CMS, поэтому Lit идеально подходит для добавления в существующие проекты и приложения
 ---
 
-Lit doesn't require any specialized tools, and Lit components work in any JavaScript framework or with any server templating system or CMS, so Lit is ideal for adding to existing projects and applications.
+# Добавление Lit в существующий проект
 
-## Install from npm
+Lit не требует специализированных инструментов, а компоненты Lit работают в любом JavaScript-фреймворке или с любой серверной шаблонной системой или CMS, поэтому Lit идеально подходит для добавления в существующие проекты и приложения.
 
-First, install the `lit` package from npm:
+## Установка из npm
+
+Сначала установите пакет `lit` из npm:
 
 ```sh
 npm i lit
 ```
 
-If you are not already using npm to manage JavaScript dependencies, you will have to set up your project first. We recommend the [npm CLI](https://docs.npmjs.com/cli/v7/configuring-npm/install).
+Если вы еще не используете npm для управления зависимостями JavaScript, вам придется сначала настроить свой проект. Мы рекомендуем использовать [npm CLI](https://docs.npmjs.com/cli/v7/configuring-npm/install).
 
-## Add a component
+## Добавьте компонент
 
-You can create a new element anywhere in your project's sources:
+Вы можете создать новый элемент в любом месте исходных текстов вашего проекта:
 
-_lib/components/my-element.ts_
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    import { LitElement, html } from 'lit';
+    import { customElement } from 'lit/decorators.js';
 
-```ts
-import {LitElement, html} from 'lit';
-import {customElement} from 'lit/decorators.js';
+    @customElement('my-element')
+    class MyElement extends LitElement {
+    	render() {
+    		return html` <div>Hello from MyElement!</div> `;
+    	}
+    }
+    ```
 
-@customElement('my-element')
-class MyElement extends LitElement {
-  render() {
-    return html`
-      <div>Hello from MyElement!</div>
-    `;
-  }
-}
-```
+=== "JS"
 
-```js
-import {LitElement, html} from 'lit';
+    ```js
+    import { LitElement, html } from 'lit';
 
-class MyElement extends LitElement {
-  render() {
-    return html`
-      <div>Hello from MyElement!</div>
-    `;
-  }
-}
-customElements.define('my-element', MyElement);
-```
+    class MyElement extends LitElement {
+    	render() {
+    		return html` <div>Hello from MyElement!</div> `;
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-{% endswitchable-sample %}
+## Использование компонента
 
-## Use your component
+Как использовать компонент, зависит от вашего проекта и используемых в нем библиотек или фреймворков. Вы можете использовать свой компонент в HTML, с API DOM или в языках шаблонов:
 
-How you use a component depends on your project and the libraries or frameworks it uses. You can use your component in HTML, with DOM APIs, or in template languages:
+### Обычный HTML
 
-### Plain HTML
 ```html
 <script type="module" src="/lib/components/my-elements.js">
 <my-element></my-element>
@@ -70,9 +60,9 @@ How you use a component depends on your project and the libraries or frameworks 
 
 ### JSX
 
-JSX is a very common templating language. In JSX, lower-case element names create HTML elements, which is what Lit components are. Use the tag name you specified in the `@customElement()` decorator:
+**JSX** - это очень распространенный язык шаблонов. В JSX имена элементов в нижнем регистре создают HTML-элементы, которыми и являются компоненты Lit. Используйте имя тега, которое вы указали в декораторе `@customElement()`:
 
-```tsx
+```ts
 import './components/my-elements.js';
 
 export const App = () => (
@@ -81,14 +71,14 @@ export const App = () => (
 )
 ```
 
-### Framework templates
+### Шаблоны фреймворков
 
-Most JavaScript frameworks have [great support for web components](https://custom-elements-everywhere.com/) and Lit. Just import your element definition and use the element tag names in your templates.
+Большинство фреймворков JavaScript имеют [отличную поддержку веб-компонентов](https://custom-elements-everywhere.com/) и Lit. Просто импортируйте определение элемента и используйте имена тегов элементов в своих шаблонах.
 
-## Next steps
+## Следующие шаги
 
-At this point, you should be able to build and run your project and see the "Hello from MyElement!" message.
+На данном этапе вы должны быть в состоянии собрать и запустить свой проект и увидеть сообщение "Привет от MyElement!".
 
-If you're ready to add features to your component, head over to [Components](/docs/v3/components/overview/) to learn about building your first Lit component, or [Templates](/docs/v3/templates/overview/) for details on writing templates.
+Если вы готовы добавить функции в свой компонент, перейдите в раздел [Components](../components/overview.md), чтобы узнать о создании вашего первого компонента Lit, или в раздел [Templates](../templates/overview.md), чтобы узнать подробности о написании шаблонов.
 
-For details on building projects, including some sample Rollup configurations, see [Building for production](/docs/v3/tools/production/).
+Подробности о сборке проектов, включая примеры конфигураций Rollup, смотрите в разделе [Building for production](./production.md).
