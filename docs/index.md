@@ -9,7 +9,7 @@ hide:
 
 <div class="grid cards" style="margin-top: 1.6em" markdown>
 
--   **PWA**
+-   :simple-pwa:{ .lg .middle } **PWA**
 
     ***
 
@@ -19,7 +19,7 @@ hide:
 
     [:octicons-arrow-right-24: 30 дней PWA](./learn/30days-pwa/index.md) <small>Microsoft</small>
 
--   **Lit**
+-   :simple-lit:{ .lg .middle } **Lit**
 
     ***
 
