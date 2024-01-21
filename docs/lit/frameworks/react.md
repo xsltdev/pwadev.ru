@@ -1,209 +1,202 @@
 ---
-title: React
-eleventyNavigation:
-  key: React
-  parent: Frameworks
-  order: 1
-versionLinks:
-  v2: frameworks/react/
+description: Пакет @lit/react предоставляет утилиты для создания компонентов-оберток React для веб-компонентов и пользовательских хуков из reactive controllers
 ---
 
-The [@lit/react](https://github.com/lit/lit/tree/main/packages/react) package provides utilities to create React wrapper components for web components, and custom hooks from [reactive controllers](../../composition/controllers/).
+# React
 
-The React component wrapper enables setting properties on custom elements (instead of just attributes), mapping DOM events to React-style callbacks, and enables correct type-checking in JSX by TypeScript.
+Пакет [@lit/react](https://github.com/lit/lit/tree/main/packages/react) предоставляет утилиты для создания компонентов-оберток React для веб-компонентов и пользовательских хуков из [reactive controllers](../composition/controllers.md).
 
-The wrappers are targeted at two different audiences:
-- Users of web components can wrap components and controllers for their own use in their own React projects.
-- Vendors of components can publish React wrappers so that their React users have idiomatic versions of their components.
+Обертка для React-компонентов позволяет задавать свойства пользовательских элементов (вместо атрибутов), сопоставлять события DOM с обратными вызовами в стиле React, а также обеспечивает корректную проверку типов в JSX с помощью TypeScript.
 
-### Why are wrappers needed?
+Обертки предназначены для двух разных аудиторий:
 
-React can already render web components, since custom elements are just HTML elements and React knows how to render HTML. But React makes some assumptions about HTML elements that don't always hold for custom elements, and it treats lower-case tag names differently from upper-case component names in ways that can make custom elements harder than necessary to use.
+-   Пользователи веб-компонентов могут обертывать компоненты и контроллеры для использования в собственных React-проектах.
+-   Поставщики компонентов могут публиковать React-обертки, чтобы у пользователей React были идиоматические версии их компонентов.
 
-For instance, React assumes that all JSX properties map to HTML element attributes, and provides no way to set properties. This makes it difficult to pass complex data (like objects, arrays, or functions) to web components. React also assumes that all DOM events have corresponding "event properties" (`onclick`, `onmousemove`, etc), and uses those instead of calling `addEventListener()`. This means that to properly use more complex web components you often have to use `ref()` and imperative code. (For more information on the limitations of React's web component integration, see [Custom Elements Everywhere](https://custom-elements-everywhere.com/libraries/react/results/results.html).)
+## Зачем нужны обертки?
 
-React is working on fixes to these issues, but in the meantime, our wrappers take care of setting properties and listening to events for you.
+React уже умеет рендерить веб-компоненты, поскольку пользовательские элементы - это просто HTML-элементы, а React знает, как рендерить HTML. Но React делает некоторые предположения об элементах HTML, которые не всегда справедливы для пользовательских элементов, и обрабатывает имена тегов в нижнем регистре иначе, чем имена компонентов в верхнем регистре, что может сделать использование пользовательских элементов сложнее, чем нужно.
 
-The `@lit/react` package provides two main exports:
+Например, React предполагает, что все JSX-свойства соответствуют атрибутам HTML-элементов, и не предоставляет возможности установить свойства. Это затрудняет передачу сложных данных (например, объектов, массивов или функций) в веб-компоненты. React также предполагает, что все события DOM имеют соответствующие "свойства события" (`onclick`, `onmousemove` и т. д.), и использует их вместо вызова `addEventListener()`. Это означает, что для правильного использования более сложных веб-компонентов вам часто придется использовать `ref()` и императивный код. (Подробнее об ограничениях интеграции веб-компонентов в React см. в [Custom Elements Everywhere](https://custom-elements-everywhere.com/libraries/react/results/results.html)).
 
--   `createComponent()` creates a React component that _wraps_ an existing web component. The wrapper allows you to set props on the component and add event listeners to the component like you would any other React component.
+React работает над исправлением этих проблем, а пока наши обертки позаботятся об установке свойств и прослушивании событий за вас.
 
--   `useController()` lets you use a Lit reactive controller as a React hook.  
+Пакет `@lit/react` предоставляет два основных экспорта:
+
+-   `createComponent()` создает компонент React, который _обертывает_ существующий веб-компонент. Обертка позволяет вам устанавливать реквизиты компонента и добавлять к нему слушателей событий, как и к любому другому компоненту React.
+-   `useController()` позволяет использовать реактивный контроллер Lit в качестве крючка React.
 
 ## createComponent
 
-The `createComponent()` function makes a React component wrapper for a custom element class. The wrapper correctly passes React `props` to properties accepted by the custom element and listens for events dispatched by the custom element.
+Функция `createComponent()` создает обертку React-компонента для пользовательского класса элемента. Обертка корректно передает React `props` свойствам, принимаемым пользовательским элементом, и прослушивает события, отправляемые пользовательским элементом.
 
-### Usage
+### Использование
 
-Import `React`, a custom element class, and `createComponent`.
+Импортируйте `React`, класс пользовательского элемента и `createComponent`.
 
 ```js
 import React from 'react';
-import {createComponent} from '@lit/react';
-import {MyElement} from './my-element.js';
+import { createComponent } from '@lit/react';
+import { MyElement } from './my-element.js';
 
 export const MyElementComponent = createComponent({
-  tagName: 'my-element',
-  elementClass: MyElement,
-  react: React,
-  events: {
-    onactivate: 'activate',
-    onchange: 'change',
-  },
+    tagName: 'my-element',
+    elementClass: MyElement,
+    react: React,
+    events: {
+        onactivate: 'activate',
+        onchange: 'change',
+    },
 });
 ```
 
-After defining the React component, you can use it just as you would any other React component.
+Определив компонент React, вы можете использовать его так же, как и любой другой компонент React.
 
 ```jsx
 <MyElementComponent
-  active={isActive}
-  onactivate={(e) => setIsActive(e.active)}
-  onchange={handleChange}
+    active={isActive}
+    onactivate={(e) => setIsActive(e.active)}
+    onchange={handleChange}
 />
 ```
 
-{% aside "positive" "no-header" %}
+!!!info ""
 
-See it in action in the [React playground examples](/playground/#sample=examples/react-basics).
+    Посмотрите его в действии в примерах [React playground](https://lit.dev/playground/#sample=examples/react-basics).
 
-{% endaside %}
+#### Опции
 
-#### Options
+`createComponent` принимает объект options со следующими свойствами:
 
-`createComponent` takes an options object with the following properties:
+-   `tagName`: Имя тега пользовательского элемента.
+-   `elementClass`: Класс пользовательского элемента.
+-   `react`: Импортированный объект `React`. Он используется для создания компонента-обертки с предоставленным пользователем `React`. Это также может быть импорт `preact-compat`.
+-   `events`: Объект, сопоставляющий реквизит обработчика событий с именем события, вызванного пользовательским элементом.
 
-- `tagName`: The custom element's tag name.
-- `elementClass`: The custom element class.
-- `react`: The imported `React` object. This is used to create the wrapper component with the user supplied `React`. This can also be an import of `preact-compat`.
-- `events`: An object that maps an event handler prop to an event name fired by the custom element.
+#### Использование слотов
 
-#### Using slots
-
-Children of component created with `createComponent()` will render to the default slot of the custom element.
+Дети компонента, созданного с помощью `createComponent()`, будут отображаться в слоте по умолчанию пользовательского элемента.
 
 ```jsx
 <MyElementComponent>
-  <p>This will render in the default slot.</p>
+    <p>This will render in the default slot.</p>
 </MyElementComponent>
 ```
 
-To render the child to a specific named slot, the standard `slot` attribute can be added.
+Чтобы переместить дочерний элемент в определенный слот, можно добавить стандартный атрибут `slot`.
 
 ```jsx
 <MyElementComponent>
-  <p slot="foo">This will render in the slot named "foo".</p>
+    <p slot="foo">
+        This will render in the slot named "foo".
+    </p>
 </MyElementComponent>
 ```
 
-Since React components are not themselves HTML elements, they usually cannot directly have a `slot` attribute. To render into a named slot, the component will need to be wrapped with a container element that has a `slot` attribute. If a wrapper element interferes with styling, like for grid and flexbox layouts, giving it a `display: contents;` style ([See MDN for details](https://developer.mozilla.org/en-US/docs/Web/CSS/display#box)) will remove the container from rendering, and only render its children.
+Поскольку компоненты React сами по себе не являются элементами HTML, они обычно не могут напрямую иметь атрибут `slot`. Для рендеринга в именованный слот компонент должен быть обернут элементом-контейнером с атрибутом `slot`. Если элемент обертки мешает стилизации, как, например, для макетов grid или flexbox, задайте ему стиль `display: contents;` ([Подробности см. в MDN](https://developer.mozilla.org/docs/Web/CSS/display#box)), чтобы исключить контейнер из рендеринга и рендерить только его дочерние элементы.
 
 ```jsx
 <MyElementComponent>
-  <div slot="foo" style="display: contents;">
-    <ReactComponent />
-  </div>
+    <div slot="foo" style="display: contents;">
+        <ReactComponent />
+    </div>
 </MyElementComponent>
 ```
 
-{% aside "positive" "no-header" %}
+!!!info ""
 
-Try it out in the [React slots playground example](/playground/#sample=examples/react-slots).
+    Попробуйте это в примере [React slots playground](https://lit.dev/playground/#sample=examples/react-slots).
 
-{% endaside %}
+#### События
 
-#### Events
+Опция `events` принимает объект, который сопоставляет имена реквизитов React с именами событий. Когда пользователь компонента передает реквизит callback с одним из имен реквизитов события, обертка добавит его в качестве обработчика соответствующего события.
 
-The `events` option takes an object that maps React prop names to event names. When a component user passes a callback prop with one of the event prop names, the wrapper will add it as an event handler for the corresponding event.
+Хотя имя реквизита React может быть любым, рекомендуемое соглашение - добавлять `on` перед именем события. Это соответствует тому, как React планирует реализовать поддержку событий для пользовательских элементов. Вы также должны убедиться, что это имя реквизита не пересекается с какими-либо существующими свойствами элемента.
 
-While the the React prop name can be whatever you want, the recommended convention is to add `on` in front of the event name. This matches how React is planning to implement event support for custom elements. You should also make sure this prop name does not collide with any existing properties on the element.
+В TypeScript тип события можно указать, приведя имя события к полезному типу `EventName`. Это хорошая практика для того, чтобы пользователи React получали наиболее точные типы для своих обратных вызовов событий.
 
-In TypeScript, the event type can be specified by casting the event name to the `EventName` utility type. This is a good practice to do so that React users will get the most accurate types for their event callbacks.
-
-The `EventName` type is a string that takes an event interface as a type parameter. Here we cast the `'my-event'` name to an `EventName<MyEvent>` to provide the right event type:
+Тип `EventName` - это строка, которая принимает интерфейс события в качестве параметра типа. Здесь мы приводим имя `'my-event'` к типу `EventName<MyEvent>`, чтобы обеспечить правильный тип события:
 
 ```ts
-
 import React from 'react';
-import {createComponent} from '@lit/react';
-import {MyElement, type EventName} from './my-element.js';
+import { createComponent } from '@lit/react';
+import { MyElement, type EventName } from './my-element.js';
 
 export const MyElementComponent = createComponent({
-  tagName: 'my-element',
-  elementClass: MyElement,
-  react: React,
-  events: {
-    'onmy-event': 'my-event' as EventName<MyEvent>,
-  },
+    tagName: 'my-element',
+    elementClass: MyElement,
+    react: React,
+    events: {
+        'onmy-event': 'my-event' as EventName<MyEvent>,
+    },
 });
 ```
 
-Casting the event name to `EventName<MyEvent>` causes the React component to have an `onMyEvent` callback prop that accepts a `MyEvent` parameter instead of a plain `Event`:
+Приведение имени события к `EventName<MyEvent>` приводит к тому, что у компонента React появляется свойство обратного вызова `onMyEvent`, принимающее параметр `MyEvent` вместо простого `Event`:
 
 ```tsx
 <MyElementComponent
-  onmy-event={(e: MyEvent) => {
-    console.log(e.myEventData);
-  }}
+    onmy-event={(e: MyEvent) => {
+        console.log(e.myEventData);
+    }}
 />
 ```
 
-### How it works
+### Как это работает
 
-During a render, the wrapper receives props from React and based on the options and the custom element class, changes the behavior of some of the props:
+Во время рендеринга обертка получает реквизиты от React и, основываясь на опциях и классе пользовательского элемента, изменяет поведение некоторых реквизитов:
 
-* If a prop name is a property on the custom element, as determined with an `in` check, the wrapper sets that property on the element to the prop value
-* If a prop name is an event name passed to the `events` option, the prop value is passed to `addEventListener()` with the name of the event.
-* Otherwise the prop is passed to React's `createElement()` to be rendered as an attribute.
+-   Если имя реквизита является свойством пользовательского элемента, как определено с помощью проверки `in`, обертка устанавливает это свойство элемента в значение реквизита.
+-   Если имя реквизита - это имя события, переданное в опцию `events`, значение реквизита передается в `addEventListener()` с именем события.
+-   В противном случае свойство передается в функцию React `createElement()` для отображения в качестве атрибута.
 
-Both properties and events are added in `componentDidMount()` and `componentDidUpdate()` callbacks, because the element must have already been instantiated by React in order to access it.
+Как свойства, так и события добавляются в обратных вызовах `componentDidMount()` и `componentDidUpdate()`, поскольку для доступа к элементу он должен быть уже инстанцирован React.
 
-For events, `createComponent()` accepts a mapping of React event prop names to events fired by the custom element. For example passing `{onfoo: 'foo'}` means a function passed via a prop named `onfoo` will be called when the custom element fires the `foo` event with the event as an argument.
+Для событий `createComponent()` принимает отображение имен реквизитов React событий на события, запускаемые пользовательским элементом. Например, передача `{onfoo: 'foo'}` означает, что функция, переданная через prop с именем `onfoo`, будет вызвана, когда пользовательский элемент вызовет событие `foo` с этим событием в качестве аргумента.
 
 ## useController
 
-Reactive controllers allow developers to hook in to a component's lifecycle to bundle
-together state and behavior related to a feature. They are similar to React
-hooks in the user cases and capabilities, but are plain JavaScript objects
-instead of functions with hidden state.
+Реактивные контроллеры позволяют разработчикам подключаться к жизненному циклу компонента, чтобы связать воедино состояние и поведение, связанные с функцией. Они похожи на хуки React по пользовательским кейсам и возможностям, но являются обычными объектами JavaScript вместо функций со скрытым состоянием.
 
-`useController()` lets you make React hooks out of reactive controllers allowing for the sharing of state and behaviors across web components and React.
+`useController()` позволяет создавать React-хуки из реактивных контроллеров, что обеспечивает совместное использование состояния и поведения веб-компонентов и React.
 
-### Usage
+### Использование
 
 ```jsx
 import React from 'react';
-import {useController} from '@lit/react/use-controller.js';
-import {MouseController} from '@example/mouse-controller';
+import { useController } from '@lit/react/use-controller.js';
+import { MouseController } from '@example/mouse-controller';
 
 // Write a custom React hook function:
 const useMouse = () => {
-  // Use useController to create and store a controller instance:
-  const controller = useController(React, (host) => new MouseController(host));
-  // Return relevant data for consumption by the component:
-  return controller.pos;
+    // Use useController to create and store a controller instance:
+    const controller = useController(
+        React,
+        (host) => new MouseController(host),
+    );
+    // Return relevant data for consumption by the component:
+    return controller.pos;
 };
 
 // Now use the new hook in a React component:
 const Component = (props) => {
-  const mousePosition = useMouse();
-  return (
-    <pre>
-      x: {mousePosition.x}
-      y: {mousePosition.y}
-    </pre>
-  );
+    const mousePosition = useMouse();
+    return (
+        <pre>
+            x: {mousePosition.x}
+            y: {mousePosition.y}
+        </pre>
+    );
 };
 ```
 
-See the [mouse controller example](../../composition/controllers/#example:-mousemovecontroller) in the reactive controller docs for its implementation.
+Смотрите пример [контроллера мыши](../composition/controllers.md#example:-mousemovecontroller) в документации по реактивным контроллерам для его реализации.
 
-### How it works
+### Как это работает
 
-`useController()` creates a custom host object for the controller passed to it and drives the controller's lifecycle by using React hooks.
+`useController()` создает пользовательский хост-объект для переданного ему контроллера и управляет жизненным циклом контроллера с помощью хуков React.
 
-- `useState()` is used to store an instance of a controller and a `ReactControllerHost`
-- The hook body and `useLayoutEffect()` callbacks emulate the `ReactiveElement` lifecycle as closely as possible.
-- `ReactControllerHost` implements `addController()` so that controller composition works and nested controller lifecycles are called correctly.
-- `ReactControllerHost` also implements `requestUpdate()` by calling a `useState()` setter, so that a controller can cause its host component to re-render.
+-   `useState()` используется для хранения экземпляра контроллера и `ReactControllerHost`.
+-   Тело хука и обратные вызовы `useLayoutEffect()` максимально близко эмулируют жизненный цикл `ReactiveElement`.
+-   `ReactControllerHost` реализует `addController()`, чтобы композиция контроллеров работала и жизненные циклы вложенных контроллеров вызывались корректно.
+-   `ReactControllerHost` также реализует `requestUpdate()`, вызывая сеттер `useState()`, так что контроллер может вызвать повторный рендеринг своего компонента-хоста.

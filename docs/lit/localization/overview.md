@@ -1,260 +1,192 @@
 ---
-title: Localization
-eleventyNavigation:
-  key: Overview
-  parent: Localization
-  order: 1
-versionLinks:
-  v2: localization/overview/
+description: Локализация - это процесс поддержки нескольких языков и регионов в ваших
+приложениях и компонентах
 ---
 
-Localization is the process of supporting multiple languages and regions in your
-apps and components. Lit has first-party support for localization through the
-`@lit/localize` library, which has a number of advantages that can make it a
-good choice over third-party localization libraries:
+# Локализация
 
-- Native support for expressions and HTML markup inside localized templates. No
-  need for a new syntax and interpolation runtime for variable substitution—just
-  use the templates you already have.
+Локализация - это процесс поддержки нескольких языков и регионов в ваших приложениях и компонентах. В Lit есть сторонняя поддержка локализации с помощью библиотеки Библиотека `@lit/localize` имеет ряд преимуществ, которые могут сделать ее хорошим выбором по сравнению со сторонними библиотеками локализации:
 
-- Automatic re-rendering of Lit components when the locale switches.
+-   Встроенная поддержка выражений и HTML-разметки внутри локализованных шаблонов. Нет необходимости в новом синтаксисе и интерполяционном времени выполнения для подстановки переменных - просто используйте уже имеющиеся шаблоны.
+-   Автоматический повторный рендеринг компонентов Lit при смене локали.
+-   Всего 1,27 килобайта (минифицированного + сжатого) дополнительного JavaScript.
+-   Опционально компилируется для каждой локали, сокращая дополнительный JavaScript до 0 KiB.
 
-- Only 1.27 KiB (minified + compressed) of extra JavaScript.
+## Установка
 
-- Optionally compile for each locale, reducing extra JavaScript to 0 KiB.
-
-## Installation
-
-Install the `@lit/localize` client library and the `@lit/localize-tools`
-command-line interface.
+Установите клиентскую библиотеку `@lit/localize` и интерфейс командной строки `@lit/localize-tools`. интерфейс командной строки.
 
 ```sh
 npm i @lit/localize
 npm i -D @lit/localize-tools
 ```
 
-## Quick start
+## Быстрый старт
 
-1. Wrap a string or template in the `msg` function
-   ([details](#making-strings-and-templates-localizable)).
-2. Create a `lit-localize.json` config file ([details](#config-file)).
-3. Run `lit-localize extract` to generate an XLIFF file ([details](#extracting-messages)).
-4. Edit the generated XLIFF file to add a `<target>` translation tag
-   ([details](#translation-with-xliff)).
-5. Run `lit-localize build` to output a localized version of your strings and
-   templates ([details](#output-modes)).
+1.  Оберните строку или шаблон в функцию `msg` ([подробности](#making-strings-and-templates-localizable)).
+2.  Создайте конфигурационный файл `lit-localize.json` ([details](#config-file)).
+3.  Запустите `lit-localize extract` для создания XLIFF-файла ([подробности](#extracting-messages)).
+4.  Отредактируйте сгенерированный XLIFF-файл, добавив в него тег перевода `<target>` ([details](#translation-with-xliff)).
+5.  Запустите `lit-localize build` для вывода локализованной версии ваших строк и шаблонов ([details](#output-modes)).
 
-## Making strings and templates localizable
+## Создание локализуемых строк и шаблонов {#making-strings-and-templates-localizable}
 
-To make a string or Lit template localizable, wrap it in the `msg` function. The
-`msg` function returns a version of the given string or template in whichever
-locale is currently active.
+Чтобы сделать строку или шаблон Lit локализуемыми, оберните их в функцию `msg`. Функция `msg` возвращает версию заданной строки или шаблона в той локали, которая активна в данный момент.
 
-<div class="alert alert-info">
+!!!info ""
 
-Before you have any translations available, `msg` simply returns the original
-string or template, so it's safe to use even if you're not yet ready to actually
-localize.
+    Пока у вас нет никаких переводов, `msg` просто возвращает исходную строку или шаблон, поэтому его можно использовать, даже если вы еще не готовы к локализации.
 
-</div>
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    import { html, LitElement } from 'lit';
+    import { customElement, property } from 'lit/decorators.js';
+    import { msg } from '@lit/localize';
 
-```ts
-import {html, LitElement} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
-import {msg} from '@lit/localize';
+    @customElement('my-greeter')
+    class MyGreeter extends LitElement {
+    	@property()
+    	who = 'World';
 
-@customElement('my-greeter')
-class MyGreeter extends LitElement {
-  @property()
-  who = 'World';
+    	render() {
+    		return msg(html`Hello <b>${this.who}</b>`);
+    	}
+    }
+    ```
 
-  render() {
-    return msg(html`Hello <b>${this.who}</b>`);
-  }
-}
-```
+=== "JS"
 
-```js
-import {html, LitElement} from 'lit';
-import {msg} from '@lit/localize';
+    ```js
+    import { html, LitElement } from 'lit';
+    import { msg } from '@lit/localize';
 
-class MyGreeter extends LitElement {
-  static properties = {
-    who: {},
-  };
+    class MyGreeter extends LitElement {
+    	static properties = {
+    		who: {},
+    	};
 
-  constructor() {
-    super();
-    this.who = 'World';
-  }
+    	constructor() {
+    		super();
+    		this.who = 'World';
+    	}
 
-  render() {
-    return msg(html`Hello <b>${this.who}</b>`);
-  }
-}
-customElements.define('my-greeter', MyGreeter);
-```
+    	render() {
+    		return msg(html`Hello <b>${this.who}</b>`);
+    	}
+    }
+    customElements.define('my-greeter', MyGreeter);
+    ```
 
-{% endswitchable-sample %}
+### Типы сообщений {#message-types}
 
-### Message types
+Любая строка или шаблон, которые вы обычно отображаете с помощью Lit, может быть локализована, включая те, которые содержат динамические выражения и HTML-разметку.
 
-Any string or template that you would normally render with Lit can be localized,
-including ones with dynamic expressions and HTML markup.
-
-Plain string:
+Обычная строка:
 
 ```js
 msg('Hello World');
 ```
 
-Plain string with expression (see [strings with
-expressions](#strings-with-expressions) for details on `str`):
+Обычная строка с выражением (подробнее о `str` см. в [строки с выражениями](#strings-with-expressions)):
 
 ```js
 msg(str`Hello ${name}`);
 ```
 
-HTML template:
+HTML-шаблон:
 
 ```js
 msg(html`Hello <b>World</b>`);
 ```
 
-HTML template with expression:
+HTML-шаблон с выражением:
 
 ```js
 msg(html`Hello <b>${name}</b>`);
 ```
 
-Localized messages can also be nested inside HTML templates:
+Локализованные сообщения также могут быть вложены в HTML-шаблоны:
 
 ```js
 html`<button>${msg('Hello World')}</button>`;
 ```
 
-### Strings with expressions
+### Строки с выражениями {#strings-with-expressions}
 
-Strings that contain an expression must be tagged with either `html` or `str` in
-order to be localizable. You should prefer `str` over `html` when your string
-doesn't contain any HTML markup, because it has slightly less performance
-overhead. An error will be raised when you run the `lit-localize` command if you
-forget the `html` or `str` tag on a string with an expression.
+Строки, содержащие выражение, должны быть помечены либо `html`, либо `str`, чтобы быть локализуемыми. Вы должны предпочесть `str`, а не `html`, если ваша строка не содержит никакой HTML-разметки, потому что она имеет немного меньше накладных расходов на производительность. При выполнении команды `lit-localize` будет выдана ошибка, если вы забудете тег `html` или `str` для строки с выражением.
 
-Incorrect:
-<strike>
+Неверно:
 
 ```js
-import {msg} from '@lit/localize';
+import { msg } from '@lit/localize';
 msg(`Hello ${name}`);
 ```
 
-</strike>
-
-Correct:
+Правильно:
 
 ```js
-import {msg, str} from '@lit/localize';
+import { msg, str } from '@lit/localize';
 msg(str`Hello ${name}`);
 ```
 
-The `str` tag is required in these cases because untagged template string
-literals are evaluated to regular strings before they are received by the `msg`
-function, which means dynamic expression values could not otherwise be captured
-and substituted into the localized versions of the string.
+Тег `str` необходим в этих случаях, потому что не помеченные литералы шаблонных строк оцениваются до обычных строк, прежде чем они будут получены функцией `msg`, что означает, что значения динамических выражений не могут быть иначе захвачены и подставлены в локализованные версии строк.
 
-## Locale codes
+## Коды локалей
 
-A locale code is a string that identifies a human language, and sometimes also
-includes a region, script, or other variation.
+Код локали - это строка, идентифицирующая человеческий язык, а иногда также включающая регион, сценарий или другие вариации.
 
-Lit Localize does not mandate use any particular system of locale codes, though
-it is strongly recommended to use the <a
-href="https://www.w3.org/International/articles/language-tags/index.en"
-target="_blank" rel="noopener">BCP 47 language tag standard</a>. Some examples
-of BCP 47 language tags are:
+Lit Localize не предписывает использовать какую-либо определенную систему кодов локалей, хотя настоятельно рекомендуется использовать стандарт [BCP 47 language tag standard](https://www.w3.org/International/articles/language-tags/index.en). Примерами языковых тегов BCP 47 являются:
 
-- en: English
-- es-419: Spanish spoken in Latin America
-- zh-Hans: Chinese written in Simplified script
+-   `en`: Английский
+-   `es-419`: испанский язык, на котором говорят в Латинской Америке
+-   `zh-Hans`: китайский язык, написанный упрощенным шрифтом
 
-### Terms
+### Термины
 
-Lit Localize defines a few terms that refer to locale codes. These terms are
-used in this documentation, in the Lit Localize config file, and in the Lit
-Localize API:
+В Lit Localize есть несколько терминов, относящихся к кодам локалей. Эти термины используются в данной документации, в файле конфигурации Lit Localize и в Lit Localize API:
 
-<dl class="params">
-  <dt class="paramName">Source locale</dt>
-  <dd class="paramDetails">
-    <p>The locale that is used to write strings and templates in
-    your source code.</p>
-  </dd>
+| Название | Описание |
+| --- | --- |
+| Source locale | Локаль, которая используется для написания строк и шаблонов в вашем исходном коде. |
+| Target locales | Локализации, в которые могут быть переведены ваши строки и шаблоны. |
+| Active locale | Глобальная локаль, которая отображается в данный момент. |
 
-  <dt class="paramName">Target locales</dt>
-  <dd class="paramDetails">
-    <p>The locales that your strings and templates can be translated into.</p>
-  </dd>
+## Режимы вывода {#output-modes}
 
-  <dt class="paramName">Active locale</dt>
-  <dd class="paramDetails">
-    <p>The global locale that is currently being displayed.</p>
-  </dd>
-</dl>
+Lit Localize поддерживает два режима вывода:
 
-## Output modes
+-   Режим _Runtime_ использует API Lit Localize для загрузки локализованных сообщений во время выполнения.
+-   Режим _Transform_ позволяет обойтись без кода Lit Localize во время выполнения, создавая отдельный пакет JavaScript для каждой локали.
 
-Lit Localize supports two output modes:
+!!!info "Не знаете, какой режим использовать?"
 
--  _Runtime_ mode uses Lit Localize's APIs to load localized messages at
-   runtime.
+    Начните с режима выполнения. Позже можно будет легко переключить режим, поскольку основной API `msg` идентичен.
 
--  _Transform_ mode eliminates the Lit Localize runtime code by building a
-   separate JavaScript bundle for each locale.
+### Режим выполнения
 
-<div class="alert alert-info">
+В режиме выполнения для каждой локали генерируется один модуль JavaScript или TypeScript. Каждый модуль содержит локализованные шаблоны для этой локали. Когда активная локаль переключается, модуль для этой локали импортируется, и все локализованные компоненты перерисовываются.
 
-**Unsure which mode to use?** Start with runtime mode. It's easy to switch modes
-later because the core `msg` API is identical.
+Режим выполнения делает переключение локалей очень быстрым, поскольку перезагрузка страницы не требуется. Однако по сравнению с режимом преобразования это несколько снижает производительность рендеринга.
 
-</div>
-
-### Runtime mode
-
-In runtime mode, one JavaScript or TypeScript module is generated for each of
-your locales. Each module contains the localized templates for that locale. When
-the active locale switches, the module for that locale is imported, and all
-localized components are re-rendered.
-
-Runtime mode makes switching locales very fast because a page reload is not
-required. However, there is a slight performance cost to rendering performance
-compared to transform mode.
-
-#### Example generated output
+Пример сгенерированного вывода:
 
 ```js
 // locales/es-419.ts
 export const templates = {
-  hf71d669027554f48: html`Hola <b>Mundo</b>`,
+    hf71d669027554f48: html`Hola <b>Mundo</b>`,
 };
 ```
 
-See the [runtime mode](/docs/v3/localization/runtime-mode) page for full details
-about runtime mode.
+Все подробности о режиме выполнения см. на странице [Режим выполнения](runtime-mode.md).
 
-### Transform mode
+### Режим преобразования
 
-In transform mode, a separate folder is generated for each locale. Each folder
-contains a complete standalone build of your application in that locale, with
-`msg` wrappers and all other Lit Localize runtime code completely removed.
+В режиме преобразования для каждой локали создается отдельная папка. Каждая папка содержит полную автономную сборку вашего приложения в этой локали, с полностью удаленными обертками `msg` и всем остальным кодом времени выполнения Lit Localize.
 
-Transform mode requires 0 KiB of extra JavaScript and is extremely fast to
-render. However, switching locales requires re-loading the page so that a new
-JavaScript bundle can be loaded.
+Режим трансформации требует 0 килобайт дополнительного JavaScript и очень быстро отрисовывается. Однако при смене локали требуется перезагрузить страницу, чтобы загрузить новый пакет JavaScript.
 
-#### Example generated output
+Пример сгенерированного вывода:
 
 ```js
 // locales/en/my-element.js
@@ -263,6 +195,8 @@ render() {
 }
 ```
 
+---
+
 ```js
 // locales/es-419/my-element.js
 render() {
@@ -270,34 +204,30 @@ render() {
 }
 ```
 
-See the [transform mode](/docs/v3/localization/transform-mode) page for full
-details about transform mode.
+Подробную информацию о режиме трансформации см. на странице [Режим преобразования](transform-mode.md).
 
-### Differences
-
-<!-- TODO(aomarks) Default CSS doesn't have a margin above table -->
-<br>
+### Различия
 
 <table>
 <thead>
 <tr>
   <th></th>
-  <th>Runtime mode</th>
-  <th>Transform mode</th>
+  <th>Режим выполнения</th>
+  <th>Режим преобразования</th>
 </tr>
 </thead>
 
 <tbody>
 <tr>
-  <td>Output</td>
-  <td>A dynamically loaded module for each target locale.</td>
-  <td>A standalone app build for each locale.</td>
+  <td>Вывод</td>
+  <td>Динамически загружаемый модуль для каждой целевой локали.</td>
+  <td>Отдельная сборка приложения для каждой локали.</td>
 </tr>
 
 <tr>
-  <td>Switch locales</td>
-  <td>Call <code>setLocale()</code></td>
-  <td>Reload page</td>
+  <td>Переключение локалей</td>
+  <td>Вызов <code>setLocale()</code></td>
+  <td>Перезагрузка страницы</td>
 </tr>
 
 <tr>
@@ -307,105 +237,92 @@ details about transform mode.
 </tr>
 
 <tr>
-  <td>Make template localizable</td>
+  <td>Сделать шаблон локализируемым</td>
   <td><code>msg()</code></td>
   <td><code>msg()</code></td>
 </tr>
 
 <tr>
-  <td>Configure</td>
+  <td>Настройка</td>
   <td><code>configureLocalization()</code></td>
   <td><code>configureTransformLocalization()</code></td>
 </tr>
 
 <tr>
-  <td>Advantages</td>
+  <td>Преимущества</td>
   <td>
     <ul>
-      <li>Faster locale switching.</li>
-      <li>Fewer <em>marginal</em> bytes when switching locale.</li>
+      <li>Более быстрое переключение локалей.</li>
+      <li>Меньше <em>маргинальных</em> байтов при переключении локали.</li>
     </ul>
   </td>
   <td>
     <ul>
-      <li>Faster rendering.</li>
-      <li>Fewer bytes for a single locale.</li>
+      <li>Более быстрый рендеринг.</li>
+      <li>Меньше байтов для одной локали.</li>
     </ul>
   </td>
 </tr>
 </tbody>
 </table>
 
-## Config file
+## Конфигурационный файл {#config-file}
 
-The `lit-localize` command-line tool looks for a config file called
-`lit-localize.json` in the current directory. Copy-paste the example below for a
-quick start, and see the [CLI and config](/docs/v3/localization/cli-and-config)
-page for a full reference of all options.
+Инструмент командной строки `lit-localize` ищет файл конфигурации `lit-localize.json` в текущем каталоге. Скопируйте и вставьте приведенный ниже пример для быстрого начала работы, а полный список всех опций смотрите на странице [CLI и config](cli-and-config.md).
 
-<div class="alert alert-info">
+!!!info ""
 
-If you're writing JavaScript, set the `inputFiles` property to the location of
-your `.js` source files. If you're writing TypeScript, set the `tsConfig`
-property to the location of your `tsconfig.json` file, and leave `inputFiles`
-blank.
+    Если вы пишете JavaScript, установите свойство `inputFiles` в местоположение исходных файлов `.js`. Если вы пишете на TypeScript, установите свойство `tsConfig` в местоположение файла `tsconfig.json`, а `inputFiles` оставьте пустым.
 
-</div>
+=== "TS"
 
-{% switchable-sample %}
+    ```ts
+    {
+    "$schema": "https://raw.githubusercontent.com/lit/lit/main/packages/localize-tools/config.schema.json",
+    "sourceLocale": "en",
+    "targetLocales": ["es-419", "zh-Hans"],
+    "tsConfig": "./tsconfig.json",
+    "output": {
+    	"mode": "runtime",
+    	"outputDir": "./src/generated/locales"
+    },
+    "interchange": {
+    	"format": "xliff",
+    	"xliffDir": "./xliff/"
+    }
+    }
+    ```
 
-```ts
-{
-  "$schema": "https://raw.githubusercontent.com/lit/lit/main/packages/localize-tools/config.schema.json",
-  "sourceLocale": "en",
-  "targetLocales": ["es-419", "zh-Hans"],
-  "tsConfig": "./tsconfig.json",
-  "output": {
-    "mode": "runtime",
-    "outputDir": "./src/generated/locales"
-  },
-  "interchange": {
-    "format": "xliff",
-    "xliffDir": "./xliff/"
-  }
-}
-```
+=== "JS"
 
-```js
-{
-  "$schema": "https://raw.githubusercontent.com/lit/lit/main/packages/localize-tools/config.schema.json",
-  "sourceLocale": "en",
-  "targetLocales": ["es-419", "zh-Hans"],
-  "inputFiles": [
-    "src/**/*.js"
-  ],
-  "output": {
-    "mode": "runtime",
-    "outputDir": "./src/generated/locales"
-  },
-  "interchange": {
-    "format": "xliff",
-    "xliffDir": "./xliff/"
-  }
-}
-```
+    ```js
+    {
+    "$schema": "https://raw.githubusercontent.com/lit/lit/main/packages/localize-tools/config.schema.json",
+    "sourceLocale": "en",
+    "targetLocales": ["es-419", "zh-Hans"],
+    "inputFiles": [
+    	"src/**/*.js"
+    ],
+    "output": {
+    	"mode": "runtime",
+    	"outputDir": "./src/generated/locales"
+    },
+    "interchange": {
+    	"format": "xliff",
+    	"xliffDir": "./xliff/"
+    }
+    }
+    ```
 
-{% endswitchable-sample %}
+## Извлечение сообщений {#extracting-messages}
 
-## Extracting messages
-
-Run `lit-localize extract` to generate an <a
-href="https://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html" target="_blank"
-rel="noopener">XLIFF</a> file for each target locale. XLIFF is an XML format
-supported by most localization tools and services. XLIFF files will be written
-to the directory specified by the `interchange.xliffDir` [config
-option](/docs/v3/localization/cli-and-config/#xliff-mode-settings).
+Выполните команду `lit-localize extract`, чтобы сгенерировать файл [XLIFF](https://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html) для каждой целевой локали. XLIFF - это XML-формат, поддерживаемый большинством инструментов и сервисов локализации. Файлы XLIFF будут записаны в каталог, указанный опцией `interchange.xliffDir` [config](cli-and-config.md#xliff-mode-settings).
 
 ```sh
 lit-localize extract
 ```
 
-For example, given the source:
+Например, с учетом источника:
 
 ```js
 msg('Hello World');
@@ -413,7 +330,7 @@ msg(str`Hello ${name}`);
 msg(html`Hello <b>World</b>`);
 ```
 
-Then a `<xliffDir>/<locale>.xlf` file will be generated for each target locale:
+Затем для каждой целевой локали будет сгенерирован файл `<xliffDir>/<locale>.xlf`:
 
 ```xml
 <!-- xliff/es-419.xlf -->
@@ -431,19 +348,13 @@ Then a `<xliffDir>/<locale>.xlf` file will be generated for each target locale:
 </trans-unit>
 ```
 
-## Translation with XLIFF
+## Перевод с помощью XLIFF {#translation-with-xliff}
 
-XLIFF files can be edited manually, but more typically they are sent to a
-third-party translation service where they are edited by language experts using
-specialized tools.
+Файлы XLIFF можно редактировать вручную, но чаще всего они отправляются в стороннюю службу перевода, где их редактируют эксперты-лингвисты с помощью специализированных инструментов.
 
-After uploading your XLIFF files to your chosen translation service, you will
-eventually receive new XLIFF files in response. The new XLIFF files will look
-just like the ones you uploaded, but with `<target>` tags inserted into each
-`<trans-unit>`.
+После загрузки XLIFF-файлов в выбранную службу перевода вы получите в ответ новые XLIFF-файлы. Новые XLIFF-файлы будут выглядеть так же, как и загруженные вами, но с тегами `<target>`, вставленными в каждый `<trans-unit>`.
 
-When you receive new translation XLIFF files, save them to your configured
-`interchange.xliffDir` directory, overwriting the original versions.
+Когда вы получите новые XLIFF-файлы перевода, сохраните их в настроенном каталоге `interchange.xliffDir`, заменяя оригинальные версии.
 
 ```xml
 <!-- xliff/es-419.xlf -->
@@ -464,26 +375,19 @@ When you receive new translation XLIFF files, save them to your configured
 </trans-unit>
 ```
 
-## Building localized templates
+## Создание локализованных шаблонов
 
-Use the `lit-localize build` command to incorporate translations back into your
-application. The behavior of this command depends on the [output mode](#output-modes)
-you have configured.
+Используйте команду `lit-localize build`, чтобы включить переводы обратно в ваше приложение. Поведение этой команды зависит от настроенного вами [output mode](#output-modes).
 
 ```sh
 lit-localize build
 ```
 
-See the [runtime mode](/docs/v3/localization/runtime-mode) and [transform
-mode](/docs/v3/localization/transform-mode) pages for details of how building in
-each mode works.
+Подробнее о том, как работает сборка в каждом режиме, смотрите на страницах [runtime mode](runtime-mode.md) и [transform mode](transform-mode.md).
 
-## Message descriptions
+## Описания сообщений
 
-Use the `desc` option to the `msg` function to provide human-readable
-descriptions for your strings and templates. These descriptions are shown to
-translators by most translation tools, and are highly recommended to help
-explain and contextualize the meaning of messages.
+Используйте опцию `desc` для функции `msg`, чтобы предоставить человекочитаемые описания для ваших строк и шаблонов. Эти описания показываются переводчикам большинством инструментов перевода, и их настоятельно рекомендуется использовать для объяснения и контекстуализации смысла сообщений.
 
 ```js
 render() {
@@ -495,7 +399,7 @@ render() {
 }
 ```
 
-Descriptions are represented in XLIFF files using `<note>` elements.
+Описания представляются в файлах XLIFF с помощью элементов `<note>`.
 
 ```xml
 <trans-unit id="s512957aa09384646">
@@ -504,66 +408,61 @@ Descriptions are represented in XLIFF files using `<note>` elements.
 </trans-unit>
 ```
 
-## Message IDs
+## Идентификаторы сообщений
 
-Lit Localize automatically generates an ID for every `msg` call using a hash of
-the string.
+Lit Localize автоматически генерирует идентификатор для каждого вызова `msg`, используя хэш строки.
 
-If two `msg` calls share the same ID, then they are treated as the same message,
-meaning they will be translated as a single unit and the same translations will
-be substituted in both places.
+Если два вызова `msg` имеют одинаковый идентификатор, то они рассматриваются как одно и то же сообщение, то есть будут переведены как единое целое, и в обоих местах будут подставлены одинаковые переводы.
 
-For example, these two `msg` calls are in two different files, but since they
-have the same content they will be treated as one message:
+Например, эти два вызова `msg` находятся в двух разных файлах, но поскольку они имеют одинаковое содержание, они будут рассматриваться как одно сообщение:
 
 ```js
 // file1.js
-msg('Hello World')
+msg('Hello World');
 
 // file2.js
-msg('Hello World')
+msg('Hello World');
 ```
 
-### ID generation
+### Генерация идентификаторов
 
-The following content affects ID generation:
+Следующее содержимое влияет на генерацию идентификатора:
 
-- String content
-- HTML markup
-- The position of expressions
-- Whether the string is tagged with `html`
+-   Строковое содержимое
+-   HTML-разметка
+-   Положение выражений
+-   Отмечена ли строка тегом `html`.
 
-The following content **does not** affect ID generation:
+Следующее содержимое **не** влияет на генерацию идентификаторов:
 
-- The code inside an expression
-- The computed value of an expression
-- Descriptions
-- File location
+-   Код внутри выражения
+-   Вычисленное значение выражения
+-   Описания
+-   Расположение файла
 
-For example, all of these messages share the same ID:
+Например, все эти сообщения имеют один и тот же идентификатор:
 
 ```js
 msg(html`Hello <b>${name}</b>`);
 msg(html`Hello <b>${this.name}</b>`);
-msg(html`Hello <b>${this.name}</b>`, {desc: 'A friendly greeting'});
+msg(html`Hello <b>${this.name}</b>`, {
+    desc: 'A friendly greeting',
+});
 ```
 
-But this message has a different ID:
+Но это сообщение имеет другой идентификатор:
 
 ```js
 msg(html`Hello <i>${name}</i>`);
 ```
 
-### Overriding IDs
+### Переопределение идентификаторов
 
-Message IDs can be overridden by specifying the `id` option to the `msg`
-function. In some cases this may be necessary, such as when an identical string
-has multiple meanings, because each might be written differently in another
-language:
+Идентификаторы сообщений можно переопределить, указав опцию `id` в функции `msg`. В некоторых случаях это может быть необходимо, например, когда одинаковая строка имеет несколько значений, поскольку на другом языке каждое из них может быть написано по-разному:
 
 ```js
-msg('Buffalo', {id: 'buffalo-animal-singular'});
-msg('Buffalo', {id: 'buffalo-animal-plural'});
-msg('Buffalo', {id: 'buffalo-city'});
-msg('Buffalo', {id: 'buffalo-verb'});
+msg('Buffalo', { id: 'buffalo-animal-singular' });
+msg('Buffalo', { id: 'buffalo-animal-plural' });
+msg('Buffalo', { id: 'buffalo-city' });
+msg('Buffalo', { id: 'buffalo-verb' });
 ```

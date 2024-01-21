@@ -8,6 +8,6 @@ nav:
     - data
     - tools
     - ssr
-    #- frameworks
-    #- localization
+    - frameworks
+    - localization
     #- libraries
