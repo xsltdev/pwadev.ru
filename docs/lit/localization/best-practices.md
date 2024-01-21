@@ -1,28 +1,16 @@
 ---
-title: Localization best practices
-eleventyNavigation:
-  key: Best practices
-  parent: Localization
-  order: 5
-versionLinks:
-  v2: localization/best-practices/
+description: Лучшие практики локализации
 ---
 
+# Лучшие практики локализации
 
-## Ensure re-evaluation on render
+## Обеспечение повторной оценки при рендеринге
 
-Each time the `msg` function is called, it returns a version of the given string
-or Lit template in the active locale. However, this result is just a normal
-string or template; it is not *intrinsically* capable of re-rendering itself
-when the locale changes.
+Каждый раз, когда вызывается функция `msg`, она возвращает версию заданной строки или шаблона Lit в активной локали. Однако этот результат - обычная строка или шаблон; он не способен _внутренне_ пересмотреть себя при смене локали.
 
-For this reason, it is important to write `msg` calls in a way that ensures they
-will be re-evaluated each time the Lit `render` method runs. This way, when the
-locale changes, the correct string or template for the latest locale will be
-returned.
+По этой причине важно писать вызовы `msg` таким образом, чтобы обеспечить их переоценку при каждом запуске метода Lit `render`. Таким образом, при смене локали будет возвращена правильная строка или шаблон для последней локали.
 
-One situation where it is easy to make a mistake here is when localizing
-property default values. It may seem natural to write this:
+Одна из ситуаций, в которой легко допустить ошибку, - это локализация значений свойств по умолчанию. Может показаться естественным написать так:
 
 ```js
 // Don't do this!
@@ -33,12 +21,9 @@ render() {
 }
 ```
 
-However, the above pattern provides no opportunity for the default label to be
-updated when the locale changes. The default value will get stuck at the version
-from the locale that happened to be active when the element was instantiated.
+Однако вышеописанная схема не дает возможности обновлять метку по умолчанию при изменении локали. Значение по умолчанию будет застревать на версии локали, которая была активна в момент создания элемента.
 
-A simple fix is to move the default value fallback directly into the render
-method:
+Простым исправлением является перемещение возврата значения по умолчанию непосредственно в метод рендеринга:
 
 ```js
 render() {
@@ -46,66 +31,57 @@ render() {
 }
 ```
 
-Alternatively, a custom getter/setter can be used to create a more natural
-interface:
+Кроме того, для создания более естественного интерфейса можно использовать пользовательский геттер/сеттер:
 
-{% switchable-sample %}
+=== "TS"
 
-```ts
-private _label?: string;
+    ```ts
+    private _label?: string;
 
-@property()
-get label() {
-  return this._label ?? msg('Default label');
-}
+    @property()
+    get label() {
+    	return this._label ?? msg('Default label');
+    }
 
-set label(label: string) {
-  this._label = label;
-}
+    set label(label: string) {
+    	this._label = label;
+    }
 
-render() {
-  return html`<button>${this.label}</button>`;
-}
-```
+    render() {
+    	return html`<button>${this.label}</button>`;
+    }
+    ```
 
-```js
-static properties = {
-  label: {}
-};
+=== "JS"
 
-get label() {
-  return this._label ?? msg('Default label');
-}
+    ```js
+    static properties = {
+    	label: {}
+    };
 
-set label(label) {
-  this._label = label;
-}
+    get label() {
+    	return this._label ?? msg('Default label');
+    }
 
-render() {
-  return html`<button>${this.label}</button>`;
-}
-```
+    set label(label) {
+    	this._label = label;
+    }
 
-{% endswitchable-sample %}
+    render() {
+    	return html`<button>${this.label}</button>`;
+    }
+    ```
 
-## Avoid unnecessary HTML markup
+## Избегайте ненужной HTML-разметки
 
-While `@lit/localize` has full support for embedding HTML markup inside
-localized templates, it's best to avoid doing so whenever possible. This is
-because:
+Хотя `@lit/localize` полностью поддерживает встраивание HTML-разметки в локализованные шаблоны, лучше избегать этого, когда это возможно. Это связано с тем, что:
 
-1. It's easier for translators to deal with simple string phrases instead of
-   phrases with embedded markup.
+1.  Переводчикам проще работать с простыми строковыми фразами, а не с фразами со встроенной разметкой.
+2.  Это позволяет избежать ненужной работы по повторному переводу при изменении разметки, например, при добавлении класса, который влияет на внешний вид, не меняя смысла.
+3.  Смена локалей обычно происходит быстрее, поскольку обновлять нужно меньше частей DOM. Кроме того, в ваши пакеты будет включено меньше JavaScript, поскольку общую разметку не нужно будет дублировать в каждом переводе.
 
-2. It avoids unnecessary re-translation work when markup changes, such as when
-   adding a class that affects appearance without changing the meaning.
+Не идеальный вариант:
 
-3. It will typically be faster to swap locales, because fewer parts of the DOM
-   will need to update. Also, less JavaScript will be included in your bundles,
-   because common markup will not need to be duplicated into each translation.
-
-
-Not ideal:
 ```js
 render() {
   // Don't do this! There's no reason to include the <button> tag in this
@@ -114,7 +90,8 @@ render() {
 }
 ```
 
-Ideal:
+Идеально:
+
 ```js
 render() {
   // Much better! Now the phrase "Launch rocket" can be translated more easily
@@ -123,11 +100,11 @@ render() {
 }
 ```
 
-Breaking templates into smaller pieces can also be helpful:
+Разбиение шаблонов на более мелкие части также может быть полезным:
 
 ```js
 render() {
-  // Don't do this!
+  // Не делайте этого!
   return msg(html`
   <p>The red button makes the rocket go up.</p>
   <p>The green button makes the rocket do a flip.</p>
@@ -135,10 +112,12 @@ render() {
 }
 ```
 
+---
+
 ```js
 render() {
-  // Better! No markup needs to be processed by translators, and each sentence
-  // can be translated independently.
+  // Лучше! Переводчикам не нужно обрабатывать разметку, и каждое предложение
+  // может быть переведено независимо.
   return html`
   <p>${msg('The red button makes the rocket go up.')}</p>
   <p>${msg('The green button makes the rocket do a flip.')}</p>
@@ -146,17 +125,11 @@ render() {
 }
 ```
 
-<div class="alert alert-info">
+!!!info ""
 
-When using transform mode, templates will be automatically flattened to make
-them as small and efficient as possible. After transformation, the above example
-won't have any placeholders, because it knows that strings can be directly
-merged into HTML templates.
+    При использовании режима трансформации шаблоны будут автоматически сплющиваться, чтобы сделать их как можно меньше и эффективнее. После трансформации в приведенном выше примере не будет никаких заполнителей, поскольку он знает, что строки можно напрямую объединять в HTML-шаблоны.
 
-</div>
-
-There are cases where HTML *should* be included in the localized template. For
-example where an HTML tag is needed in the middle of a phrase:
+Есть случаи, когда HTML _должен_ быть включен в локализованный шаблон. Например, когда в середине фразы требуется HTML-тег:
 
 ```js
 render() {
@@ -164,31 +137,25 @@ render() {
 }
 ```
 
-## Safely re-exporting or re-assigning localize APIs
+## Безопасный реэкспорт или переназначение API локализации
 
-Static analysis is used to determine when you are calling the `@lit/localize`
-`msg` function and other APIs, as opposed to a different function with the same
-name.
+Статический анализ используется для определения того, когда вы вызываете функцию `@lit/localize` `msg` и другие API, а не другую функцию с тем же именем.
 
-It is possible to re-export or re-assign the `msg` function and other APIs, and
-most of the time this will just work.
+Можно реэкспортировать или переназначить функцию `msg` и другие API, и в большинстве случаев это будет работать.
 
-However, certain patterns may be too dynamic for static analysis to understand.
-If a message is failing to be extracted, and you have re-assigned or re-exported
-the `msg` function, this could be the cause.
+Однако некоторые паттерны могут быть слишком динамичными, чтобы статический анализ мог их понять. Если сообщение не извлекается, а вы переназначили или реэкспортировали функцию `msg`, это может быть причиной.
 
-To force a function to be analyzed as a `@lit/localize` API, you can use a JSDoc
-`@type` comment in JavaScript, or a type cast in TypeScript:
+Чтобы заставить функцию анализироваться как API `@lit/localize`, вы можете использовать комментарий JSDoc `@type` в JavaScript или приведение типа в TypeScript:
 
-{% switchable-sample %}
+=== "TS"
 
-```ts
-const myMsg = ... as typeof import('@lit/localize').msg;
-```
+    ```ts
+    const myMsg = ... as typeof import('@lit/localize').msg;
+    ```
 
-```js
-/** @type import('@lit/localize').msg */
-const myMsg = ...;
-```
+=== "JS"
 
-{% endswitchable-sample %}
+    ```js
+    /** @type import('@lit/localize').msg */
+    const myMsg = ...;
+    ```

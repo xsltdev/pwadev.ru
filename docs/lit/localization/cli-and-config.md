@@ -1,12 +1,8 @@
 ---
-title: Localization CLI and config
-eleventyNavigation:
-  key: CLI and config
-  parent: Localization
-  order: 4
-versionLinks:
-  v2: localization/cli-and-config/
+description: Локализация CLI и конфигурации
 ---
+
+# Локализация CLI и конфигурации
 
 ## CLI
 
@@ -14,188 +10,153 @@ versionLinks:
 lit-localize command [--flags]
 ```
 
-### Commands
+### Команды
 
-<br>
+| Команда | Описание |
+| --- | --- |
+| `extract` | Извлечение вызовов `msg` из всех входных файлов и создание или обновление файлов XLIFF (`.xlf`). |
+| `build` | Включите переводы обратно в ваше приложение, используя настроенный [режим](overview.md#output-modes). |
 
-| Command   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `extract` | Extract `msg` calls from all input files and create or update XLIFF (`.xlf`) files.                                                                                                                                                                                                                                                                               |
-| `build`   | Incorporate translations back into your app using the configured [mode](/docs/v3/localization/overview/#output-modes). |
+### Флаги
 
-### Flags
+| Флаг | Описание |
+| --- | --- |
+| `--help` | Отображение справки об использовании. |
+| `--config` | Путь к файлу JSON [config](#config-file). По умолчанию `./lit-localize.json` |
 
-<br>
+## Конфигурационный файл {#config-file}
 
-| Flag       | Description                                                                 |
-| ---------- | --------------------------------------------------------------------------- |
-| `--help`   | Display help about usage.                                                   |
-| `--config` | Path to JSON [config file](#config-file). Defaults to `./lit-localize.json` |
+### Общие настройки
 
-## Config file
+!!!info ""
 
-### General settings
+    Все пути к файлам являются относительными по отношению к местоположению файла конфигурации.
 
-<div class="alert alert-info">
+**`sourceLocale`**
 
-All file paths are relative to the location of the config file.
+: `string`
 
-</div>
+    _Обязательно_
 
-<dl class="params">
-  <dt class="paramName">sourceLocale</dt>
-  <dd class="paramDetails">
-    <code class="paramType">string</code>
-    <p><em>Required</em></p>
-    <p>Locale code that templates in the source code are written in.</p>
-  </dd>
+    Код локали, в которой написаны шаблоны в исходном коде.
 
-  <dt class="paramName">targetLocales</dt>
-  <dd class="paramDetails">
-    <code class="paramType">string[]</code>
-    <p><em>Required (can be empty)</em></p>
-    <p>Locale codes that templates will be localized to.</p>
-  </dd>
+**`targetLocales`**
 
-  <dt class="paramName">inputFiles</dt>
-  <dd class="paramDetails">
-    <code class="paramType">string[]</code>
-    <p><em>Required unless <code>tsConfig</code> is specified</em></p>
-    <p>Array of filenames or
-    <a href="https://github.com/mrmlnc/fast-glob#pattern-syntax" target="_blank" rel="noopener">
-    glob</a> patterns matching the JavaScript or TypeScript files to extract messages from.</p>
-    <p>If both <code>tsConfig</code> and <code>inputFiles</code> are specified, then
-    <code>inputFiles</code> takes precedence.</p>
-  </dd>
+: `string[]`
 
-  <dt class="paramName">tsConfig</dt>
-  <dd class="paramDetails">
-    <code class="paramType">string</code>
-    <p><em>Required unless <code>inputFiles</code> is specified</em></p>
-    <p>Path to a <code>tsconfig.json</code> or <code>jsconfig.json</code> file
-    that describes the JavaScript or TypeScript files from which messages will
-    be extracted, and also the compiler options that will be used when building for
-    transform mode.</p>
-    <p>If both <code>tsConfig</code> and <code>inputFiles</code> are specified, then
-    <code>inputFiles</code> takes precedence.</p>
-  </dd>
+    _Обязательно (может быть пустым)_
 
-  <dt class="paramName">output.mode</dt>
-  <dd class="paramDetails">
-    <code class="paramType">"transform" | "runtime"</code>
-    <p><em>Required</em></p>
-    <p>What kind of output should be produced. See
-    <a href="/docs/localization/overview/#output-modes">modes</a>.</p>
-  </dd>
+    Коды локалей, на которые будут локализованы шаблоны.
 
-  <dt class="paramName">output.localeCodesModule</dt>
-  <dd class="paramDetails">
-    <code class="paramType">string</code>
-    <p><em>Optional</em></p>
-    <p>Filepath for a generated JavaScript or TypeScript module that exports
-       <code>sourceLocale</code>, <code>targetLocales</code>, and
-       <code>allLocales</code> using the locale codes from your config file.
-      Use to keep your config file and client config in sync.</p>
-    <p>This path should end with either <code>".js"</code> or
-       <code>".ts"</code>. If it ends with <code>".js"</code> it will be
-       emitted as a JavaScript module. If it ends with <code>".ts"</code> it
-       will be emitted as a TypeScript module.</p>
-  </dd>
+**`inputFiles`**
 
-  <dt class="paramName">interchange.format</dt>
-  <dd class="paramDetails">
-    <code class="paramType">"xliff" | "xlb"</code>
-    <p><em>Required</em></p>
-    <p>Data format to be consumed by your localization process. Options:
-      <ul>
-        <li><code>"xliff"</code>:
-          <a href="https://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html"
-            target="_blank" rel="noopener">XLIFF 1.2</a> XML format</li>
-        <li><code>"xlb"</code>: Google-internal XML format</li>
-      </ul>
-    </p>
-  </dd>
-</dl>
+: `string[]`
 
-### Runtime mode settings
+    _Обязательно, если не указано `tsConfig`_
 
-<dl class="params">
-  <dt class="paramName">output.outputDir</dt>
-  <dd class="paramDetails">
-    <code class="paramType">string</code>
-    <p><em>Required</em></p>
-    <p>Output directory for generated modules. A
-       <code>&lt;locale&gt;.[js|ts]</code> file is generated for each
-       <code>targetLocale</code>. Each file is a module that exports the
-       translations for that locale, keyed by message ID.</p>
-  </dd>
+    Массив имен файлов или шаблонов [glob](https://github.com/mrmlnc/fast-glob#pattern-syntax), соответствующих файлам JavaScript или TypeScript для извлечения сообщений.
 
-  <dt class="paramName">output.language</dt>
-  <dd class="paramDetails">
-    <code class="paramType">"js" | "ts"</code>
-    <p><em>Defaults to <code>"js"</code>, or <code>"ts"</code> if
-    <code>tsConfig</code> was specified.</em></p>
-    <p>Language to generate modules in.</p>
-  </dd>
+    Если указаны и `tsConfig`, и `inputFiles`, то приоритет имеет `inputFiles`.
 
-</dl>
+**`tsConfig`**
 
-### Transform mode settings
+: `string`
 
-<dl class="params">
-  <dt class="paramName">output.outputDir</dt>
-  <dd class="paramDetails">
-    <code class="paramType">string</code>
-    <p><em>Required unless <code>tsConfig</code> is specified, in which case it
-    defaults to that file's <code>outDir</code>. If both are specified, this
-    field takes precedence.</em></p>
-    <p>Output directory for generated modules. A subdirectory is created for
-    each locale within this directory, each containing a full build of the
-    project for that locale.</p>
-  </dd>
+    _Обязательно, если не указано `inputFiles`_
 
-</dl>
+    Путь к файлу `tsconfig.json` или `jsconfig.json`, описывающему файлы JavaScript или TypeScript, из которых будут извлекаться сообщения, а также параметры компилятора, которые будут использоваться при сборке для режима преобразования.
 
-### XLIFF mode settings
+    Если указаны и `tsConfig`, и `inputFiles`, то приоритет имеет `inputFiles`.
 
-<dl class="params">
-  <dt class="paramName">interchange.xliffDir</dt>
-  <dd class="paramDetails">
-    <code class="paramType">string</code>
-    <p><em>Required with <code>"mode": "xliff"</code></em></p>
-    <p>Directory on disk to read/write <code>.xlf</code> XML files. For each target
-    locale, the path <code>&lt;xliffDir>/&lt;locale>.xlf</code> will be used.</p>
-  </dd>
+**`output.mode`**
 
-  <dt class="paramName">interchange.placeholderStyle</dt>
-  <dd class="paramDetails">
-    <code class="paramType">"x" | "ph"</code>
-    <p><em>Defaults to <code>"x"</code></em></p>
-    <p>How to represent placeholders containing HTML markup and dynamic expressions.
-    Different localization tools and services have varying support for placeholder
-    syntax.</p>
-  </dd>
-</dl>
+: `"transform" | "runtime"`
 
-### XLB mode settings
+    _Обязательно_
 
-<dl class="params">
-  <dt class="paramName">interchange.outputFile</dt>
-  <dd class="paramDetails">
-    <code class="paramType">string</code>
-    <p><em>Required with <code>"mode": "xlb"</code></em></p>
-    <p>Output path for XLB XML file that will be created containing all messages
-       extracted from the source.
-       E.g. <code>"data/localization/en.xlb".</code></p>
-  </dd>
+    Какой вид вывода должен быть произведен. См. раздел [режимы](overview.md#output-modes).
 
-  <dt class="paramName">interchange.translationsGlob</dt>
-  <dd class="paramDetails">
-    <code class="paramType">string</code>
-    <p><em>Required with <code>"mode": "xlb"</code></em></p>
-    <p><a href="https://github.com/mrmlnc/fast-glob#pattern-syntax"
-          target="_blank" rel="noopener">Glob</a> pattern of XLB XML files to
-       read from disk containing translated messages. E.g.
-       <code>"data/localization/*.xlb"</code>.</p>
-  </dd>
-</dl>
+**`output.localeCodesModule`**
+
+: `string`
+
+    _Опционально_
+
+    Путь к файлу сгенерированного модуля JavaScript или TypeScript, который экспортирует `sourceLocale`, `targetLocales` и `allLocales`, используя коды локалей из вашего файла конфигурации. Используется для синхронизации конфигурационного файла и конфигурации клиента.
+
+    Этот путь должен заканчиваться либо на `".js"`, либо на `".ts"`. Если он заканчивается на `".js"`, он будет выдан как модуль JavaScript. Если он заканчивается на `".ts"`, он будет выдан как модуль TypeScript.
+
+**`interchange.format`**
+
+: `"xliff" | "xlb"`
+
+    _Обязательно_
+
+    Формат данных, который должен использоваться процессом локализации. Опции:
+
+    - `"xliff"`: [XLIFF 1.2](https://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html) XML-формат.
+    - `"xlb"`: Внутренний XML-формат Google
+
+### Настройки режима выполнения
+
+**`output.outputDir`**
+
+: `string`
+
+    _Обязательно_
+
+    Выходной каталог для сгенерированных модулей. Для каждой `targetLocale` генерируется файл `<locale>.[js|ts]`. Каждый файл представляет собой модуль, экспортирующий переводы для данной локали, с ключом по ID сообщения.
+
+**`output.language`**
+
+: `"js" | "ts"`
+
+    _По умолчанию `"js"`, или `"ts"`, если указан `tsConfig._
+
+    Язык, на котором будут генерироваться модули.
+
+### Настройки режима преобразования
+
+**`output.outputDir`**
+
+: `string`
+
+    _Требуется, если не указан `tsConfig`, в этом случае по умолчанию используется `outDir` этого файла. Если оба поля указаны, приоритет имеет это поле._
+
+    Выходной каталог для сгенерированных модулей. Для каждой локали в этой директории создается поддиректория, каждая из которых содержит полную сборку проекта для этой локали.
+
+### Настройки режима XLIFF
+
+**`interchange.xliffDir`**
+
+: `string`
+
+    _Необходимо с `"mode": "xliff"`_
+
+    Каталог на диске для чтения/записи XML-файлов `.xlf`. Для каждой целевой локали будет использоваться путь `<xliffDir>/<locale>.xlf`.
+
+**`interchange.placeholderStyle`**
+
+: `"x" | "ph"`</code>
+
+    _По умолчанию `"x"`_
+
+    Как представлять заполнители, содержащие HTML-разметку и динамические выражения. Различные инструменты и сервисы локализации по-разному поддерживают синтаксис placeholder.
+
+### Настройки режима XLB
+
+**`interchange.outputFile`**
+
+: `string`
+
+    _Требуется с `"mode": "xlb"`_
+
+    Выходной путь для XLB XML-файла, который будет создан, содержащий все сообщения, извлеченные из источника. Например, `"data/localization/en.xlb".`.
+
+**`interchange.translationsGlob`**
+
+: `string`
+
+    _Требуется с `"mode": "xlb"`_
+
+    [Glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) шаблон XML-файлов XLB для чтения с диска, содержащих переведенные сообщения. Например, `"data/localization/*.xlb"`.

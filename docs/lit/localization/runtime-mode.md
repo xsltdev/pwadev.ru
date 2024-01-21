@@ -1,54 +1,37 @@
 ---
-title: Runtime localization mode
-eleventyNavigation:
-  key: Runtime mode
-  parent: Localization
-  order: 2
-versionLinks:
-  v2: localization/runtime-mode/
+description: В режиме выполнения Lit Localize для каждой из ваших локалей генерируется один модуль JavaScript или TypeScript. Каждый сгенерированный модуль содержит локализованные шаблоны для этой локали
 ---
 
-In Lit Localize runtime mode, one JavaScript or TypeScript module is generated
-for each of your locales. Each generated module contains the localized templates
-for that locale. When your application switches locales, the module for that
-locale is imported, and all localized components are re-rendered.
+# Режим локализации во время выполнения
 
-See [output modes](/docs/v3/localization/overview/#output-modes) for a comparison
-of Lit Localize output modes.
+В режиме выполнения Lit Localize для каждой из ваших локалей генерируется один модуль JavaScript или TypeScript. Каждый сгенерированный модуль содержит локализованные шаблоны для этой локали. Когда ваше приложение переключается на другую локаль, модуль для этой локали импортируется, и все локализованные компоненты перерисовываются.
 
-#### Example output
+Сравнение режимов вывода Lit Localize см. в разделе [Режимы вывода](./overview.md#output-modes).
+
+Пример вывода:
 
 ```js
 // locales/es-419.ts
 export const templates = {
-  h3c44aff2d5f5ef6b: html`Hola <b>Mundo!</b>`,
+    h3c44aff2d5f5ef6b: html`Hola <b>Mundo!</b>`,
 };
 ```
 
-## Example of using runtime mode
+## Пример использования режима выполнения
 
-The following example demonstrates an application built with Lit Localize
-runtime mode:
+Следующий пример демонстрирует приложение, созданное с использованием режима времени выполнения Lit Localize:
 
-{% playground-example "v3-docs/libraries/localization/runtime" "x-greeter.ts" %}
+<litdev-example sandbox-base-url="https://playground.lit.dev/" style="--litdev-example-editor-lines-ts:12;
+               --litdev-example-editor-lines-js:14;
+               --litdev-example-preview-height:120px" project="v3-docs/libraries/localization/runtime" filename="x-greeter.ts"></litdev-example>
 
-The Lit GitHub repo includes full working examples
-([JavaScript](https://github.com/lit/lit/tree/main/packages/localize/examples/runtime-js),
-[TypeScript](https://github.com/lit/lit/tree/main/packages/localize/examples/runtime-ts))
-of Lit Localize runtime mode that you can use as templates.
+В репозитории Lit GitHub есть полные рабочие примеры ([JavaScript](https://github.com/lit/lit/tree/main/packages/localize/examples/runtime-js), [TypeScript](https://github.com/lit/lit/tree/main/packages/localize/examples/runtime-ts)) режима выполнения Lit Localize, которые можно использовать в качестве шаблонов.
 
-## Configuring runtime mode
+## Настройка режима выполнения
 
-In your `lit-localize.json` config, set the `output.mode` property to `runtime`,
-and set the `output.outputDir` property to the location where you would like
-your localized template modules to be generated. See [runtime mode
-settings](/docs/v3/localization/cli-and-config#runtime-mode-settings) for more
-details.
+В конфигурации `lit-localize.json` установите для свойства `output.mode` значение `runtime`, а для свойства `output.outputDir` - место, где вы хотите генерировать локализованные модули шаблонов. Более подробная информация приведена в разделе [Настройки режима выполнения](cli-and-config.md#runtime-mode-settings).
 
-Next, set `output.localeCodesModule` to a filepath of your chosing. Lit Localize
-will generate a `.js` or `.ts` module here which mirrors the `sourceLocale` and
-`targetLocales` settings in your config file as exported variables. The
-generated module will look something like this:
+Затем установите `output.localeCodesModule` в выбранный вами путь к файлу. Lit Localize сгенерирует здесь модуль `.js` или `.ts`, который будет отражать настройки `sourceLocale` и `targetLocales` в вашем конфигурационном файле как экспортируемые переменные. Сгенерированный модуль будет выглядеть примерно так:
 
 ```js
 export const sourceLocale = 'en';
@@ -56,237 +39,211 @@ export const targetLocales = ['es-419', 'zh-Hans'];
 export const allLocales = ['en', 'es-419', 'zh-Hans'];
 ```
 
-Finally, in your JavaScript or TypeScript project, call `configureLocalization`,
-passing an object with the following properties:
+Наконец, в вашем JavaScript или TypeScript проекте вызовите `configureLocalization`, передав объект со следующими свойствами:
 
-- `sourceLocale: string`: The `sourceLocale` variable exported by your generated
-  `output.localeCodesModule` module.
+-   `sourceLocale: string`: Переменная `sourceLocale`, экспортируемая сгенерированным вами модулем `output.localeCodesModule`.
+-   `targetLocales: string[]`: Переменная `targetLocales`, экспортируемая сгенерированным вами модулем `output.localeCodesModule`.
+-   `loadLocale: (locale: string) => Promise<LocaleModule>`: Функция, загружающая локализованный шаблон. Возвращает обещание, разрешающее сгенерированный модуль локализованного шаблона для заданного кода локали. Примеры функций, которые вы можете использовать здесь, смотрите в [Подходы к загрузке модулей локали](#approaches-for-loading-locale-modules).
 
-- `targetLocales: string[]`: The `targetLocales` variable exported by your
-  generated `output.localeCodesModule` module.
+`configureLocalization` возвращает объект со следующими свойствами:
 
-- `loadLocale: (locale: string) => Promise<LocaleModule>`: A function that loads
-  a localized template. Returns a promise that resolves to the generated
-  localized template module for the given locale code. See [Approaches for
-  loading locale modules](#approaches-for-loading-locale-modules) for examples
-  of functions you can use here.
+-   `getLocale`: Функция, возвращающая код активной локали. Если началась загрузка новой локали, `getLocale` будет продолжать возвращать код предыдущей локали, пока не закончится загрузка новой.
+-   `setLocale`: Функция, которая начинает переключать активную локаль на заданный код и возвращает обещание, которое разрешается после загрузки новой локали. Пример использования:
 
-`configureLocalization` returns an object with the following properties:
-
-- `getLocale`: Function that returns the active locale code. If a new locale has
-  started loading, `getLocale` will continue to return the previous locale code
-  until the new one has finished loading.
-
-- `setLocale`: Function that begins switching the active locale to the given
-  code, and returns a promise that resolves when the new locale has loaded.
-  Example usage:
-
-For example:
+Например:
 
 ```js
-import {configureLocalization} from '@lit/localize';
+import { configureLocalization } from '@lit/localize';
 // Generated via output.localeCodesModule
-import {sourceLocale, targetLocales} from './generated/locales.js';
+import {
+    sourceLocale,
+    targetLocales,
+} from './generated/locales.js';
 
-export const {getLocale, setLocale} = configureLocalization({
-  sourceLocale,
-  targetLocales,
-  loadLocale: (locale) => import(`/locales/${locale}.js`),
-});
-```
-## Automatically re-render
-
-To automatically trigger a re-render of your component each time the active
-locale switches, apply the `updateWhenLocaleChanges` function in your
-`constructor` when writing JavaScript, or apply the `@localized` decorator to
-your class when writing TypeScript.
-
-{% switchable-sample %}
-
-```ts
-import {LitElement, html} from 'lit';
-import {customElement} from 'lit/decorators.js';
-import {msg, localized} from '@lit/localize';
-
-@customElement('my-element');
-@localized()
-class MyElement extends LitElement {
-  render() {
-    // Whenever setLocale() is called, and templates for that locale have
-    // finished loading, this render() function will be re-invoked.
-    return msg(html`Hello <b>World!</b>`);
-  }
-}
+export const { getLocale, setLocale } =
+    configureLocalization({
+        sourceLocale,
+        targetLocales,
+        loadLocale: (locale) =>
+            import(`/locales/${locale}.js`),
+    });
 ```
 
-```js
-import {LitElement, html} from 'lit';
-import {msg, updateWhenLocaleChanges} from '@lit/localize';
+## Автоматический рендеринг
 
-class MyElement extends LitElement {
-  constructor() {
-    super();
-    updateWhenLocaleChanges(this);
-  }
+Чтобы автоматически вызывать перерисовку компонента при переключении активной локали, примените функцию `updateWhenLocaleChanges` в вашем `конструкторе` при написании JavaScript, или примените декоратор `@localized` к вашему классу при написании TypeScript.
 
-  render() {
-    // Whenever setLocale() is called, and templates for that locale have
-    // finished loading, this render() function will be re-invoked.
-    return msg(html`Hello <b>World!</b>`);
-  }
-}
-customElements.define('my-element', MyElement);
-```
+=== "TS"
 
-{% endswitchable-sample %}
+    ```ts
+    import {LitElement, html} from 'lit';
+    import {customElement} from 'lit/decorators.js';
+    import {msg, localized} from '@lit/localize';
 
-## Status event
+    @customElement('my-element');
+    @localized()
+    class MyElement extends LitElement {
+    	render() {
+    		// Whenever setLocale() is called, and templates for that locale have
+    		// finished loading, this render() function will be re-invoked.
+    		return msg(html`Hello <b>World!</b>`);
+    	}
+    }
+    ```
 
-The `lit-localize-status` event fires on `window` whenever a locale switch
-starts, finishes, or fails. You can use this event to:
+=== "JS"
 
-- Re-render when you can't use the `@localized` decorator (e.g. when using the
-  Lit `render` function directly).
+    ```js
+    import { LitElement, html } from 'lit';
+    import {
+    	msg,
+    	updateWhenLocaleChanges,
+    } from '@lit/localize';
 
-- Render as soon as a locale switch begins, even before it finishes loading
-  (e.g. a loading indicator).
+    class MyElement extends LitElement {
+    	constructor() {
+    		super();
+    		updateWhenLocaleChanges(this);
+    	}
 
-- Perform other localization related tasks (e.g. setting a locale preference
-  cookie).
+    	render() {
+    		// Whenever setLocale() is called, and templates for that locale have
+    		// finished loading, this render() function will be re-invoked.
+    		return msg(html`Hello <b>World!</b>`);
+    	}
+    }
+    customElements.define('my-element', MyElement);
+    ```
 
-### Event types
+## Событие статуса
 
-The `detail.status` string property tells you what kind of status change has
-occured, and can be either `loading`, `ready`, or `error`:
+Событие `lit-localize-status` срабатывает в `window` каждый раз, когда начинается, завершается или не работает переключение локали. Вы можете использовать это событие для:
 
-<dl class="params">
-  <dt class="paramName">loading</dt>
-  <dd class="paramDetails">
-    <p>A new locale has started to load.</p>
-    <p>The <code>detail</code> object contains:</p>
-    <ul>
-      <li><code>loadingLocale: string</code>: Code of the locale that has
-      started loading.</li>
-    </ul>
-    <p>In the case that a second locale is requested before the first one
-    finishes loading, a new <code>loading</code> event is dispatched, and no
-    <code>ready</code> or <code>error</code> event will be dispatched for the
-    first request.</p>
-    <p>A <code>loading</code> status can be followed by a <code>ready</code>,
-    <code>error</code>, or <code>loading</code> status.</p>
-  </dd>
+-   Повторного рендеринга, когда вы не можете использовать декоратор `@localized` (например, при использовании функции Lit `render` напрямую).
+-   Рендерить, как только начинается переключение локали, даже до того, как она закончит загрузку (например, индикатор загрузки).
+-   Выполнять другие задачи, связанные с локализацией (например, установка cookie для предпочтений локали).
 
-  <dt class="paramName">ready</dt>
-  <dd class="paramDetails">
-    <p>A new locale has successfully loaded and is ready for rendering.</p>
-    <p>The <code>detail</code> object contains:</p>
-    <ul>
-      <li><code>readyLocale: string</code>: Code of the locale that has
-      successfully loaded.</li>
-    </ul>
-    <p>A <code>ready</code> status can be followed only by a
-    <code>loading</code> status.</p>
-  </dd>
+### Типы событий
 
-  <dt class="paramName">error</dt>
-  <dd class="paramDetails">
-    <p>A new locale failed to load.</p>
-    <p>The <code>detail</code> object contains:</p>
-    <ul>
-      <li><code>errorLocale: string</code>: Code of the locale that failed to
-      load.</li>
-      <li><code>errorMessage: string</code>: Error message from locale load
-      failure.</li>
-    </ul>
-    <p>An <code>error</code> status can be followed only by a
-    <code>loading</code> status.</p>
-  </dd>
-</dl>
+Строковое свойство `detail.status` говорит о том, какой тип изменения статуса произошел, и может быть либо `loading`, либо `ready`, либо `error`:
 
-### Example of using the status event
+**`loading`**
+
+: Началась загрузка новой локали.
+
+    Объект `detail` содержит:
+
+    - `loadingLocale: string`: Код локали, которая начала загружаться.
+
+    В случае, если вторая локаль запрашивается до того, как первая закончит загрузку, отправляется новое событие `loading`, а для первого запроса не будет отправлено событие `ready` или `error`.
+
+    За статусом `loading` может следовать статус `ready`, `error` или `loading`.
+
+**`ready`**
+
+: Новая локаль успешно загружена и готова к рендерингу.
+
+    Объект `detail` содержит:
+
+    -   `readyLocale: string`: Код локали, которая успешно загрузилась.
+
+    За статусом `ready` может следовать только статус `loading`.
+
+**`error`**
+
+: Не удалось загрузить новую локаль.
+
+    Объект `detail` содержит:
+
+    -   `errorLocale: string`: Код локали, которую не удалось загрузить.
+    -   `errorMessage: string`: Сообщение об ошибке при неудачной загрузке локали.
+
+    За статусом `error` может следовать только статус `loading`.
+
+### Пример использования события состояния
 
 ```ts
 // Show/hide a progress indicator whenever a new locale is loading,
 // and re-render the application every time a new locale successfully loads.
 window.addEventListener('lit-localize-status', (event) => {
-  const spinner = document.querySelector('#spinner');
+    const spinner = document.querySelector('#spinner');
 
-  if (event.detail.status === 'loading') {
-    console.log(`Loading new locale: ${event.detail.loadingLocale}`);
-    spinner.removeAttribute('hidden');
-  } else if (event.detail.status === 'ready') {
-    console.log(`Loaded new locale: ${event.detail.readyLocale}`);
-    spinner.setAttribute('hidden', '');
-    renderApplication();
-  } else if (event.detail.status === 'error') {
-    console.error(
-      `Error loading locale ${event.detail.errorLocale}: ` +
-        event.detail.errorMessage
-    );
-    spinner.setAttribute('hidden', '');
-  }
+    if (event.detail.status === 'loading') {
+        console.log(
+            `Loading new locale: ${event.detail.loadingLocale}`,
+        );
+        spinner.removeAttribute('hidden');
+    } else if (event.detail.status === 'ready') {
+        console.log(
+            `Loaded new locale: ${event.detail.readyLocale}`,
+        );
+        spinner.setAttribute('hidden', '');
+        renderApplication();
+    } else if (event.detail.status === 'error') {
+        console.error(
+            `Error loading locale ${event.detail.errorLocale}: ` +
+                event.detail.errorMessage,
+        );
+        spinner.setAttribute('hidden', '');
+    }
 });
 ```
 
-## Approaches for loading locale modules
+## Подходы к загрузке модулей локали {#approaches-for-loading-locale-modules}
 
-Lit Localize lets you load locale modules however you like, because you can pass
-any function as the `loadLocale` option. Here are a few common patterns:
+Lit Localize позволяет загружать модули локали как угодно, поскольку в качестве опции `loadLocale` можно передать любую функцию. Вот несколько распространенных шаблонов:
 
 ### Lazy-load
 
-Use [dynamic
-imports](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#dynamic_imports)
-to load each locale only when it becomes active. This is a good default because
-it minimizes the amount of code that your users will download and execute.
+Используйте [динамический импорт](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/import#dynamic_imports) для загрузки каждой локали только тогда, когда она становится активной. Это хороший вариант по умолчанию, потому что он минимизирует количество кода, который будут загружать и выполнять ваши пользователи.
 
 ```js
-import {configureLocalization} from '@lit/localize';
-import {sourceLocale, targetLocales} from './generated/locales.js';
+import { configureLocalization } from '@lit/localize';
+import {
+    sourceLocale,
+    targetLocales,
+} from './generated/locales.js';
 
-const {getLocale, setLocale} = configureLocalization({
-  sourceLocale,
-  targetLocales,
-  loadLocale: (locale) => import(`/locales/${locale}.js`),
+const { getLocale, setLocale } = configureLocalization({
+    sourceLocale,
+    targetLocales,
+    loadLocale: (locale) => import(`/locales/${locale}.js`),
 });
 ```
 
-### Pre-load
+### Предварительная загрузка
 
-Start pre-loading all locales when the page loads. Dynamic imports are still
-used to ensure that the remaining script on the page is not blocked while the
-locale modules are being fetched.
+Начните предварительную загрузку всех локалей при загрузке страницы. Динамический импорт по-прежнему используется для того, чтобы остальные сценарии на странице не блокировались, пока происходит выборка модулей локалей.
 
 ```js
-import {configureLocalization} from '@lit/localize';
-import {sourceLocale, targetLocales} from './generated/locales.js';
+import { configureLocalization } from '@lit/localize';
+import {
+    sourceLocale,
+    targetLocales,
+} from './generated/locales.js';
 
 const localizedTemplates = new Map(
-  targetLocales.map((locale) => [locale, import(`/locales/${locale}.js`)])
+    targetLocales.map((locale) => [
+        locale,
+        import(`/locales/${locale}.js`),
+    ]),
 );
 
-const {getLocale, setLocale} = configureLocalization({
-  sourceLocale,
-  targetLocales,
-  loadLocale: async (locale) => localizedTemplates.get(locale),
+const { getLocale, setLocale } = configureLocalization({
+    sourceLocale,
+    targetLocales,
+    loadLocale: async (locale) =>
+        localizedTemplates.get(locale),
 });
 ```
 
-### Static imports
+### Статический импорт
 
-Use [static
-imports](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
-to pre-load all locales in a way that blocks other script on the page.
+Используйте [static imports](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/import) для предварительной загрузки всех локалей таким образом, чтобы блокировать другие сценарии на странице.
 
-<div class="alert alert-warning">
+!!!alert ""
 
-This approach is not usually recommended because it will cause more code than
-necessary to be fetched and executed before the rest of the script on the page
-can execute, blocking interactivity. Use this approach only if your application
-is extremely small, must be distributed in a single JavaScript file, or you have
-some other restriction that prevents the use of dynamic imports.
-
-</div>
+    Обычно такой подход не рекомендуется, поскольку в этом случае будет извлечено и выполнено больше кода, чем нужно, прежде чем успеет выполниться остальная часть сценария на странице, что заблокирует интерактивность. Используйте этот подход, только если ваше приложение очень маленькое, должно распространяться в одном файле JavaScript, или у вас есть другие ограничения, которые не позволяют использовать динамический импорт.
 
 ```js
 import {configureLocalization} from '@lit/localize';
