@@ -1,4 +1,5 @@
 title: Статьи
 nav:
     - index.md
-    - ...
+    - how-to-create-a-nextjs-pwa
+    - wc-framework-lock-in.md
