@@ -32,15 +32,15 @@ export class MyElement extends LitElement {
 
 | Декоратор | Резюме | Дополнительная информация |
 | --- | --- | --- |
-| [`@customElement`](https://lit.dev/docs/api/decorators#customElement) | Определяет пользовательский элемент. | [Defining](defining.md) |
+| [`@customElement`](https://lit.dev/docs/api/decorators#customElement) | Определяет пользовательский элемент. | [Определение компонента](defining.md) |
 | [`@eventOptions`](https://lit.dev/docs/api/decorators#eventOptions) | Добавляет опции слушателя событий. | [События](events.md#event-options-decorator) |
-| [`@property`](https://lit.dev/docs/api/decorators#property) | Определяет публичное свойство. | [Properties](properties.md#declare-with-decorators) |
-| [`@state`](https://lit.dev/docs/api/decorators#state) | Определяет частное свойство состояния | [Properties](properties.md#declare-with-decorators) |
-| [`@query`](https://lit.dev/docs/api/decorators#query) | Определяет свойство, которое возвращает элемент в шаблоне компонента. | [Shadow DOM](shadow-dom.md#query) |
-| [`@queryAll`](https://lit.dev/docs/api/decorators#queryAll) | Определяет свойство, которое возвращает список элементов в шаблоне компонента. | [Shadow DOM](shadow-dom.md#query-all) |
-| [`@queryAsync`](https://lit.dev/docs/api/decorators#queryAsync) | Определяет свойство, которое возвращает обещание, разрешающее элемент в шаблоне компонента. | [Shadow DOM](shadow-dom.md#query-async) |
-| [`@queryAssignedElements`](https://lit.dev/docs/api/decorators#queryAssignedElements) | Определяет свойство, которое возвращает дочерние элементы, назначенные определенному слоту. | [Shadow DOM](shadow-dom.md#query-assigned-nodes) |
-| [`@queryAssignedNodes`](https://lit.dev/docs/api/decorators#queryAssignedNodes) | Определяет свойство, которое возвращает дочерние узлы, назначенные определенному слоту. | [Shadow DOM](shadow-dom.md#query-assigned-nodes) |
+| [`@property`](https://lit.dev/docs/api/decorators#property) | Определяет публичное свойство. | [Свойства](properties.md#declare-with-decorators) |
+| [`@state`](https://lit.dev/docs/api/decorators#state) | Определяет частное свойство состояния | [Свойства](properties.md#declare-with-decorators) |
+| [`@query`](https://lit.dev/docs/api/decorators#query) | Определяет свойство, которое возвращает элемент в шаблоне компонента. | [Теневой DOM](shadow-dom.md#query) |
+| [`@queryAll`](https://lit.dev/docs/api/decorators#queryAll) | Определяет свойство, которое возвращает список элементов в шаблоне компонента. | [Теневой DOM](shadow-dom.md#query-all) |
+| [`@queryAsync`](https://lit.dev/docs/api/decorators#queryAsync) | Определяет свойство, которое возвращает обещание, разрешающее элемент в шаблоне компонента. | [Теневой DOM](shadow-dom.md#query-async) |
+| [`@queryAssignedElements`](https://lit.dev/docs/api/decorators#queryAssignedElements) | Определяет свойство, которое возвращает дочерние элементы, назначенные определенному слоту. | [Теневой DOM](shadow-dom.md#query-assigned-nodes) |
+| [`@queryAssignedNodes`](https://lit.dev/docs/api/decorators#queryAssignedNodes) | Определяет свойство, которое возвращает дочерние узлы, назначенные определенному слоту. | [Теневой DOM](shadow-dom.md#query-assigned-nodes) |
 
 ## Импорт декораторов
 
@@ -126,7 +126,7 @@ TypeScript поддерживает как экспериментальные, �
 
 Примечание: Декораторы Lit работают только с `"версией": "2023-05"`. Другие версии, включая ранее поддерживаемую `"2018-09"`, не поддерживаются.
 
-## Версии декораторов
+## Версии декораторов {#decorator-versions}
 
 Декораторы являются [stage 3 proposal](https://github.com/tc39/proposal-decorators) для добавления в стандарт ECMAScript. Такие компиляторы, как [Babel](https://babeljs.io/) и [TypeScript](https://www.typescriptlang.org/), поддерживают декораторы, хотя ни в одном браузере они пока не реализованы. Декораторы Lit работают в Babel и TypeScript, и будут работать в браузерах, когда они реализуют их нативно.
 

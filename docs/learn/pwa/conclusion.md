@@ -1,32 +1,30 @@
 ---
-title: Conclusion
-description: >
-  Next steps and resources.
-authors:
-  - firt
-  - rachelandrew
-  - ajara
-  - petelepage
-  - joemedley
-date: 2021-11-03
+description: Дальнейшие шаги и ресурсы после курса о прогрессивных веб-приложениях.
 ---
 
-Congratulations! You've made it to the end! We hope that you have enjoyed this course of Progressive Web Apps. In case you are using a library or a framework to create your web apps, you can check out the following additional resources:
-##  Resources
+# Заключение
 
-- [React with CRA: Making a PWA](https://create-react-app.dev/docs/making-a-progressive-web-app/)
-- [Next.js: PWA Sample](https://github.com/vercel/next.js/tree/canary/examples/progressive-web-app)
-- [Vue: CLI PWA Plugin](https://cli.vuejs.org/core-plugins/pwa.html)
-- [Angular: Service Worker and PWA Documentation](https://angular.io/guide/service-worker-intro)
-- [Svelte: Build a PWA](https://blog.logrocket.com/building-a-pwa-with-svelte/)
-- [Nuxt.js: PWA](https://pwa.nuxtjs.org)
-- [Jekyll PWA Plugin](https://github.com/lavas-project/jekyll-pwa)
-- [Gatsby: PWA](https://www.gatsbyjs.com/docs/progressive-web-app/)
-- [ASP.NET: Build PWAs with ASP.NET Core Blazor WebAssembly](https://docs.microsoft.com/en-us/aspnet/core/blazor/progressive-web-app?view=aspnetcore-6.0&tabs=visual-studio)
-- [Django: Make PWA of a Django Project](https://www.geeksforgeeks.org/make-pwa-of-a-django-project/)
-- [Flutter: Building a web application with Flutter](https://docs.flutter.dev/get-started/web)
-- [Wordpress: PWAs for Wordpress](https://wpengine.com/resources/wordpress-progressive-web-apps/)
+<big>Дальнейшие шаги и ресурсы.</big>
 
-## Brought to you by
+Поздравляем, вы дошли до конца курса. Если приложение собирается библиотекой или фреймворком, начните с этих материалов. У многих из них установка PWA сводится к манифесту, сервис-воркеру и плагину сборщика. Create React App и Vue CLI для новых проектов уже не подходят: их сменили Vite и собственные средства фреймворков.
 
-{% include 'partials/authors-stack.njk' %}
+## Ресурсы
+
+-   [Next.js: PWA на этом сайте](../../articles/how-to-create-a-nextjs-pwa/index.md)
+-   [Vite: vite-plugin-pwa](https://vite-pwa-org.netlify.app/guide/)
+-   [Vue и Vite](https://vite-pwa-org.netlify.app/frameworks/vue.html)
+-   [Nuxt](https://vite-pwa-org.netlify.app/frameworks/nuxt.html)
+-   [Svelte и SvelteKit](https://vite-pwa-org.netlify.app/frameworks/svelte.html)
+-   [Angular: сервис-воркеры и PWA](https://angular.dev/ecosystem/service-workers/getting-started)
+-   [ASP.NET: PWA на Blazor WebAssembly](https://learn.microsoft.com/aspnet/core/blazor/progressive-web-app)
+-   [Django: django-pwa](https://github.com/silviolleite/django-pwa)
+-   [Flutter: веб-приложение как PWA](https://docs.flutter.dev/platform-integration/web/initialization)
+-   [Gatsby: манифест веб-приложения](https://www.gatsbyjs.com/docs/how-to/adding-common-features/adding-a-manifest-file/)
+-   [WordPress: плагин PWA](https://github.com/GoogleChromeLabs/pwa-wp)
+-   [Jekyll: плагин PWA](https://github.com/lavas-project/jekyll-pwa)
+
+!!!note "Авторы"
+
+    Этот курс был написан [Максимилиано Фиртманом](https://twitter.com/firt) при участии [Рэйчел Эндрю](https://twitter.com/rachelandrew), [Адриана Джара](https://twitter.com/tropicadri), [Пит ЛеПейдж](https://twitter.com/petele), [Сэм Ричард](https://twitter.com/snugug) и [Джо Медли](https://twitter.com/medleyjp).
+
+:material-information-outline: Источник &mdash; [Learn PWA](https://web.dev/learn/pwa/conclusion)

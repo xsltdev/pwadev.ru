@@ -10,3 +10,5 @@ nav:
     - ssr
     - frameworks
     - localization
+    - libraries
+    - releases

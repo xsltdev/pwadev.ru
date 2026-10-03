@@ -97,7 +97,7 @@ lit-localize command [--flags]
     - `"xliff"`: [XLIFF 1.2](https://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html) XML-формат.
     - `"xlb"`: Внутренний XML-формат Google
 
-### Настройки режима выполнения
+### Настройки режима выполнения {#runtime-mode-settings}
 
 **`output.outputDir`**
 
@@ -115,7 +115,7 @@ lit-localize command [--flags]
 
     Язык, на котором будут генерироваться модули.
 
-### Настройки режима преобразования
+### Настройки режима преобразования {#transform-mode-settings}
 
 **`output.outputDir`**
 
@@ -125,7 +125,7 @@ lit-localize command [--flags]
 
     Выходной каталог для сгенерированных модулей. Для каждой локали в этой директории создается поддиректория, каждая из которых содержит полную сборку проекта для этой локали.
 
-### Настройки режима XLIFF
+### Настройки режима XLIFF {#xliff-mode-settings}
 
 **`interchange.xliffDir`**
 

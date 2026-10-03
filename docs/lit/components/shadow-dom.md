@@ -19,7 +19,7 @@ Shadow DOM обеспечивает три преимущества:
 
 !!!alert "Старые браузеры"
 
-    В старых браузерах, где нативный теневой DOM недоступен, можно использовать [полифиллы веб-компонентов](https://github.com/webcomponents/polyfills/tree/master/packages/webcomponentsjs). Обратите внимание, что модуль `polyfill-support` от Lit должен быть загружен вместе с полифиллами веб-компонентов. Подробности см. в [Требования для устаревших браузеров](../tools/requirements.md#building-for-legacy-browsers).
+    В старых браузерах, где нативный теневой DOM недоступен, можно использовать [полифиллы веб-компонентов](https://github.com/webcomponents/polyfills/tree/master/packages/webcomponentsjs). Обратите внимание, что модуль `polyfill-support` от Lit должен быть загружен вместе с полифиллами веб-компонентов. Подробности см. в [Требования для устаревших браузеров](../tools/requirements.md#note-on-legacy-browsers).
 
 ## Доступ к узлам в теневом DOM
 
@@ -271,7 +271,7 @@ class DelegatesFocus extends LitElement {
 
 ### Реализация `createRenderRoot`
 
-Реализация по умолчанию `createRenderRoot` создает открытый корень тени и добавляет к нему любые стили, заданные в поле класса `static styles`. Подробнее о стилях см. в [Styles](styles.md).
+Реализация по умолчанию `createRenderRoot` создает открытый корень тени и добавляет к нему любые стили, заданные в поле класса `static styles`. Подробнее о стилях см. в [стилях](styles.md).
 
 Чтобы настроить корень рендеринга компонента, реализуйте `createRenderRoot` и верните узел, в который должен рендериться шаблон.
 

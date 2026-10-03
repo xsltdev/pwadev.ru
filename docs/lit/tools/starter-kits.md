@@ -192,11 +192,11 @@ description: Стартовые наборы Lit - это шаблоны про�
 
 ## Следующие шаги
 
-Готовы добавить функции в свой компонент? Загляните в раздел [Components](../components/overview.md), чтобы узнать о создании вашего первого компонента Lit, или в раздел [Templates](../templates/overview.md), чтобы узнать о написании шаблонов.
+Готовы добавить функции в свой компонент? Загляните в раздел [Компоненты](../components/overview.md), чтобы узнать о создании вашего первого компонента Lit, или в раздел [Шаблоны](../templates/overview.md), чтобы узнать о написании шаблонов.
 
 Подробную информацию о выполнении тестов и использовании других инструментов можно найти в README стартового проекта:
 
 -   [TypeScript project README](https://github.com/PolymerLabs/lit-element-starter-ts/blob/master/README.md)
 -   [JavaScript project README](https://github.com/PolymerLabs/lit-element-starter-js/blob/master/README.md)
 
-Руководство по публикации компонента в `npm` см. в разделе [Publishing](./publishing.md).
+Руководство по публикации компонента в `npm` см. в разделе [Публикация](./publishing.md).
