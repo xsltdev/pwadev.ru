@@ -24,11 +24,11 @@ Lit — это стандартная современная библиотек�
 
 ### Поддержка современного Javascript
 
-Тестовая среда, которую вы используете, должна поддерживать современный Javascript, включая использование модулей с голыми спецификаторами модулей, или понижение уровня современного Javascript соответствующим образом. Подробнее см. в документации [Требования для устаревших браузеров](requirements.md#building-for-legacy-browsers).
+Тестовая среда, которую вы используете, должна поддерживать современный Javascript, включая использование модулей с голыми спецификаторами модулей, или понижение уровня современного Javascript соответствующим образом. Подробнее см. в документации [Требования для устаревших браузеров](requirements.md#note-on-legacy-browsers).
 
 ### Использование полифиллов
 
-Для тестирования на старых браузерах в тестовое окружение необходимо загрузить некоторые полифиллы, включая [web components polyfills](https://github.com/webcomponents/polyfills/tree/master/packages/webcomponentsjs) и модуль Lit's `polyfill-support`. Подробнее см. документацию [Polyfills](requirements.md#polyfills).
+Для тестирования на старых браузерах в тестовое окружение необходимо загрузить некоторые полифиллы, включая [web components polyfills](https://github.com/webcomponents/polyfills/tree/master/packages/webcomponentsjs) и модуль Lit's `polyfill-support`. Подробнее см. документацию [примечании об устаревших браузерах](requirements.md#note-on-legacy-browsers).
 
 ## Использование Web Test Runner {#web-test-runner}
 

@@ -208,6 +208,14 @@ hide:
 
     [:octicons-arrow-right-24: Возможности](capabilities.md)
 
+-   :material-flag-checkered:{ .lg .middle } **Заключение**
+
+    ***
+
+    Дальнейшие шаги и актуальные материалы о PWA в React, Vue, Angular, Next.js и других стеках.
+
+    [:octicons-arrow-right-24: Заключение](conclusion.md)
+
 </div>
 
 !!!note "Авторы"

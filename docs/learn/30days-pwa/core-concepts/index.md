@@ -54,20 +54,20 @@ hide:
 
     [:octicons-arrow-right-24: Сделайте PWA автономным](05.md)
 
--   :material-numeric-6-box:{ .lg .middle } **Feature Detection**
+-   :material-numeric-6-box:{ .lg .middle } **Сделайте PWA полнофункциональным**
 
     ***
 
-    Что такое проект веб-возможностей? Что такое ключевые веб-интерфейсы, API? Что такое Feature Detection? Каковы плюсы и минусы разработки PWA?
+    Что такое проект веб-возможностей? Что такое Project Fugu? Какие API уже можно попробовать и как обнаружить поддержку функции в браузере?
 
-    [:octicons-arrow-right-24: Feature Detection](06.md)
+    [:octicons-arrow-right-24: Сделайте PWA полнофункциональным](06.md)
 
--   :material-numeric-7-box:{ .lg .middle } **Строим итеративно**
+-   :material-numeric-7-box:{ .lg .middle } **Разработка PWA**
 
     ***
 
     Как создать PWA с нуля? Как улучшить существующее приложение для обеспечения его готовности к PWA? На какие инструменты и практики я могу опираться как разработчик?
 
-    [:octicons-arrow-right-24: Строим итеративно](07.md)
+    [:octicons-arrow-right-24: Разработка PWA](07.md)
 
 </div>

@@ -2,3 +2,4 @@ title: Управление данными
 nav:
     - context.md
     - task.md
+    - signals.md
